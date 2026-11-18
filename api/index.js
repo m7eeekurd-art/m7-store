@@ -90,7 +90,7 @@ module.exports = async (req, res) => {
   try {
     if (path === '/api/services') {
       const apiKey = (process.env.KD1S_API_KEY || '').trim();
-      if (!apiKey) return res.status(200).json({ success: false, error: 'KD1S_API_KEY missing in Vercel' });
+      if (!apiKey) return res.status(200).json({ success: false, error: 'KD1S_API_KEY missing' });
 
       let profit = 0.40;
       try {
@@ -102,24 +102,19 @@ module.exports = async (req, res) => {
       } catch (_) {}
 
       const data = await kd1sPost({ key: apiKey, action: 'services' });
-      if (!Array.isArray(data)) {
-        return res.status(200).json({ success: false, error: (data && data.error) || 'Invalid KD1S API Key' });
-      }
-      const services = data.map(s => ({
-        ...s,
-        rate: (parseFloat(s.rate || 0) * (1 + profit)).toFixed(4)
-      }));
+      if (!Array.isArray(data)) return res.status(200).json({ success: false, error: (data && data.error) || 'Invalid Key' });
+      const services = data.map(s => ({ ...s, rate: (parseFloat(s.rate || 0) * (1 + profit)).toFixed(4) }));
       return res.status(200).json({ success: true, services });
     }
 
     const db = await connectDB();
-    if (!db) return res.status(200).json({ success: false, error: 'Database not connected' });
+    if (!db) return res.status(200).json({ success: false, error: 'DB Error' });
 
     if (path === '/api/user') {
       const { telegramId, username, firstName } = body;
       if (!telegramId) return res.status(200).json({ success: false });
       let user = await db.User.findOne({ telegramId });
-      if (!user) user = await db.User.create({ telegramId, username, firstName, balance: 0 });
+      if (!user) user = await db.User.create({ telegramId, username: username || 'NoUsername', firstName: firstName || 'User', balance: 0 });
       else if (username && user.username !== username) { user.username = username; await user.save(); }
       let settings = await db.Settings.findOne({ key: 'main' });
       if (!settings) settings = await db.Settings.create({ key: 'main' });
@@ -141,9 +136,12 @@ module.exports = async (req, res) => {
       const cost = parseFloat(((quantity / 1000) * parseFloat(svc.rate) * (1 + profit)).toFixed(4));
       if (user.balance < cost) return res.status(200).json({ success: false, error: 'Insufficient balance!' });
 
+      const uTag = username ? `@${username}` : 'No Username';
+      const uIdStr = telegramId || 'Unknown ID';
+
       if (((settings && settings.approvalMode) || 'auto') === 'manual') {
         const p = await db.Order.create({ telegramId, username, serviceId, serviceName: svc.name, link, quantity, cost, status: 'Pending Approval' });
-        await sendAlert(db, `⏳ <b>Pending Order #${p._id}</b>\n👤 @${username || telegramId}\n📦 #${serviceId}\n🔗 ${link}\n🔢 ${quantity}\n💰 $${cost}`);
+        await sendAlert(db, `⏳ <b>داواکارییا په‌ندینگ #${p._id}</b>\n👤 <b>ناڤ:</b> ${uTag}\n🆔 <b>ئایدی:</b> <code>${uIdStr}</code>\n📦 <b>خزمەتگوزاری:</b> #${serviceId} (${svc.name})\n🔗 <b>لینک:</b> ${link}\n🔢 <b>چەنداتی:</b> ${quantity}\n💰 <b>کوژمە:</b> $${cost}`);
         return res.status(200).json({ success: true, pending: true });
       }
 
@@ -152,7 +150,7 @@ module.exports = async (req, res) => {
         user.balance -= cost;
         await user.save();
         await db.Order.create({ telegramId, username, orderId: String(kd.order), serviceId, serviceName: svc.name, link, quantity, cost, status: 'In Progress' });
-        await sendAlert(db, `✅ <b>Order #${kd.order}</b>\n👤 @${username || telegramId}\n📦 #${serviceId}\n🔗 ${link}\n🔢 ${quantity}\n💸 $${cost}`);
+        await sendAlert(db, `✅ <b>داواکارییا سه‌رکه‌فتی #${kd.order}</b>\n👤 <b>ناڤ:</b> ${uTag}\n🆔 <b>ئایدی:</b> <code>${uIdStr}</code>\n📦 <b>خزمەتگوزاری:</b> #${serviceId} (${svc.name})\n🔗 <b>لینک:</b> ${link}\n🔢 <b>چەنداتی:</b> ${quantity}\n💸 <b>کوژمە:</b> $${cost}\n💳 <b>ماوەیا باڵانسی:</b> $${user.balance.toFixed(2)}`);
         return res.status(200).json({ success: true, orderId: kd.order, newBalance: user.balance });
       }
       return res.status(200).json({ success: false, error: (kd && kd.error) || 'Order failed' });
@@ -167,7 +165,9 @@ module.exports = async (req, res) => {
     if (path === '/api/refill-request') {
       const { telegramId, username, method, amount, note } = body;
       await db.Refill.create({ telegramId, username, method, amount, note });
-      await sendAlert(db, `💳 <b>Top-Up Request</b>\n👤 @${username || telegramId}\n💵 $${amount}\n🏦 ${method}\n📝 ${note || '-'}`);
+      const uTag = username ? `@${username}` : 'No Username';
+      const uIdStr = telegramId || 'Unknown ID';
+      await sendAlert(db, `💳 <b>داواکارییا پڕکرنا باڵانسی!</b>\n👤 <b>ناڤ:</b> ${uTag}\n🆔 <b>ئایدی:</b> <code>${uIdStr}</code>\n💵 <b>بڕ:</b> $${amount}\n🏦 <b>ڕێکا ڤەدانا:</b> ${method}\n📝 <b>تێبینی:</b> ${note || '-'}`);
       return res.status(200).json({ success: true });
     }
 
@@ -207,9 +207,9 @@ module.exports = async (req, res) => {
       return res.status(200).json({ success: true });
     }
 
-    return res.status(200).json({ success: false, error: 'Unknown route' });
+    return res.status(200).json({ success: false, error: 'Route not found' });
   } catch (err) {
     return res.status(200).json({ success: false, error: err.message });
   }
 };
-                    
+      
