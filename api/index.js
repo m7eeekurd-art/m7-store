@@ -1,366 +1,215 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const axios = require('axios');
-const cors = require('cors');
+let mongoose;
+try { mongoose = require('mongoose'); } catch (_) {}
 
-const app = express();
-app.use(express.json());
-app.use(cors());
-
-// MongoDB Connection (Cached for Vercel Serverless)
-const MONGO_URI = process.env.MONGO_URI;
+let models = null;
 async function connectDB() {
-    if (!MONGO_URI) return;
-    if (mongoose.connection.readyState === 1) return;
-    await mongoose.connect(MONGO_URI);
+  const uri = (process.env.MONGO_URI || '').trim();
+  if (!mongoose || !uri) return null;
+  if (mongoose.connection.readyState !== 1) {
+    await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
+  }
+  if (!models) {
+    models = {
+      User: mongoose.models.User || mongoose.model('User', new mongoose.Schema({
+        telegramId: { type: String, unique: true },
+        username: String,
+        firstName: String,
+        balance: { type: Number, default: 0 }
+      })),
+      Settings: mongoose.models.Settings || mongoose.model('Settings', new mongoose.Schema({
+        key: { type: String, unique: true },
+        profitPercentage: { type: Number, default: 40 },
+        qicard: { type: String, default: '0000000000' },
+        usdt: { type: String, default: 'TYourAdminWalletAddressHere...' },
+        botToken: { type: String, default: '' },
+        adminChatId: { type: String, default: '' },
+        approvalMode: { type: String, default: 'auto' }
+      })),
+      Order: mongoose.models.Order || mongoose.model('Order', new mongoose.Schema({
+        telegramId: String,
+        username: String,
+        orderId: String,
+        serviceId: String,
+        serviceName: String,
+        link: String,
+        quantity: Number,
+        cost: Number,
+        status: { type: String, default: 'In Progress' },
+        createdAt: { type: Date, default: Date.now }
+      })),
+      Refill: mongoose.models.Refill || mongoose.model('Refill', new mongoose.Schema({
+        telegramId: String,
+        username: String,
+        method: String,
+        amount: Number,
+        note: String,
+        status: { type: String, default: 'Pending' },
+        createdAt: { type: Date, default: Date.now }
+      }))
+    };
+  }
+  return models;
 }
 
-// Schemas & Models
-const userSchema = new mongoose.Schema({
-    telegramId: { type: String, unique: true },
-    username: String,
-    firstName: String,
-    balance: { type: Number, default: 0 }
-});
-const User = mongoose.models.User || mongoose.model('User', userSchema);
-
-const settingsSchema = new mongoose.Schema({
-    key: { type: String, unique: true },
-    profitPercentage: { type: Number, default: 40 },
-    qicard: { type: String, default: '0000000000' },
-    usdt: { type: String, default: 'TYourAdminWalletAddressHere...' },
-    botToken: { type: String, default: '' },
-    adminChatId: { type: String, default: '' },
-    approvalMode: { type: String, default: 'auto' }
-});
-const Settings = mongoose.models.Settings || mongoose.model('Settings', settingsSchema);
-
-const orderSchema = new mongoose.Schema({
-    telegramId: String,
-    username: String,
-    orderId: String,
-    serviceId: String,
-    serviceName: String,
-    link: String,
-    quantity: Number,
-    cost: Number,
-    status: { type: String, default: 'In Progress' },
-    createdAt: { type: Date, default: Date.now }
-});
-const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
-
-const refillSchema = new mongoose.Schema({
-    telegramId: String,
-    username: String,
-    method: String,
-    amount: Number,
-    note: String,
-    status: { type: String, default: 'Pending' },
-    createdAt: { type: Date, default: Date.now }
-});
-const Refill = mongoose.models.Refill || mongoose.model('Refill', refillSchema);
-
-// Telegram Notification Helper
-async function sendTelegramAlert(text) {
-    try {
-        const settings = await Settings.findOne({ key: 'main' });
-        const token = process.env.BOT_TOKEN || settings?.botToken;
-        const chatId = process.env.ADMIN_CHAT_ID || settings?.adminChatId;
-        if (!token || !chatId) return;
-        await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
-            chat_id: chatId,
-            text,
-            parse_mode: 'HTML'
-        });
-    } catch (_) {}
+async function kd1sPost(params) {
+  const res = await fetch('https://kd1s.com/api/v2', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(params).toString()
+  });
+  const text = await res.text();
+  try { return JSON.parse(text); } catch (_) { return { error: 'KD1S Error: ' + text.slice(0, 60) }; }
 }
 
-// Health Check
-app.get('/api', (req, res) => {
-    res.json({ success: true, message: 'M7 Store API is running!' });
-});
+async function sendAlert(db, text) {
+  try {
+    const s = db ? await db.Settings.findOne({ key: 'main' }) : null;
+    const token = (process.env.BOT_TOKEN || (s && s.botToken) || '').trim();
+    const chatId = (process.env.ADMIN_CHAT_ID || (s && s.adminChatId) || '').trim();
+    if (!token || !chatId) return;
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' })
+    });
+  } catch (_) {}
+}
 
-// Get Services from KD1S
-app.get('/api/services', async (req, res) => {
-    try {
-        await connectDB();
-        const apiKey = process.env.KD1S_API_KEY;
-        if (!apiKey) {
-            return res.status(500).json({ success: false, error: 'KD1S_API_KEY is not configured' });
+module.exports = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  const path = (req.url || '').split('?')[0];
+  let body = req.body || {};
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch (_) { body = {}; }
+  }
+
+  try {
+    if (path === '/api/services') {
+      const apiKey = (process.env.KD1S_API_KEY || '').trim();
+      if (!apiKey) return res.status(200).json({ success: false, error: 'KD1S_API_KEY missing in Vercel' });
+
+      let profit = 0.40;
+      try {
+        const db = await connectDB();
+        if (db) {
+          const s = await db.Settings.findOne({ key: 'main' });
+          if (s && typeof s.profitPercentage === 'number') profit = s.profitPercentage / 100;
         }
+      } catch (_) {}
 
-        const response = await axios.post('https://kd1s.com/api/v2', {
-            key: apiKey,
-            action: 'services'
-        });
-
-        let profit = 0.40;
-        if (MONGO_URI) {
-            const settings = await Settings.findOne({ key: 'main' });
-            if (settings) profit = settings.profitPercentage / 100;
-        }
-
-        let services = response.data;
-        if (Array.isArray(services)) {
-            services = services.map(s => ({
-                ...s,
-                rate: (parseFloat(s.rate) * (1 + profit)).toFixed(4)
-            }));
-        }
-        res.json({ success: true, services });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+      const data = await kd1sPost({ key: apiKey, action: 'services' });
+      if (!Array.isArray(data)) {
+        return res.status(200).json({ success: false, error: (data && data.error) || 'Invalid KD1S API Key' });
+      }
+      const services = data.map(s => ({
+        ...s,
+        rate: (parseFloat(s.rate || 0) * (1 + profit)).toFixed(4)
+      }));
+      return res.status(200).json({ success: true, services });
     }
-});
 
-// Sync User & Settings
-app.post('/api/user', async (req, res) => {
-    try {
-        await connectDB();
-        const { telegramId, username, firstName } = req.body;
-        if (!telegramId) return res.status(400).json({ success: false });
+    const db = await connectDB();
+    if (!db) return res.status(200).json({ success: false, error: 'Database not connected' });
 
-        let user = await User.findOne({ telegramId });
-        if (!user) {
-            user = await User.create({ telegramId, username, firstName, balance: 0 });
-        } else if (username && user.username !== username) {
-            user.username = username;
-            await user.save();
-        }
-
-        let settings = await Settings.findOne({ key: 'main' });
-        if (!settings) {
-            settings = await Settings.create({ key: 'main' });
-        }
-
-        res.json({ success: true, balance: user.balance, settings });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+    if (path === '/api/user') {
+      const { telegramId, username, firstName } = body;
+      if (!telegramId) return res.status(200).json({ success: false });
+      let user = await db.User.findOne({ telegramId });
+      if (!user) user = await db.User.create({ telegramId, username, firstName, balance: 0 });
+      else if (username && user.username !== username) { user.username = username; await user.save(); }
+      let settings = await db.Settings.findOne({ key: 'main' });
+      if (!settings) settings = await db.Settings.create({ key: 'main' });
+      return res.status(200).json({ success: true, balance: user.balance, settings });
     }
-});
 
-// Place New Order
-app.post('/api/order', async (req, res) => {
-    try {
-        await connectDB();
-        const { telegramId, username, serviceId, link, quantity } = req.body;
-        const user = await User.findOne({ telegramId });
-        if (!user) return res.status(404).json({ success: false, error: 'User not found' });
+    if (path === '/api/order') {
+      const { telegramId, username, serviceId, link, quantity } = body;
+      const user = await db.User.findOne({ telegramId });
+      if (!user) return res.status(200).json({ success: false, error: 'User not found' });
 
-        const apiKey = process.env.KD1S_API_KEY;
-        const servicesRes = await axios.post('https://kd1s.com/api/v2', { key: apiKey, action: 'services' });
-        const serviceObj = Array.isArray(servicesRes.data)
-            ? servicesRes.data.find(s => String(s.service || s.id) === String(serviceId))
-            : null;
+      const apiKey = (process.env.KD1S_API_KEY || '').trim();
+      const list = await kd1sPost({ key: apiKey, action: 'services' });
+      const svc = Array.isArray(list) ? list.find(s => String(s.service || s.id) === String(serviceId)) : null;
+      if (!svc) return res.status(200).json({ success: false, error: 'Service not found' });
 
-        if (!serviceObj) return res.status(400).json({ success: false, error: 'Service not found' });
+      const settings = await db.Settings.findOne({ key: 'main' });
+      const profit = settings ? (settings.profitPercentage / 100) : 0.40;
+      const cost = parseFloat(((quantity / 1000) * parseFloat(svc.rate) * (1 + profit)).toFixed(4));
+      if (user.balance < cost) return res.status(200).json({ success: false, error: 'Insufficient balance!' });
 
-        const settings = await Settings.findOne({ key: 'main' });
-        const profit = settings ? (settings.profitPercentage / 100) : 0.40;
-        const finalRate = parseFloat(serviceObj.rate) * (1 + profit);
-        const cost = parseFloat(((quantity / 1000) * finalRate).toFixed(4));
+      if (((settings && settings.approvalMode) || 'auto') === 'manual') {
+        const p = await db.Order.create({ telegramId, username, serviceId, serviceName: svc.name, link, quantity, cost, status: 'Pending Approval' });
+        await sendAlert(db, `⏳ <b>Pending Order #${p._id}</b>\n👤 @${username || telegramId}\n📦 #${serviceId}\n🔗 ${link}\n🔢 ${quantity}\n💰 $${cost}`);
+        return res.status(200).json({ success: true, pending: true });
+      }
 
-        if (user.balance < cost) {
-            return res.status(400).json({ success: false, error: 'Insufficient balance!' });
-        }
-
-        const approvalMode = settings?.approvalMode || 'auto';
-
-        if (approvalMode === 'manual') {
-            const pendingOrder = await Order.create({
-                telegramId,
-                username,
-                serviceId,
-                serviceName: serviceObj.name,
-                link,
-                quantity,
-                cost,
-                status: 'Pending Approval'
-            });
-            await sendTelegramAlert(`⏳ <b>New Pending Order #${pendingOrder._id}</b>\n👤 User: @${username || telegramId}\n📦 Service: #${serviceId}\n🔗 Link: ${link}\n🔢 Qty: ${quantity}\n💰 Cost: $${cost}`);
-            return res.json({ success: true, pending: true, message: 'Submitted for approval' });
-        }
-
-        const kdOrder = await axios.post('https://kd1s.com/api/v2', {
-            key: apiKey,
-            action: 'add',
-            service: serviceId,
-            link,
-            quantity
-        });
-
-        if (kdOrder.data && kdOrder.data.order) {
-            user.balance -= cost;
-            await user.save();
-
-            await Order.create({
-                telegramId,
-                username,
-                orderId: String(kdOrder.data.order),
-                serviceId,
-                serviceName: serviceObj.name,
-                link,
-                quantity,
-                cost,
-                status: 'In Progress'
-            });
-
-            await sendTelegramAlert(`✅ <b>New Successful Order #${kdOrder.data.order}</b>\n👤 User: @${username || telegramId}\n📦 Service: #${serviceId}\n🔗 Link: ${link}\n🔢 Qty: ${quantity}\n💸 Cost: $${cost}\n💳 Remaining: $${user.balance.toFixed(2)}`);
-
-            res.json({ success: true, orderId: kdOrder.data.order, newBalance: user.balance });
-        } else {
-            res.status(400).json({ success: false, error: kdOrder.data?.error || 'Failed to place order' });
-        }
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// Get User Order History
-app.get('/api/orders/:telegramId', async (req, res) => {
-    try {
-        await connectDB();
-        const orders = await Order.find({ telegramId: req.params.telegramId }).sort({ createdAt: -1 }).limit(20);
-        res.json({ success: true, orders });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// Refill / Top-Up Request
-app.post('/api/refill-request', async (req, res) => {
-    try {
-        await connectDB();
-        const { telegramId, username, method, amount, note } = req.body;
-        await Refill.create({ telegramId, username, method, amount, note });
-        await sendTelegramAlert(`💳 <b>New Top-Up Request!</b>\n👤 User: @${username || telegramId}\n💵 Amount: $${amount}\n🏦 Method: ${method}\n📝 Note: ${note || 'None'}`);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// Admin Login
-app.post('/api/admin/login', async (req, res) => {
-    try {
-        await connectDB();
-        const { username, password } = req.body;
-        const adminUser = process.env.ADMIN_USER || 'admin';
-        const adminPass = process.env.ADMIN_PASS || 'admin';
-
-        if (username === adminUser && password === adminPass) {
-            const settings = await Settings.findOne({ key: 'main' });
-            const pendingOrders = await Order.find({ status: 'Pending Approval' }).sort({ createdAt: -1 });
-            res.json({ success: true, settings, pendingOrders });
-        } else {
-            res.status(401).json({ success: false, message: 'Invalid credentials' });
-        }
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// Admin Add Balance
-app.post('/api/admin/add-balance', async (req, res) => {
-    try {
-        await connectDB();
-        const { username, password, targetTelegramId, amount } = req.body;
-        if (username !== (process.env.ADMIN_USER || 'admin') || password !== (process.env.ADMIN_PASS || 'admin')) {
-            return res.status(401).json({ success: false });
-        }
-
-        let user = await User.findOne({ telegramId: targetTelegramId });
-        if (!user) {
-            user = await User.create({ telegramId: targetTelegramId, balance: 0 });
-        }
-        user.balance += parseFloat(amount);
+      const kd = await kd1sPost({ key: apiKey, action: 'add', service: serviceId, link, quantity });
+      if (kd && kd.order) {
+        user.balance -= cost;
         await user.save();
-
-        res.json({ success: true, newBalance: user.balance });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        await db.Order.create({ telegramId, username, orderId: String(kd.order), serviceId, serviceName: svc.name, link, quantity, cost, status: 'In Progress' });
+        await sendAlert(db, `✅ <b>Order #${kd.order}</b>\n👤 @${username || telegramId}\n📦 #${serviceId}\n🔗 ${link}\n🔢 ${quantity}\n💸 $${cost}`);
+        return res.status(200).json({ success: true, orderId: kd.order, newBalance: user.balance });
+      }
+      return res.status(200).json({ success: false, error: (kd && kd.error) || 'Order failed' });
     }
-});
 
-// Admin Update Settings
-app.post('/api/admin/settings', async (req, res) => {
-    try {
-        await connectDB();
-        const { username, password, profitPercentage, qicard, usdt, botToken, adminChatId, approvalMode } = req.body;
-        if (username !== (process.env.ADMIN_USER || 'admin') || password !== (process.env.ADMIN_PASS || 'admin')) {
-            return res.status(401).json({ success: false });
-        }
-
-        let settings = await Settings.findOne({ key: 'main' });
-        if (!settings) {
-            settings = new Settings({ key: 'main' });
-        }
-        settings.profitPercentage = profitPercentage;
-        settings.qicard = qicard;
-        settings.usdt = usdt;
-        settings.botToken = botToken;
-        settings.adminChatId = adminChatId;
-        settings.approvalMode = approvalMode;
-        await settings.save();
-
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+    if (path.startsWith('/api/orders/')) {
+      const tid = path.split('/').pop();
+      const orders = await db.Order.find({ telegramId: tid }).sort({ createdAt: -1 }).limit(20);
+      return res.status(200).json({ success: true, orders });
     }
-});
 
-// Admin Approve or Reject Pending Order
-app.post('/api/admin/order-action', async (req, res) => {
-    try {
-        await connectDB();
-        const { username, password, orderDbId, action } = req.body;
-        if (username !== (process.env.ADMIN_USER || 'admin') || password !== (process.env.ADMIN_PASS || 'admin')) {
-            return res.status(401).json({ success: false });
-        }
-
-        const order = await Order.findById(orderDbId);
-        if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
-
-        if (action === 'reject') {
-            order.status = 'Rejected';
-            await order.save();
-            return res.json({ success: true, message: 'Rejected' });
-        }
-
-        if (action === 'approve') {
-            const user = await User.findOne({ telegramId: order.telegramId });
-            if (!user || user.balance < order.cost) {
-                return res.status(400).json({ success: false, message: 'User balance insufficient!' });
-            }
-
-            const apiKey = process.env.KD1S_API_KEY;
-            const kdOrder = await axios.post('https://kd1s.com/api/v2', {
-                key: apiKey,
-                action: 'add',
-                service: order.serviceId,
-                link: order.link,
-                quantity: order.quantity
-            });
-
-            if (kdOrder.data && kdOrder.data.order) {
-                user.balance -= order.cost;
-                await user.save();
-                order.orderId = String(kdOrder.data.order);
-                order.status = 'In Progress';
-                await order.save();
-                return res.json({ success: true, orderId: kdOrder.data.order });
-            } else {
-                return res.status(400).json({ success: false, message: kdOrder.data?.error || 'KD1S API Error' });
-            }
-        }
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+    if (path === '/api/refill-request') {
+      const { telegramId, username, method, amount, note } = body;
+      await db.Refill.create({ telegramId, username, method, amount, note });
+      await sendAlert(db, `💳 <b>Top-Up Request</b>\n👤 @${username || telegramId}\n💵 $${amount}\n🏦 ${method}\n📝 ${note || '-'}`);
+      return res.status(200).json({ success: true });
     }
-});
 
-if (require.main === module) {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => console.log(`M7 Server running on port ${PORT}`));
-}
+    const adminU = process.env.ADMIN_USER || 'admin';
+    const adminP = process.env.ADMIN_PASS || 'admin';
 
-module.exports = app;
+    if (path === '/api/admin/login') {
+      if (body.username === adminU && body.password === adminP) {
+        const settings = await db.Settings.findOne({ key: 'main' });
+        return res.status(200).json({ success: true, settings });
+      }
+      return res.status(200).json({ success: false });
+    }
+
+    if (path === '/api/admin/add-balance') {
+      if (body.username !== adminU || body.password !== adminP) return res.status(200).json({ success: false });
+      let user = await db.User.findOne({ telegramId: body.targetTelegramId });
+      if (!user) user = await db.User.create({ telegramId: body.targetTelegramId, balance: 0 });
+      user.balance += parseFloat(body.amount);
+      await user.save();
+      return res.status(200).json({ success: true, newBalance: user.balance });
+    }
+
+    if (path === '/api/admin/settings') {
+      if (body.username !== adminU || body.password !== adminP) return res.status(200).json({ success: false });
+      let s = await db.Settings.findOne({ key: 'main' });
+      if (!s) s = new db.Settings({ key: 'main' });
+      Object.assign(s, {
+        profitPercentage: body.profitPercentage,
+        qicard: body.qicard,
+        usdt: body.usdt,
+        botToken: body.botToken,
+        adminChatId: body.adminChatId,
+        approvalMode: body.approvalMode
+      });
+      await s.save();
+      return res.status(200).json({ success: true });
+    }
+
+    return res.status(200).json({ success: false, error: 'Unknown route' });
+  } catch (err) {
+    return res.status(200).json({ success: false, error: err.message });
+  }
+};
+                    
