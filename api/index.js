@@ -133,7 +133,11 @@ module.exports = async (req, res) => {
 
       const settings = await db.Settings.findOne({ key: 'main' });
       const profit = settings ? (settings.profitPercentage / 100) : 0.40;
-      const cost = parseFloat(((quantity / 1000) * parseFloat(svc.rate) * (1 + profit)).toFixed(4));
+      
+      // حیسابکرنا دروستا کوژمەی بەهایێ داواکاریێ ب ساناهی
+      const rawCost = (quantity / 1000) * parseFloat(svc.rate) * (1 + profit);
+      const cost = Math.max(0.0001, parseFloat(rawCost.toFixed(4)));
+
       if (user.balance < cost) return res.status(200).json({ success: false, error: 'Insufficient balance!' });
 
       const uTag = username ? `@${username}` : 'No Username';
@@ -147,8 +151,10 @@ module.exports = async (req, res) => {
 
       const kd = await kd1sPost({ key: apiKey, action: 'add', service: serviceId, link, quantity });
       if (kd && kd.order) {
-        user.balance -= cost;
+        // کێمکرنا باڵانسی ب شێوەیەکێ دروست و گشتگیر
+        user.balance = Math.max(0, parseFloat((user.balance - cost).toFixed(4)));
         await user.save();
+
         await db.Order.create({ telegramId, username, orderId: String(kd.order), serviceId, serviceName: svc.name, link, quantity, cost, status: 'In Progress' });
         await sendAlert(db, `✅ <b>داواکارییا سه‌رکه‌فتی #${kd.order}</b>\n👤 <b>ناڤ:</b> ${uTag}\n🆔 <b>ئایدی:</b> <code>${uIdStr}</code>\n📦 <b>خزمەتگوزاری:</b> #${serviceId} (${svc.name})\n🔗 <b>لینک:</b> ${link}\n🔢 <b>چەنداتی:</b> ${quantity}\n💸 <b>کوژمە:</b> $${cost}\n💳 <b>ماوەیا باڵانسی:</b> $${user.balance.toFixed(2)}`);
         return res.status(200).json({ success: true, orderId: kd.order, newBalance: user.balance });
@@ -186,7 +192,7 @@ module.exports = async (req, res) => {
       if (body.username !== adminU || body.password !== adminP) return res.status(200).json({ success: false });
       let user = await db.User.findOne({ telegramId: body.targetTelegramId });
       if (!user) user = await db.User.create({ telegramId: body.targetTelegramId, balance: 0 });
-      user.balance += parseFloat(body.amount);
+      user.balance = parseFloat((user.balance + parseFloat(body.amount)).toFixed(4));
       await user.save();
       return res.status(200).json({ success: true, newBalance: user.balance });
     }
@@ -212,4 +218,4 @@ module.exports = async (req, res) => {
     return res.status(200).json({ success: false, error: err.message });
   }
 };
-      
+        
