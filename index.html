@@ -1,256 +1,1835 @@
 <!DOCTYPE html>
-<html lang="ckb" dir="rtl">
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M7 Store - SMM Panel</title>
+    <title>M7 Store</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
+
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #ffffff;
-            --accent-color: #38bdf8;
-            --accent-hover: #0ea5e9;
-            --border-color: #334155;
+            --bg-deep: #05070b;
+            --surface: rgba(19, 27, 46, 0.85);
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.6);
+            --accent: #3b82f6;
+            --success: #10b981;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
         }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             margin: 0;
-            padding: 15px;
-            direction: rtl;
+            padding: 12px;
+            overflow-x: hidden;
         }
+
+        #welcomeIntro {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a103c 0%, #05070b 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            animation: cinematicFadeOut 0.7s cubic-bezier(0.77, 0, 0.175, 1) 1.4s forwards;
+        }
+
+        .cinematic-glow {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            background: var(--primary);
+            filter: blur(90px);
+            border-radius: 50%;
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        .intro-logo-box, .profile-logo {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .intro-logo-box {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 0 40px var(--primary-glow);
+            animation: introLogoAnim 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .intro-title {
+            margin-top: 20px;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: introTextAnim 0.8s ease 0.2s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .intro-sub {
+            font-size: 13px;
+            color: #38bdf8;
+            margin-top: 6px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: introTextAnim 0.8s ease 0.4s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes introLogoAnim {
+            0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+            70% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes introTextAnim {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            from { transform: scale(0.8); opacity: 0.5; }
+            to { transform: scale(1.2); opacity: 0.9; }
+        }
+
+        @keyframes cinematicFadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
         .container {
-            max-width: 500px;
+            max-width: 600px;
             margin: 0 auto;
+            background: var(--surface);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 16px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
         }
-        .header {
-            text-align: center;
-            padding: 15px;
-            background: var(--card-bg);
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26, 34, 56, 0.7);
+            padding: 14px 18px;
+            border-radius: 18px;
+            margin-bottom: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .balance-box-top {
+            background: rgba(19, 27, 46, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            padding: 8px 14px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             cursor: pointer;
         }
-        .header h1 {
-            margin: 0;
-            font-size: 22px;
-            color: var(--accent-color);
+
+        .balance-box-top span { font-size: 11px; color: var(--text-muted); }
+        .balance-box-top h3 { margin: 0; color: var(--success); font-size: 16px; font-weight: 700; }
+
+        .profile-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .card {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+
+        .profile-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
         }
-        .form-group {
+
+        .profile-info .name { font-weight: 700; font-size: 14px; }
+        .profile-info .id {
+            font-size: 12px;
+            color: #38bdf8;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
+        .lang-dropdown-wrapper {
+            position: relative;
+            display: inline-block;
             margin-bottom: 12px;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: #94a3b8;
-        }
-        select, input {
-            width: 100%;
-            padding: 10px;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        .btn {
-            width: 100%;
-            background-color: var(--accent-color);
-            color: #0f172a;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 16px;
+
+        .lang-drop-btn {
+            background: rgba(26, 34, 56, 0.8);
+            color: white;
+            border: 1px solid var(--border);
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .btn:hover {
-            background-color: var(--accent-hover);
+
+        .lang-content {
+            display: none;
+            position: absolute;
+            min-width: 130px;
+            background: #131b2e;
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.6);
+            border-radius: 12px;
+            z-index: 99;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-top: 5px;
         }
-        #notification {
+
+        [dir="rtl"] .lang-content { right: 0; }
+        [dir="ltr"] .lang-content { left: 0; }
+
+        .lang-content button {
+            color: white;
+            padding: 10px 14px;
+            display: block;
+            width: 100%;
+            background: none;
+            border: none;
+            text-align: inherit;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .lang-content button:hover { background: var(--primary); }
+        .show { display: block; }
+
+        .menu-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .menu-btn {
+            flex: 1;
+            background: rgba(26, 34, 56, 0.7);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 12px 6px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
             text-align: center;
-            margin-top: 15px;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 12px;
+            transition: all 0.25s ease;
         }
+
+        .menu-btn.active {
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .section-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .platform-card {
+            background: rgba(26, 34, 56, 0.6);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 12px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .platform-card:hover, .platform-card.selected {
+            border-color: var(--primary);
+            background: rgba(34, 45, 74, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .platform-icon-box {
+            width: 38px;
+            height: 38px;
+            margin: 0 auto 6px auto;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .platform-icon-box svg {
+            width: 21px;
+            height: 21px;
+            fill: currentColor;
+        }
+
+        .platform-card span.title {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .types-grid {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+            padding-bottom: 5px;
+        }
+
+        .type-pill {
+            background: rgba(26, 34, 56, 0.6);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .type-pill.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .order-card-box {
+            background: rgba(26, 34, 56, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: rgba(13, 19, 33, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+        
+        .service-details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            background: rgba(13, 19, 33, 0.7);
+            padding: 12px;
+            border-radius: 14px;
+            text-align: center;
+            margin-top: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .detail-item div:first-child { font-size: 10px; color: var(--text-muted); }
+        .detail-item div:last-child { font-size: 12px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 12px;
+            font-size: 14px;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .payment-method-box {
+            background: rgba(13, 19, 33, 0.88);
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #7c3aed, #3b82f6);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: transform 0.15s ease;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .history-item {
+            background: rgba(13, 19, 33, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        #adminModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 7, 11, 0.94);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-box {
+            background: #131b2e;
+            border: 2px solid var(--primary);
+            padding: 20px;
+            border-radius: 20px;
+            width: 92%;
+            max-width: 440px;
+            box-shadow: 0 0 35px var(--primary-glow);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .pending-order-card {
+            background: rgba(13, 19, 33, 0.9);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        #msg { text-align: center; font-size: 12px; margin-top: 10px; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Logo / Header -->
-        <div class="header" onclick="checkAdminTrigger()">
-            <h1>M7 Store ⚡</h1>
-            <p style="margin: 5px 0 0 0; font-size: 12px; color: #94a3b8;">خزمەتگوزاریێن سوشیاڵ مێدیا</p>
-        </div>
+    <div id="welcomeIntro">
+        <div class="cinematic-glow"></div>
+        <div class="intro-logo-box" onclick="handleLogoClick()">M7</div>
+        <div class="intro-title">M7 STORE</div>
+        <div class="intro-sub">Next-Gen Digital Hub</div>
+    </div>
 
-        <!-- Order Form Card -->
-        <div class="card">
-            <h3 style="margin-top: 0; font-size: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">إنشاء طلب جديد</h3>
+    <!-- Admin Panel (5 clicks on M7 logo) -->
+    <div id="adminModal">
+        <div class="admin-box">
+            <h3 style="margin-top: 0; color: var(--primary);">⚙️ Admin Panel (M7 Store)</h3>
             
-            <div class="form-group">
-                <label>البحث عن الخدمة:</label>
-                <input type="text" id="searchInput" placeholder="ابحث باسم الخدمة أو الرقم..." onkeyup="filterServices()">
+            <div class="form-group" style="background: rgba(139, 92, 246, 0.12); padding: 12px; border-radius: 12px; border: 1px solid var(--primary);">
+                <label style="color: #a78bfa; font-weight: bold;">➕ Add Balance by User ID:</label>
+                <input type="text" id="targetUserId" class="form-control" placeholder="User Telegram ID" style="margin-bottom: 8px;">
+                <input type="number" step="0.5" id="addBalanceAmount" class="form-control" placeholder="Amount ($) e.g. 10" style="margin-bottom: 8px;">
+                <button class="submit-btn" style="padding: 10px; margin-top: 2px;" onclick="adminAddBalance()">Send Balance to ID 🚀</button>
+            </div>
+
+            <div class="form-group" style="background: rgba(59, 130, 246, 0.08); padding: 12px; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.3);">
+                <label style="color: #60a5fa; font-weight: bold;">📋 Pending Orders (Approve & Charge):</label>
+                <div id="adminPendingList" style="max-height: 180px; overflow-y: auto; color: var(--text-muted); font-size: 12px;">
+                    No pending orders
+                </div>
             </div>
 
             <div class="form-group">
-                <label>التصنيف (Category):</label>
-                <select id="categorySelect" onchange="updateServices()">
-                    <option value="">الكل (مرتب)</option>
+                <label>Order Execution Mode:</label>
+                <select id="adminApprovalMode" class="form-control">
+                    <option value="auto">Auto Execute on KD1S & Deduct Balance</option>
+                    <option value="manual">Manual Admin Approval Before Deducting</option>
                 </select>
             </div>
-
             <div class="form-group">
-                <label>الخدمة (Service):</label>
-                <select id="serviceSelect" onchange="updateServiceDetails()">
-                    <option value="">اختر الخدمة أولاً...</option>
-                </select>
+                <label>Profit Percentage (% e.g. 40 = 40%):</label>
+                <input type="number" step="1" id="adminProfitInput" class="form-control" value="40">
+            </div>
+            <div class="form-group">
+                <label>QiCard Number / ID:</label>
+                <input type="text" id="adminQicardInput" class="form-control" value="0000000000">
+            </div>
+            <div class="form-group">
+                <label>USDT (TRC20) Wallet Address:</label>
+                <input type="text" id="adminUsdtInput" class="form-control" value="TYourAdminWalletAddressHere...">
+            </div>
+            <div class="form-group">
+                <label>Telegram Bot Token (for Admin Notifications):</label>
+                <input type="text" id="adminBotTokenInput" class="form-control" placeholder="123456789:ABCdef...">
+            </div>
+            <div class="form-group">
+                <label>Your Admin Telegram ID (to receive alerts):</label>
+                <input type="text" id="adminChatIdInput" class="form-control" placeholder="Your numeric Telegram ID">
             </div>
 
-            <div class="form-group">
-                <label>الرابط (Link):</label>
-                <input type="url" id="orderLink" placeholder="https://...">
-            </div>
-
-            <div class="form-group">
-                <label>الكمية (Quantity):</label>
-                <input type="number" id="orderQuantity" value="1000" min="10">
-            </div>
-
-            <button class="btn" onclick="submitOrder()">تثبيت الطلب</button>
-            <div id="notification"></div>
+            <button class="submit-btn" onclick="saveAdminSettings()">💾 Save Settings</button>
+            <button onclick="closeAdminPanel()" style="width:100%; background:none; border:none; color:#ef4444; margin-top:10px; cursor:pointer; font-weight:bold;">Exit</button>
         </div>
     </div>
 
+    <div class="container">
+        <div class="lang-dropdown-wrapper">
+            <button onclick="toggleLangMenu()" class="lang-drop-btn">
+                🌐 <span id="currentLangTitle">العربية</span> ▼
+            </button>
+            <div id="langDropdownMenu" class="lang-content">
+                <button onclick="setLang('ar')">العربية</button>
+                <button onclick="setLang('en')">English</button>
+            </div>
+        </div>
+
+        <div class="header-top">
+            <div class="balance-box-top" onclick="switchTab('refill')">
+                <span>➕</span>
+                <div>
+                    <span id="txtBalance">رصيدك</span>
+                    <h3 id="userBalance">$0.00</h3>
+                </div>
+            </div>
+            <div class="profile-right">
+                <div class="profile-info">
+                    <div class="name" id="userNameDisplay">M7 Store</div>
+                    <div class="id" id="userIdDisplay" onclick="copyTextValue(telegramId, this)">ID: ...</div>
+                </div>
+                <div class="profile-logo" id="userInitial" onclick="handleLogoClick()">M7</div>
+            </div>
+        </div>
+
+        <div class="menu-buttons">
+            <button class="menu-btn active" id="btnNewOrder" onclick="switchTab('order')">طلب جديد ⚡</button>
+            <button class="menu-btn" id="btnRefill" onclick="switchTab('refill')">شحن رصيد 💳</button>
+            <button class="menu-btn" id="btnHistory" onclick="switchTab('history')">سجلاتي 🕒</button>
+        </div>
+
+        <!-- New Order Section -->
+        <div id="orderSection">
+            <div class="section-title" id="txtSelectPlatform">اختر المنصة:</div>
+            <div class="platforms-grid">
+                <div class="platform-card selected" onclick="selectPlatform('Instagram', this)">
+                    <div class="platform-icon-box" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff;">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </div>
+                    <span class="title" id="pInsta">إنستغرام</span>
+                </div>
+
+                <div class="platform-card" onclick="selectPlatform('TikTok', this)">
+                    <div class="platform-icon-box" style="background: #000000; color: #ffffff; border: 1px solid rgba(255,255,255,0.2);">
+                        <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                    </div>
+                    <span class="title" id="pTiktok">تيك توك</span>
+                </div>
+
+                <div class="platform-card" onclick="selectPlatform('Telegram', this)">
+                    <div class="platform-icon-box" style="background: #229ED9; color: #ffffff;">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.02-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.25.38-.51 1.08-.78 4.22-1.84 7.03-3.05 8.43-3.62 4.02-1.67 4.85-1.96 5.39-1.97.12 0 .38.03.55.17.14.12.18.28.2.4-.02.07-.02.37-.17 1.52z"/></svg>
+                    </div>
+                    <span class="title" id="pTelegram">تيليجرام</span>
+                </div>
+
+                <div class="platform-card" onclick="selectPlatform('YouTube', this)">
+                    <div class="platform-icon-box" style="background: #FF0000; color: #ffffff;">
+                        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </div>
+                    <span class="title" id="pYoutube">يوتيوب</span>
+                </div>
+
+                <div class="platform-card" onclick="selectPlatform('Facebook', this)">
+                    <div class="platform-icon-box" style="background: #1877F2; color: #ffffff;">
+                        <svg viewBox="0 0 24 24"><path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z"/></svg>
+                    </div>
+                    <span class="title" id="pFacebook">فيسبوك</span>
+                </div>
+
+                <div class="platform-card" onclick="selectPlatform('Snapchat', this)">
+                    <div class="platform-icon-box" style="background: #FFFC00; color: #000000;">
+                        <svg viewBox="0 0 24 24"><path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12 1.033-.301.165-.088.344-.104.464-.104.182 0 .359.029.509.09.45.149.734.479.734.838.015.449-.39.839-1.213 1.168-.089.029-.209.075-.344.119-.45.135-1.139.36-1.333.81-.09.224-.061.524.12.868l.015.015c.06.136 1.526 3.475 4.791 4.014.255.044.435.27.42.509 0 .075-.015.149-.045.225-.24.569-1.273.988-3.146 1.271-.059.091-.12.375-.164.57-.029.179-.074.36-.134.553-.076.271-.27.405-.555.405h-.03c-.135 0-.313-.031-.538-.074-.36-.075-.765-.135-1.273-.135-.3 0-.599.015-.913.074-.6.104-1.123.464-1.723.884-.853.599-1.826 1.288-3.294 1.288-.06 0-.119-.015-.18-.015h-.149c-1.468 0-2.427-.675-3.279-1.288-.599-.42-1.107-.779-1.707-.884-.314-.045-.629-.074-.928-.074-.54 0-.958.089-1.272.149-.211.043-.391.074-.54.074-.374 0-.523-.224-.583-.42-.061-.192-.09-.389-.135-.567-.046-.181-.105-.494-.166-.57-1.918-.222-2.95-.642-3.189-1.226-.031-.063-.052-.15-.055-.225-.015-.243.165-.465.42-.509 3.264-.54 4.73-3.879 4.791-4.02l.016-.029c.18-.345.224-.645.119-.869-.195-.434-.884-.658-1.332-.809-.121-.029-.24-.074-.346-.119-1.107-.435-1.257-.93-1.197-1.273.09-.479.674-.793 1.168-.793.146 0 .27.029.383.074.42.194.789.3 1.104.3.234 0 .384-.06.465-.105l-.046-.569c-.098-1.626-.225-3.651.307-4.837C7.392 1.077 10.739.807 11.727.807l.419-.015h.06z"/></svg>
+                    </div>
+                    <span class="title" id="pSnapchat">سناب شات</span>
+                </div>
+
+                <div class="platform-card" onclick="selectPlatform('Twitter', this)">
+                    <div class="platform-icon-box" style="background: #0f1419; color: #ffffff; border: 1px solid rgba(255,255,255,0.2);">
+                        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </div>
+                    <span class="title" id="pTwitter">تويتر / X</span>
+                </div>
+
+                <div class="platform-card" onclick="selectPlatform('WhatsApp', this)">
+                    <div class="platform-icon-box" style="background: #25D366; color: #ffffff;">
+                        <svg viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12z"/></svg>
+                    </div>
+                    <span class="title" id="pWhatsapp">واتساب</span>
+                </div>
+
+                <div class="platform-card" onclick="selectPlatform('All', this)">
+                    <div class="platform-icon-box" style="background: #475569; color: #ffffff;">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm7.93 6h-3.18a15.2 15.2 0 0 0-1.77-3.56A8.03 8.03 0 0 1 19.93 8zM12 4.05c1.33 1.63 2.27 3.65 2.72 5.95H9.28c.45-2.3 1.39-4.32 2.72-5.95zM4.07 16a8.03 8.03 0 0 1-.94-4h3.18c.28 1.41.77 2.77 1.41 4zm0-6a8.03 8.03 0 0 1 .94-4h3.18c-.28 1.41-.77 2.77-1.41 4zm3.93 8.95c-1.33-1.63-2.27-3.65-2.72-5.95h5.44c-.45 2.3-1.39 4.32-2.72 5.95zM12 19.95c-1.33-1.63-2.27-3.65-2.72-5.95h5.44c-.45 2.3-1.39 4.32-2.72 5.95zm3.79-1.95a15.2 15.2 0 0 0 1.77-3.56h3.18a8.03 8.03 0 0 1-4.95 3.56zm1.94-5.56a17.4 17.4 0 0 0 0-2.78h3.34a8.1 8.1 0 0 1 0 2.78zM6.27 10.44a17.4 17.4 0 0 0 0 2.78H2.93a8.1 8.1 0 0 1 0-2.78z"/></svg>
+                    </div>
+                    <span class="title" id="pAll">الكل / عام</span>
+                </div>
+            </div>
+
+            <div class="section-title" id="txtSelectType">اختر نوع الخدمة:</div>
+            <div class="types-grid" id="typesContainer"></div>
+
+            <div class="form-group">
+                <input type="text" id="serviceSearch" class="form-control" placeholder="🔍 ابحث باسم الخدمة أو الرقم..." oninput="renderCategoriesAndServices()">
+            </div>
+
+            <div class="form-group">
+                <label id="txtCategoryLabel">القسم (Category):</label>
+                <select id="categorySelect" class="form-control" onchange="renderServicesOnly()">
+                    <option value="">جاري تحميل الأقسام...</option>
+                </select>
+            </div>
+
+            <div class="order-card-box">
+                <div class="order-header">
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px;" id="txtNewOrderTitle">إنشاء طلب جديد</div>
+                        <div style="font-size: 11px; color: var(--text-muted);" id="txtNewOrderSub">اختر الخدمة واكتب الرابط الخاص بك</div>
+                    </div>
+                    <span style="font-size: 20px;">🛒</span>
+                </div>
+
+                <div class="form-group">
+                    <label id="txtServiceLabel">الخدمة (Service):</label>
+                    <select id="serviceSelect" class="form-control" onchange="updateServiceInfo()">
+                        <option value="">جاري جلب خدمات KD1S...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label id="txtLinkLabel">الرابط (Link):</label>
+                    <input type="text" id="orderLink" class="form-control" placeholder="https://...">
+                </div>
+
+                <div class="form-group">
+                    <label id="txtQtyLabel">الكمية (Quantity):</label>
+                    <input type="number" id="orderQuantity" class="form-control" value="1000" oninput="calculateTotal()">
+                </div>
+
+                <div class="service-details-grid">
+                    <div class="detail-item">
+                        <div id="txtStart">البدء</div>
+                        <div id="infoStart">فوري (0 - 15 د)</div>
+                    </div>
+                    <div class="detail-item">
+                        <div id="txtWarranty">الضمان</div>
+                        <div style="color: var(--success);" id="txtYes">متوفر</div>
+                    </div>
+                    <div class="detail-item">
+                        <div id="txtMinMax">الحد الأدنى / الأقصى</div>
+                        <div id="infoMinMax">50 - 200,000</div>
+                    </div>
+                </div>
+
+                <p id="orderCost" style="color: #34d399; font-weight: bold; margin: 14px 0 6px 0; font-size: 15px;">الإجمالي: $0.00</p>
+                
+                <button class="submit-btn" id="submitBtnText" onclick="submitOrder()">تأكيد الطلب ⚡</button>
+                <p id="msg"></p>
+            </div>
+        </div>
+
+        <!-- Refill Section (ONLY QiCard & USDT TRC20 with Copy buttons) -->
+        <div id="refillSection" style="display: none;">
+            <div class="order-card-box">
+                <div class="order-header">
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px;" id="txtRefillTitle">شحن رصيد الحساب 💳</div>
+                        <div style="font-size: 11px; color: var(--text-muted);" id="txtRefillSub">انسخ رقم QiCard أو عنوان USDT وأرسل المبلغ</div>
+                    </div>
+                    <span style="font-size: 20px;">💳</span>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div class="payment-method-box">
+                        <div style="min-width: 0;">
+                            <strong style="color: #f59e0b; font-size: 13px;">💳 QiCard</strong>
+                            <div id="displayQicard" style="font-size: 13px; color: #ffffff; font-weight: 700; margin-top: 4px; direction: ltr;">0000000000</div>
+                        </div>
+                        <button type="button" class="copy-btn" onclick="copyTextValue(document.getElementById('displayQicard').innerText, this)">📋 نسخ</button>
+                    </div>
+
+                    <div class="payment-method-box">
+                        <div style="min-width: 0;">
+                            <strong style="color: #22c55e; font-size: 13px;">💎 USDT (TRC20)</strong>
+                            <div id="displayUsdt" style="font-size: 11px; color: #ffffff; font-weight: 600; margin-top: 4px; word-break: break-all; direction: ltr;">TYourAdminWalletAddressHere...</div>
+                        </div>
+                        <button type="button" class="copy-btn" onclick="copyTextValue(document.getElementById('displayUsdt').innerText, this)">📋 نسخ</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label id="txtPayMethodLabel">طريقة الدفع (Payment Method):</label>
+                    <select id="refillMethod" class="form-control">
+                        <option value="QiCard">QiCard</option>
+                        <option value="USDT (TRC20)">USDT (TRC20)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label id="txtRefillLabel">مبلغ الشحن ($):</label>
+                    <input type="number" id="refillAmount" class="form-control" value="10" min="1">
+                </div>
+
+                <div class="form-group">
+                    <label id="txtRefillNoteLabel">رقم العملية / اسم المرسل (اختياري):</label>
+                    <input type="text" id="refillNote" class="form-control" placeholder="...">
+                </div>
+
+                <button class="submit-btn" id="txtRefillBtn" onclick="submitRefill()">إرسال طلب الشحن 🚀</button>
+                <p id="refillMsg" style="text-align: center; font-size: 12px; margin-top: 10px; font-weight: 700;"></p>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div id="historySection" style="display: none;">
+            <div class="order-card-box" id="historyBox" style="text-align: center; padding: 40px 20px;">
+                <span style="font-size: 32px;">🕒</span>
+                <h3 id="txtHistoryEmpty" style="margin: 12px 0 6px 0; font-size: 15px;">سجل الطلبات فارغ</h3>
+                <p id="txtHistorySub" style="font-size: 12px; color: var(--text-muted);">الطلبات التي تقوم بتثبيتها ستظهر هنا</p>
+            </div>
+        </div>
+
+    </div>
+
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+        // Use Vercel origin automatically so requests target the active deployment
+        const SERVER_URL = window.location.origin;
 
-        const API_URL = window.location.origin;
         let allServices = [];
+        let currentPlatform = 'Instagram';
+        let currentType = 'all';
+        let currentService = null;
+        let userBalance = 0.00;
+        let currentLang = localStorage.getItem('m7_lang') || 'ar';
+        if (currentLang !== 'ar' && currentLang !== 'en') currentLang = 'ar';
 
-        // بارکرنا خزمەتگوزارییان ژ سێرڤەری
-        async function fetchServices() {
+        let adminCreds = { username: '', password: '' };
+        let currentSettings = {
+            profitPercentage: 40,
+            qicard: '0000000000',
+            usdt: 'TYourAdminWalletAddressHere...',
+            botToken: '',
+            adminChatId: '',
+            approvalMode: 'auto'
+        };
+
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
+
+        function extractTelegramUser() {
+            if (tg?.initDataUnsafe?.user?.id) {
+                return tg.initDataUnsafe.user;
+            }
             try {
-                const res = await fetch(`${API_URL}/api/services`);
-                allServices = await res.json();
-                populateCategories();
-            } catch (err) {
-                console.error("Error fetching services:", err);
-                document.getElementById('notification').innerText = "❌ تعذر الاتصال بالسيرفر، تأكد من تشغيل Vercel";
-                document.getElementById('notification').style.color = "#f87171";
+                const hash = window.location.hash.substring(1);
+                const params = new URLSearchParams(hash);
+                const rawData = params.get('tgWebAppData');
+                if (rawData) {
+                    const innerParams = new URLSearchParams(rawData);
+                    const userJson = innerParams.get('user');
+                    if (userJson) return JSON.parse(userJson);
+                }
+            } catch (_) {}
+            return null;
+        }
+
+        const tgUser = extractTelegramUser();
+        const telegramId = tgUser?.id ? String(tgUser.id) : "";
+        const username = tgUser?.username || tgUser?.first_name || "User";
+        const firstName = tgUser?.first_name || "M7 User";
+
+        document.getElementById('userIdDisplay').innerText = telegramId ? `ID: ${telegramId} 📋` : "Open in Telegram";
+        document.getElementById('userNameDisplay').innerText = firstName;
+        document.getElementById('userInitial').innerText = "M7";
+
+        function copyTextValue(text, btnEl) {
+            const clean = String(text || '').trim();
+            if (!clean) return;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(clean).catch(() => fallbackCopy(clean));
+            } else {
+                fallbackCopy(clean);
+            }
+
+            if (btnEl) {
+                const original = btnEl.innerText;
+                btnEl.innerText = currentLang === 'en' ? 'Copied ✅' : 'تم النسخ ✅';
+                setTimeout(() => { btnEl.innerText = original; }, 1800);
             }
         }
 
-        function populateCategories() {
-            const catSelect = document.getElementById('categorySelect');
-            const categories = [...new Set(allServices.map(s => s.category))];
-            
-            categories.forEach(cat => {
-                const opt = document.createElement('option');
-                opt.value = cat;
-                opt.textContent = cat;
-                catSelect.appendChild(opt);
-            });
-            updateServices();
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch (_) {}
+            document.body.removeChild(ta);
         }
 
-        function updateServices() {
-            const selectedCat = document.getElementById('categorySelect').value;
-            const serviceSelect = document.getElementById('serviceSelect');
-            serviceSelect.innerHTML = '';
-
-            const filtered = selectedCat ? allServices.filter(s => s.category === selectedCat) : allServices;
-
-            filtered.forEach(s => {
-                const opt = document.createElement('option');
-                opt.value = s.service;
-                opt.textContent = `${s.service} - ${s.name} (${s.rate}$ / 1000)`;
-                serviceSelect.appendChild(opt);
-            });
+        function setBalanceDisplay(val) {
+            userBalance = parseFloat(val) || 0;
+            document.getElementById('userBalance').innerText = `$${userBalance.toFixed(2)}`;
         }
 
-        function filterServices() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const serviceSelect = document.getElementById('serviceSelect');
-            serviceSelect.innerHTML = '';
-
-            const filtered = allServices.filter(s => s.name.toLowerCase().includes(query) || s.service.toString().includes(query));
-
-            filtered.forEach(s => {
-                const opt = document.createElement('option');
-                opt.value = s.service;
-                opt.textContent = `${s.service} - ${s.name} (${s.rate}$ / 1000)`;
-                serviceSelect.appendChild(opt);
-            });
+        async function syncUserWithServer() {
+            if (!telegramId) return;
+            try {
+                const res = await fetch(`${SERVER_URL}/api/user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ telegramId, username, firstName })
+                });
+                const data = await res.json();
+                if (data && data.success) {
+                    setBalanceDisplay(data.balance);
+                    if (data.settings) {
+                        currentSettings = { ...currentSettings, ...data.settings };
+                        document.getElementById('displayQicard').innerText = currentSettings.qicard || '0000000000';
+                        document.getElementById('displayUsdt').innerText = currentSettings.usdt || '';
+                    }
+                }
+            } catch (_) {}
         }
 
-        async function submitOrder() {
-            const serviceId = document.getElementById('serviceSelect').value;
-            const link = document.getElementById('orderLink').value;
-            const quantity = document.getElementById('orderQuantity').value;
-            const notif = document.getElementById('notification');
+        let logoClickCount = 0;
+        async function handleLogoClick() {
+            logoClickCount++;
+            if (logoClickCount >= 5) {
+                logoClickCount = 0;
+                const u = prompt("Admin Username:");
+                const p = prompt("Admin Password:");
+                if (!u || !p) return;
 
-            if (!link || !serviceId) {
-                notif.innerText = "⚠️ تکایە هەمی خانەیان پڕ بکە!";
-                notif.style.color = "#facc15";
+                try {
+                    const res = await fetch(`${SERVER_URL}/api/admin/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: u, password: p })
+                    });
+                    const data = await res.json();
+                    if (data && data.success) {
+                        adminCreds = { username: u, password: p };
+                        if (data.settings) {
+                            currentSettings = { ...currentSettings, ...data.settings };
+                        }
+                        document.getElementById('adminProfitInput').value = currentSettings.profitPercentage;
+                        document.getElementById('adminQicardInput').value = currentSettings.qicard;
+                        document.getElementById('adminUsdtInput').value = currentSettings.usdt;
+                        document.getElementById('adminBotTokenInput').value = currentSettings.botToken || '';
+                        document.getElementById('adminChatIdInput').value = currentSettings.adminChatId || telegramId;
+                        document.getElementById('adminApprovalMode').value = currentSettings.approvalMode || 'auto';
+                        renderAdminPendingOrders(data.pendingOrders || []);
+                        document.getElementById('adminModal').style.display = 'flex';
+                    } else {
+                        alert("Invalid Credentials!");
+                    }
+                } catch (_) {
+                    alert("Server connection error!");
+                }
+            }
+            setTimeout(() => { logoClickCount = 0; }, 3000);
+        }
+
+        function renderAdminPendingOrders(list) {
+            const box = document.getElementById('adminPendingList');
+            if (!list || list.length === 0) {
+                box.innerHTML = 'No pending orders';
                 return;
             }
+            box.innerHTML = list.map(o => `
+                <div class="pending-order-card" id="pend_${o._id}">
+                    <div><b>User ID:</b> ${o.telegramId} (@${o.username || 'user'})</div>
+                    <div><b>Service:</b> #${o.serviceId} - ${o.serviceName}</div>
+                    <div><b>Qty:</b> ${o.quantity} | <b>Cost:</b> $${o.cost}</div>
+                    <div style="word-break:break-all; color:#94a3b8;">${o.link}</div>
+                    <div style="display:flex; gap:6px; margin-top:6px;">
+                        <button onclick="handleAdminOrderAction('${o._id}', 'approve')" style="flex:1; background:#10b981; color:#fff; border:none; padding:6px; border-radius:8px; font-weight:bold; cursor:pointer;">✅ Approve & Deduct</button>
+                        <button onclick="handleAdminOrderAction('${o._id}', 'reject')" style="flex:1; background:#ef4444; color:#fff; border:none; padding:6px; border-radius:8px; font-weight:bold; cursor:pointer;">❌ Reject</button>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-            notif.innerText = "⏳ جارە چاوەڕێ بە، داواکاری تێدەپەڕێت...";
-            notif.style.color = "#38bdf8";
-
+        async function handleAdminOrderAction(orderDbId, action) {
             try {
-                const res = await fetch(`${API_URL}/api/order`, {
+                const res = await fetch(`${SERVER_URL}/api/admin/order-action`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        user_id: tg.initDataUnsafe?.user?.id || 123456,
-                        service: serviceId,
+                        username: adminCreds.username,
+                        password: adminCreds.password,
+                        orderDbId,
+                        action
+                    })
+                });
+                const data = await res.json();
+                if (data && data.success) {
+                    const card = document.getElementById(`pend_${orderDbId}`);
+                    if (card) card.remove();
+                    syncUserWithServer();
+                    alert(action === 'approve' ? `Approved! Order #${data.orderId} & Balance Deducted.` : 'Order Rejected.');
+                } else {
+                    alert(data.message || 'Failed!');
+                }
+            } catch (_) {
+                alert('Server error!');
+            }
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        async function adminAddBalance() {
+            const targetId = document.getElementById('targetUserId').value.trim();
+            const amount = parseFloat(document.getElementById('addBalanceAmount').value);
+
+            if (!targetId || isNaN(amount)) {
+                alert("Please enter valid User ID and amount!");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${SERVER_URL}/api/admin/add-balance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: adminCreds.username,
+                        password: adminCreds.password,
+                        targetTelegramId: targetId,
+                        amount: amount
+                    })
+                });
+                const data = await res.json();
+                if (data && data.success) {
+                    if (targetId === telegramId) {
+                        setBalanceDisplay(data.newBalance);
+                    }
+                    alert(`Added $${amount} to User ID (${targetId})! New Balance: $${data.newBalance}`);
+                    document.getElementById('targetUserId').value = '';
+                    document.getElementById('addBalanceAmount').value = '';
+                } else {
+                    alert(data.message || "Failed to add balance!");
+                }
+            } catch (_) {
+                alert("Server error!");
+            }
+        }
+
+        async function saveAdminSettings() {
+            const profitPercentage = parseFloat(document.getElementById('adminProfitInput').value);
+            const qicard = document.getElementById('adminQicardInput').value.trim();
+            const usdt = document.getElementById('adminUsdtInput').value.trim();
+            const botToken = document.getElementById('adminBotTokenInput').value.trim();
+            const adminChatId = document.getElementById('adminChatIdInput').value.trim();
+            const approvalMode = document.getElementById('adminApprovalMode').value;
+
+            try {
+                const res = await fetch(`${SERVER_URL}/api/admin/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: adminCreds.username,
+                        password: adminCreds.password,
+                        profitPercentage,
+                        qicard,
+                        usdt,
+                        botToken,
+                        adminChatId,
+                        approvalMode
+                    })
+                });
+                const data = await res.json();
+                if (data && data.success) {
+                    currentSettings = { profitPercentage, qicard, usdt, botToken, adminChatId, approvalMode };
+                    document.getElementById('displayQicard').innerText = qicard;
+                    document.getElementById('displayUsdt').innerText = usdt;
+                    closeAdminPanel();
+                    fetchKD1SServices();
+                } else {
+                    alert("Failed to save settings!");
+                }
+            } catch (_) {
+                alert("Server error!");
+            }
+        }
+
+        function toggleLangMenu() {
+            document.getElementById("langDropdownMenu").classList.toggle("show");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.lang-dropdown-wrapper')) {
+                document.getElementById("langDropdownMenu").classList.remove('show');
+            }
+        };
+
+        const translations = {
+            ar: {
+                balance: "رصيدك",
+                newOrder: "طلب جديد ⚡",
+                refill: "شحن رصيد 💳",
+                history: "سجلاتي 🕒",
+                selectPlatform: "اختر المنصة:",
+                selectType: "اختر نوع الخدمة:",
+                searchPlaceholder: "🔍 ابحث باسم الخدمة أو الرقم...",
+                categoryLabel: "القسم (Category):",
+                loadingCats: "جاري تحميل الأقسام...",
+                loadingServices: "جاري جلب خدمات KD1S...",
+                apiError: "تعذر الاتصال بالسيرفر، تأكد من تشغيل Vercel",
+                newOrderTitle: "إنشاء طلب جديد",
+                newOrderSub: "اختر الخدمة واكتب الرابط الخاص بك",
+                serviceLabel: "الخدمة (Service):",
+                linkLabel: "الرابط (Link):",
+                qtyLabel: "الكمية (Quantity):",
+                start: "البدء",
+                startVal: "فوري (0 - 15 د)",
+                warranty: "الضمان",
+                yes: "متوفر",
+                noWarranty: "بدون ضمان",
+                minMax: "الحد الأدنى / الأقصى",
+                totalWord: "الإجمالي",
+                submit: "تأكيد الطلب ⚡",
+                success: "تم تقديم الطلب ودخل قيد التنفيذ! رقم الطلب: #{orderId} 🎉",
+                pendingSuccess: "تم إرسال طلبك للإدارة وسيتم خصم الرصيد عند الموافقة! ⏳",
+                errorLink: "يرجى كتابة الرابط!",
+                errorService: "يرجى اختيار الخدمة!",
+                errorMinMax: "الكمية يجب أن تكون بين {min} و {max}!",
+                errorBalance: "رصيدك غير كافي! يرجى شحن حسابك.",
+                refillTitle: "شحن رصيد الحساب 💳",
+                refillSub: "انسخ رقم QiCard أو عنوان USDT (TRC20) وأرسل المبلغ",
+                payMethodLabel: "طريقة الدفع:",
+                refillLabel: "مبلغ الشحن ($):",
+                refillNoteLabel: "رقم العملية / اسم المرسل (اختياري):",
+                refillNotePlaceholder: "اكتب رقم الحوالة أو اسمك...",
+                refillBtn: "إرسال طلب الشحن 🚀",
+                refillSuccess: "تم إرسال طلب الشحن للإدارة بنجاح! سيتم إضافة الرصيد لحسابك قريباً ✅",
+                copyBtnText: "📋 نسخ",
+                historyEmpty: "سجل الطلبات فارغ",
+                historySub: "الطلبات التي تقوم بتثبيتها ستظهر هنا",
+                pInsta: "إنستغرام",
+                pTiktok: "تيك توك",
+                pTelegram: "تيليجرام",
+                pYoutube: "يوتيوب",
+                pFacebook: "فيسبوك",
+                pSnapchat: "سناب شات",
+                pTwitter: "تويتر / X",
+                pWhatsapp: "واتساب",
+                pAll: "الكل / عام",
+                typeAll: "الكل (مرتب)",
+                typeFollower: "متابعين / مشتركين",
+                typeLike: "لايكات / تفاعلات",
+                typeView: "مشاهدات / ستوري",
+                typeComment: "تعليقات",
+                typeOther: "مشاركات / أخرى",
+                langTitle: "العربية"
+            },
+            en: {
+                balance: "Balance",
+                newOrder: "New Order ⚡",
+                refill: "Top Up 💳",
+                history: "History 🕒",
+                selectPlatform: "Select Platform:",
+                selectType: "Select Service Type:",
+                searchPlaceholder: "🔍 Search by service name or ID...",
+                categoryLabel: "Category:",
+                loadingCats: "Loading categories...",
+                loadingServices: "Fetching services...",
+                apiError: "Connection error! Please check server status",
+                newOrderTitle: "Create New Order",
+                newOrderSub: "Select a service and enter your link",
+                serviceLabel: "Service:",
+                linkLabel: "Link:",
+                qtyLabel: "Quantity:",
+                start: "Start Time",
+                startVal: "Instant (0 - 15m)",
+                warranty: "Guarantee",
+                yes: "Available",
+                noWarranty: "No Refill",
+                minMax: "Min / Max",
+                totalWord: "Total",
+                submit: "Submit Order ⚡",
+                success: "Order is now in progress and balance deducted! Order ID: #{orderId} 🎉",
+                pendingSuccess: "Order submitted for admin approval! Balance will be deducted once approved. ⏳",
+                errorLink: "Please enter the link!",
+                errorService: "Please select a service!",
+                errorMinMax: "Quantity must be between {min} and {max}!",
+                errorBalance: "Insufficient balance! Please top up your account.",
+                refillTitle: "Top Up Balance 💳",
+                refillSub: "Copy QiCard ID or USDT (TRC20) address and send payment",
+                payMethodLabel: "Payment Method:",
+                refillLabel: "Amount ($):",
+                refillNoteLabel: "Transaction ID / Sender Name (Optional):",
+                refillNotePlaceholder: "Enter transfer reference or name...",
+                refillBtn: "Send Top-Up Request 🚀",
+                refillSuccess: "Top-up request sent to admin! Balance will be added to your ID shortly ✅",
+                copyBtnText: "📋 Copy",
+                historyEmpty: "Order history is empty",
+                historySub: "Your submitted orders will appear here",
+                pInsta: "Instagram",
+                pTiktok: "TikTok",
+                pTelegram: "Telegram",
+                pYoutube: "YouTube",
+                pFacebook: "Facebook",
+                pSnapchat: "Snapchat",
+                pTwitter: "Twitter / X",
+                pWhatsapp: "WhatsApp",
+                pAll: "All / General",
+                typeAll: "All (Sorted)",
+                typeFollower: "Followers / Subscribers",
+                typeLike: "Likes / Reactions",
+                typeView: "Views / Story",
+                typeComment: "Comments",
+                typeOther: "Shares / Saves",
+                langTitle: "English"
+            }
+        };
+
+        const AR_TO_EN_PHRASES = [
+            ['الأرخص مبيعاً', 'Best Sellers'], ['الارخص مبيعا', 'Best Sellers'],
+            ['الأكثر مبيعاً', 'Top Selling'], ['الاكثر مبيعا', 'Top Selling'],
+            ['التحديث الجديد', 'New Update'], ['تحديث الجديد', 'New Update'], ['بعد التحديث', 'Post-Update'], ['تحديث', 'Update'],
+            ['عروض خاصة', 'Special Offers'], ['عروض مميزة', 'Featured Offers'],
+            ['جودة عالية جداً', 'Ultra High Quality'], ['جودة عالية جدا', 'Ultra High Quality'],
+            ['عالية الجودة', 'High Quality'], ['جودة عالية', 'High Quality'],
+            ['جودة متوسطة', 'Medium Quality'], ['جودة منخفضة', 'Low Quality'], ['جودة ممتازة', 'Premium Quality'], ['جودة عادية', 'Standard Quality'],
+            ['بدون ضمان', 'No Refill'], ['لا يوجد ضمان', 'No Refill'], ['غير مضمون', 'No Refill'],
+            ['تعويض تلقائي', 'Auto Refill'], ['ضمان تلقائي', 'Auto Refill'],
+            ['زر التعويض', 'Refill Button'], ['ضمان مدى الحياة', 'Lifetime Refill'], ['ضمان مفتوح', 'Lifetime Refill'],
+            ['ساعات مشاهدة', 'Watch Hours'], ['تحقيق الربح', 'Monetization'], ['شروط الربح', 'Monetization'],
+            ['مشاهدات ستوري', 'Story Views'], ['مشاهدات ريلز', 'Reels Views'],
+            ['لايكات ريلز', 'Reels Likes'], ['مشاهدات فيديو', 'Video Views'],
+            ['مشاهدات منشور', 'Post Views'], ['بث مباشر', 'Live Stream'],
+            ['اعضاء قناة', 'Channel Members'], ['أعضاء قناة', 'Channel Members'],
+            ['اعضاء جروب', 'Group Members'], ['أعضاء جروب', 'Group Members'],
+            ['اعضاء مجموعة', 'Group Members'], ['أعضاء مجموعة', 'Group Members'],
+            ['تعليقات مخصصة', 'Custom Comments'], ['تعليقات عشوائية', 'Random Comments'],
+            ['تفاعلات ايجابية', 'Positive Reactions'], ['تفاعلات إيجابية', 'Positive Reactions'], ['تفاعلات سلبية', 'Negative Reactions'],
+            ['سريع جداً', 'Super Fast'], ['سريع جدا', 'Super Fast'], ['صاروخي', 'Super Fast'],
+            ['بدون نقص', 'Non-Drop'], ['لا ينقص', 'Non-Drop'], ['ثبات عالي', 'High Stability'],
+            ['نقص قليل', 'Low Drop'], ['تساقط قليل', 'Low Drop'], ['نقص متوسط', 'Medium Drop'],
+            ['حسابات قديمة', 'Aged Accounts'], ['حسابات حقيقية', 'Real Accounts'],
+            ['مع صور ومنشورات', 'With Posts & Avatar'], ['مع صور', 'With Profile Picture'],
+            ['زيارات الملف الشخصي', 'Profile Visits'], ['زيارات الملف', 'Profile Visits'],
+            ['مرات الظهور', 'Impressions'], ['وصول', 'Reach'], ['نسخ الرابط', 'Link Copies'],
+            ['باليوم', 'Per Day'], ['في اليوم', 'Per Day'], ['يومياً', 'Per Day'],
+            ['بالساعة', 'Per Hour'], ['في الساعة', 'Per Hour'], ['بالدقيقة', 'Per Minute'],
+            ['انستغرام', 'Instagram'], ['إنستغرام', 'Instagram'], ['انستقرام', 'Instagram'], ['انستا', 'Instagram'],
+            ['تيك توك', 'TikTok'], ['تيكتوك', 'TikTok'],
+            ['تيليجرام', 'Telegram'], ['تليجرام', 'Telegram'], ['تلغرام', 'Telegram'],
+            ['يوتيوب', 'YouTube'], ['يوتوب', 'YouTube'],
+            ['فيسبوك', 'Facebook'], ['فيس بوك', 'Facebook'],
+            ['سناب شات', 'Snapchat'], ['سناب', 'Snapchat'],
+            ['تويتر', 'Twitter'], ['واتساب', 'WhatsApp'], ['واتس اب', 'WhatsApp'],
+            ['ثريدز', 'Threads'], ['سبوتيفاي', 'Spotify'], ['ديسكورد', 'Discord'],
+            ['كواي', 'Kwai'], ['لايكي', 'Likee'], ['تويتش', 'Twitch'], ['بنتريست', 'Pinterest'], ['لينكد ان', 'LinkedIn'],
+            ['متابعين', 'Followers'], ['متابعون', 'Followers'], ['متابع', 'Follower'], ['فولورز', 'Followers'], ['فولو', 'Followers'],
+            ['مشتركين', 'Subscribers'], ['مشترك', 'Subscriber'], ['سبسكرايب', 'Subscribers'],
+            ['أعضاء', 'Members'], ['اعضاء', 'Members'], ['عضو', 'Member'],
+            ['لايكات', 'Likes'], ['اعجابات', 'Likes'], ['إعجابات', 'Likes'], ['لايك', 'Like'], ['اعجاب', 'Like'],
+            ['مشاهدات', 'Views'], ['مشاهدة', 'View'], ['فيوز', 'Views'],
+            ['تعليقات', 'Comments'], ['تعليق', 'Comment'], ['كومنتات', 'Comments'],
+            ['مشاركات', 'Shares'], ['مشاركة', 'Share'], ['شير', 'Shares'],
+            ['تفاعلات', 'Reactions'], ['تفاعل', 'Reaction'], ['رياكشن', 'Reactions'],
+            ['حفظ', 'Saves'], ['سيف', 'Saves'],
+            ['اكسبلور', 'Explore'], ['إكسبلور', 'Explore'],
+            ['ستوري', 'Story'], ['قصص', 'Stories'],
+            ['ريلز', 'Reels'], ['شورتس', 'Shorts'],
+            ['منشورات', 'Posts'], ['منشور', 'Post'], ['بوست', 'Post'],
+            ['فيديوهات', 'Videos'], ['فيديو', 'Video'],
+            ['تصويت', 'Poll Votes'], ['استطلاع', 'Poll Votes'],
+            ['بلاغات', 'Reports'], ['تبليغ', 'Report'], ['تقييمات', 'Reviews'], ['تقييم', 'Review'],
+            ['قنوات', 'Channels'], ['قناة', 'Channel'],
+            ['مجموعات', 'Groups'], ['مجموعة', 'Group'], ['جروبات', 'Groups'], ['جروب', 'Group'],
+            ['حسابات', 'Accounts'], ['حساب', 'Account'], ['رابط', 'Link'],
+            ['حقيقيين', 'Real'], ['حقيقية', 'Real'], ['حقيقي', 'Real'],
+            ['عضوي', 'Organic'], ['طبيعي', 'Organic'],
+            ['وهميين', 'Bot'], ['وهمية', 'Bot'], ['وهمي', 'Bot'], ['بوتات', 'Bots'], ['بوت', 'Bot'],
+            ['نشطين', 'Active'], ['نشطة', 'Active'], ['نشط', 'Active'], ['متفاعلين', 'Active'],
+            ['مضمونين', 'Guaranteed'], ['مضمونة', 'Guaranteed'], ['مضمون', 'Guaranteed'],
+            ['ضمان', 'Refill'], ['فوري', 'Instant'], ['لحظي', 'Instant'],
+            ['سريع', 'Fast'], ['سريعة', 'Fast'],
+            ['متوسط', 'Medium'], ['بطيء', 'Slow'], ['بطيئة', 'Slow'], ['تدريجي', 'Gradual'],
+            ['أرخص', 'Cheapest'], ['ارخص', 'Cheapest'], ['رخيصة', 'Cheap'], ['رخيص', 'Cheap'],
+            ['مستقر', 'Stable'], ['مستقرة', 'Stable'], ['ثابت', 'Stable'], ['ثابتة', 'Stable'],
+            ['بنات', 'Female'], ['نساء', 'Female'], ['إناث', 'Female'],
+            ['شباب', 'Male'], ['رجال', 'Male'], ['ذكور', 'Male'],
+            ['عربي', 'Arab'], ['عربية', 'Arab'], ['عرب', 'Arab'],
+            ['عراقي', 'Iraqi'], ['عراقية', 'Iraqi'], ['العراق', 'Iraq'],
+            ['خليجي', 'Gulf'], ['الخليج', 'Gulf'],
+            ['سعودي', 'Saudi'], ['السعودية', 'Saudi'],
+            ['اماراتي', 'UAE'], ['إماراتي', 'UAE'], ['الإمارات', 'UAE'],
+            ['كويتي', 'Kuwait'], ['الكويت', 'Kuwait'],
+            ['قطري', 'Qatar'], ['قطر', 'Qatar'],
+            ['بحريني', 'Bahrain'], ['البحرين', 'Bahrain'],
+            ['عماني', 'Oman'], ['عمان', 'Oman'],
+            ['مصري', 'Egyptian'], ['مصر', 'Egypt'],
+            ['أردني', 'Jordanian'], ['الأردن', 'Jordan'],
+            ['لبناني', 'Lebanese'], ['لبنان', 'Lebanon'],
+            ['سوري', 'Syrian'], ['سوريا', 'Syria'],
+            ['مغربي', 'Moroccan'], ['المغرب', 'Morocco'],
+            ['جزائري', 'Algerian'], ['الجزائر', 'Algeria'],
+            ['تونسي', 'Tunisian'], ['تونس', 'Tunisia'],
+            ['تركي', 'Turkish'], ['تركيا', 'Turkey'],
+            ['هندي', 'Indian'], ['الهند', 'India'],
+            ['روسي', 'Russian'], ['روسيا', 'Russia'],
+            ['امريكي', 'USA'], ['أمريكي', 'USA'], ['أمريكا', 'USA'],
+            ['اوروبي', 'European'], ['أوروبي', 'European'], ['أوروبا', 'Europe'],
+            ['برازيلي', 'Brazilian'], ['البرازيل', 'Brazil'],
+            ['اجنبي', 'Worldwide'], ['أجنبي', 'Worldwide'], ['عالمي', 'Worldwide'],
+            ['مستهدف', 'Targeted'], ['تلقائي', 'Auto'], ['يدوي', 'Manual'],
+            ['سيرفر', 'Server'], ['خدمات', 'Services'], ['خدمة', 'Service'],
+            ['مختلط', 'Mixed'], ['مكس', 'Mix'],
+            ['حصري', 'Exclusive'], ['حصرية', 'Exclusive'],
+            ['خاص', 'Special'], ['خاصة', 'Special'],
+            ['مميز', 'Premium'], ['مميزة', 'Premium'], ['ممتاز', 'Premium'],
+            ['عروض', 'Offers'], ['عرض', 'Offer'],
+            ['باقات', 'Packages'], ['باقة', 'Package'],
+            ['جديد', 'New'], ['جديدة', 'New'], ['يعمل', 'Working'],
+            ['عام', 'General'], ['عامة', 'General'],
+            ['الكل', 'All'], ['أخرى', 'Other'], ['اخرى', 'Other'],
+            ['السرعة', 'Speed'], ['سرعة', 'Speed'],
+            ['البدء', 'Start'], ['بدء', 'Start'],
+            ['الحد الأقصى', 'Max'], ['الحد الأدنى', 'Min'],
+            ['أيام', 'Days'], ['ايام', 'Days'], ['يوم', 'Day'],
+            ['ساعات', 'Hours'], ['ساعة', 'Hour'],
+            ['دقائق', 'Minutes'], ['دقيقة', 'Minute'],
+            ['الف', 'K'], ['ألف', 'K'], ['مليون', 'M']
+        ].sort((a, b) => b[0].length - a[0].length);
+
+        const EN_TO_AR_PHRASES = [
+            ['New Update', 'التحديث الجديد'], ['Best Sellers', 'الأكثر مبيعاً'],
+            ['High Quality', 'جودة عالية'], ['Medium Quality', 'جودة متوسطة'],
+            ['Low Quality', 'جودة منخفضة'], ['No Refill', 'بدون ضمان'],
+            ['Non Drop', 'بدون نقص'], ['Non-Drop', 'بدون نقص'],
+            ['Auto Refill', 'تعويض تلقائي'], ['Lifetime', 'مدى الحياة'],
+            ['Watch Hours', 'ساعات مشاهدة'], ['Story Views', 'مشاهدات ستوري'],
+            ['Reels Views', 'مشاهدات ريلز'], ['Reels Likes', 'لايكات ريلز'],
+            ['Video Views', 'مشاهدات فيديو'], ['Live Stream', 'بث مباشر'],
+            ['Channel Members', 'أعضاء قناة'], ['Group Members', 'أعضاء مجموعة'],
+            ['Custom Comments', 'تعليقات مخصصة'], ['Super Fast', 'سريع جداً'],
+            ['Followers', 'متابعين'], ['Follower', 'متابع'],
+            ['Subscribers', 'مشتركين'], ['Members', 'أعضاء'],
+            ['Likes', 'لايكات'], ['Views', 'مشاهدات'],
+            ['Comments', 'تعليقات'], ['Shares', 'مشاركات'],
+            ['Reactions', 'تفاعلات'], ['Saves', 'حفظ'],
+            ['Explore', 'اكسبلور'], ['Story', 'ستوري'], ['Reels', 'ريلز'],
+            ['Shorts', 'شورتس'], ['Posts', 'منشورات'], ['Real', 'حقيقي'],
+            ['Organic', 'عضوي'], ['Active', 'نشط'], ['Guaranteed', 'مضمون'],
+            ['Refill', 'ضمان'], ['Instant', 'فوري'], ['Fast', 'سريع'],
+            ['Cheapest', 'أرخص'], ['Cheap', 'رخيص'], ['Stable', 'مستقر'],
+            ['Arab', 'عربي'], ['Iraqi', 'عراقي'], ['Gulf', 'خليجي'],
+            ['Saudi', 'سعودي'], ['Worldwide', 'عالمي'], ['Targeted', 'مستهدف'],
+            ['Server', 'سيرفر'], ['Services', 'خدمات'], ['Premium', 'مميز'], ['General', 'عام']
+        ].sort((a, b) => b[0].length - a[0].length);
+
+        function formatServiceText(rawText, lang) {
+            if (!rawText) return '';
+            let text = rawText
+                .replace(/kd1s/gi, '')
+                .replace(/[٠-٩]/g, d => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)])
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+
+            if (lang === 'en') {
+                text = text
+                    .replace(/(\d+(?:\.\d+)?)\s*ك(?=\s|$|\||\]|\)|\/|-)/g, '$1K')
+                    .replace(/\b(?:AR|R)(\d+)\b/gi, '$1D Refill')
+                    .replace(/(\d+)\s*(?:يوم|أيام|ايام)\b/g, '$1 Days')
+                    .replace(/(\d+)\s*(?:ساعة|ساعات)\b/g, '$1 Hours')
+                    .replace(/(\d+)\s*(?:دقيقة|دقائق)\b/g, '$1 Min');
+
+                for (const [ar, en] of AR_TO_EN_PHRASES) {
+                    const escaped = ar.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    text = text.replace(new RegExp(`(?:الـ?\\s*)?${escaped}`, 'gi'), ` ${en} `);
+                }
+
+                text = text
+                    .replace(/[\u0600-\u06FF]+/g, ' ')
+                    .replace(/\|\s*\|/g, '|')
+                    .replace(/-\s*-/g, '-')
+                    .replace(/\(\s*\)/g, '')
+                    .replace(/\[\s*\]/g, '')
+                    .replace(/^[\s|\-]+|[\s|\-]+$/g, '')
+                    .replace(/\s{2,}/g, ' ')
+                    .trim();
+
+                return text || 'SMM Service';
+            }
+
+            for (const [en, ar] of EN_TO_AR_PHRASES) {
+                const escaped = en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                text = text.replace(new RegExp(`\\b${escaped}\\b`, 'gi'), ar);
+            }
+            return text.replace(/\s{2,}/g, ' ').trim();
+        }
+
+        function detectPlatform(cat, name) {
+            const full = (cat + ' ' + name).toLowerCase();
+            if (full.includes('insta') || full.includes('انست') || full.includes('إنست')) return 'Instagram';
+            if (full.includes('tiktok') || full.includes('تيك توك') || full.includes('تيكتوك')) return 'TikTok';
+            if (full.includes('telegram') || full.includes('تيليجرام') || full.includes('تليجرام')) return 'Telegram';
+            if (full.includes('youtube') || full.includes('يوتيوب') || full.includes('يوتوب')) return 'YouTube';
+            if (full.includes('facebook') || full.includes('فيسبوك') || full.includes('فيس بوك')) return 'Facebook';
+            if (full.includes('snapchat') || full.includes('سناب')) return 'Snapchat';
+            if (full.includes('twitter') || full.includes('تويتر') || /\bx\b/.test(full)) return 'Twitter';
+            if (full.includes('whatsapp') || full.includes('واتساب') || full.includes('واتس')) return 'WhatsApp';
+            return 'All';
+        }
+
+        function detectServiceType(cat, name) {
+            const full = (cat + ' ' + name).toLowerCase();
+            if (full.includes('follower') || full.includes('متابع') || full.includes('فولو') || full.includes('subscrib') || full.includes('مشترك') || full.includes('member') || full.includes('عضو') || full.includes('اعضاء') || full.includes('أعضاء')) {
+                return 'follower';
+            }
+            if (full.includes('like') || full.includes('لايك') || full.includes('اعجاب') || full.includes('إعجاب') || full.includes('reaction') || full.includes('تفاعل')) {
+                return 'like';
+            }
+            if (full.includes('view') || full.includes('مشاهد') || full.includes('story') || full.includes('ستوري') || full.includes('reel') || full.includes('ريلز') || full.includes('watch') || full.includes('ساعات') || full.includes('live') || full.includes('بث')) {
+                return 'view';
+            }
+            if (full.includes('comment') || full.includes('تعليق') || full.includes('كومينت')) {
+                return 'comment';
+            }
+            return 'other';
+        }
+
+        function getServiceOrderRank(typeKey) {
+            const order = { follower: 1, like: 2, view: 3, comment: 4, other: 5 };
+            return order[typeKey] || 5;
+        }
+
+        function setLang(lang) {
+            currentLang = (lang === 'en') ? 'en' : 'ar';
+            localStorage.setItem('m7_lang', currentLang);
+            document.getElementById("langDropdownMenu").classList.remove("show");
+            
+            const t = translations[currentLang];
+            const root = document.getElementById('htmlRoot');
+            
+            root.setAttribute('dir', (currentLang === 'en') ? 'ltr' : 'rtl');
+            root.setAttribute('lang', currentLang);
+
+            document.getElementById('currentLangTitle').innerText = t.langTitle;
+            document.getElementById('txtBalance').innerText = t.balance;
+            document.getElementById('btnNewOrder').innerText = t.newOrder;
+            document.getElementById('btnRefill').innerText = t.refill;
+            document.getElementById('btnHistory').innerText = t.history;
+            document.getElementById('txtSelectPlatform').innerText = t.selectPlatform;
+            document.getElementById('txtSelectType').innerText = t.selectType;
+            document.getElementById('serviceSearch').placeholder = t.searchPlaceholder;
+            document.getElementById('txtCategoryLabel').innerText = t.categoryLabel;
+            document.getElementById('txtNewOrderTitle').innerText = t.newOrderTitle;
+            document.getElementById('txtNewOrderSub').innerText = t.newOrderSub;
+            document.getElementById('txtServiceLabel').innerText = t.serviceLabel;
+            document.getElementById('txtLinkLabel').innerText = t.linkLabel;
+            document.getElementById('txtQtyLabel').innerText = t.qtyLabel;
+            document.getElementById('txtStart').innerText = t.start;
+            document.getElementById('txtWarranty').innerText = t.warranty;
+            document.getElementById('txtMinMax').innerText = t.minMax;
+            document.getElementById('submitBtnText').innerText = t.submit;
+            
+            document.getElementById('txtRefillTitle').innerText = t.refillTitle;
+            document.getElementById('txtRefillSub').innerText = t.refillSub;
+            document.getElementById('txtPayMethodLabel').innerText = t.payMethodLabel;
+            document.getElementById('txtRefillLabel').innerText = t.refillLabel;
+            document.getElementById('txtRefillNoteLabel').innerText = t.refillNoteLabel;
+            document.getElementById('refillNote').placeholder = t.refillNotePlaceholder;
+            document.getElementById('txtRefillBtn').innerText = t.refillBtn;
+
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.innerText = t.copyBtnText;
+            });
+
+            document.getElementById('pInsta').innerText = t.pInsta;
+            document.getElementById('pTiktok').innerText = t.pTiktok;
+            document.getElementById('pTelegram').innerText = t.pTelegram;
+            document.getElementById('pYoutube').innerText = t.pYoutube;
+            document.getElementById('pFacebook').innerText = t.pFacebook;
+            document.getElementById('pSnapchat').innerText = t.pSnapchat;
+            document.getElementById('pTwitter').innerText = t.pTwitter;
+            document.getElementById('pWhatsapp').innerText = t.pWhatsapp;
+            document.getElementById('pAll').innerText = t.pAll;
+
+            renderTypePills();
+            if (allServices.length > 0) {
+                renderCategoriesAndServices();
+            } else {
+                calculateTotal();
+            }
+        }
+
+        function switchTab(tab) {
+            document.getElementById('btnNewOrder').classList.remove('active');
+            document.getElementById('btnRefill').classList.remove('active');
+            document.getElementById('btnHistory').classList.remove('active');
+
+            document.getElementById('orderSection').style.display = 'none';
+            document.getElementById('refillSection').style.display = 'none';
+            document.getElementById('historySection').style.display = 'none';
+
+            if (tab === 'order') {
+                document.getElementById('btnNewOrder').classList.add('active');
+                document.getElementById('orderSection').style.display = 'block';
+            } else if (tab === 'refill') {
+                document.getElementById('btnRefill').classList.add('active');
+                document.getElementById('refillSection').style.display = 'block';
+            } else if (tab === 'history') {
+                document.getElementById('btnHistory').classList.add('active');
+                document.getElementById('historySection').style.display = 'block';
+                fetchAndRenderHistory();
+            }
+        }
+
+        function selectPlatform(platform, el) {
+            currentPlatform = platform;
+            currentType = 'all';
+            document.getElementById('serviceSearch').value = '';
+            document.querySelectorAll('.platform-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            renderTypePills();
+            renderCategoriesAndServices();
+        }
+
+        function renderTypePills() {
+            const container = document.getElementById('typesContainer');
+            container.innerHTML = '';
+            const t = translations[currentLang];
+
+            const types = [
+                { id: 'all', name: t.typeAll },
+                { id: 'follower', name: t.typeFollower },
+                { id: 'like', name: t.typeLike },
+                { id: 'view', name: t.typeView },
+                { id: 'comment', name: t.typeComment },
+                { id: 'other', name: t.typeOther }
+            ];
+
+            types.forEach(tp => {
+                const pill = document.createElement('div');
+                pill.className = `type-pill ${currentType === tp.id ? 'selected' : ''}`;
+                pill.innerText = tp.name;
+                pill.onclick = () => {
+                    currentType = tp.id;
+                    document.querySelectorAll('.type-pill').forEach(p => p.classList.remove('selected'));
+                    pill.classList.add('selected');
+                    renderCategoriesAndServices();
+                };
+                container.appendChild(pill);
+            });
+        }
+
+        async function fetchKD1SServices() {
+            const selectEl = document.getElementById('serviceSelect');
+            const catEl = document.getElementById('categorySelect');
+            const t = translations[currentLang];
+            selectEl.innerHTML = `<option value="">${t.loadingServices}</option>`;
+            catEl.innerHTML = `<option value="">${t.loadingCats}</option>`;
+
+            try {
+                const res = await fetch(`${SERVER_URL}/api/services`);
+                const data = await res.json();
+
+                if (!data || !data.success || !Array.isArray(data.services)) {
+                    selectEl.innerHTML = `<option value="">${t.apiError}</option>`;
+                    catEl.innerHTML = `<option value="">${t.apiError}</option>`;
+                    return;
+                }
+
+                allServices = data.services.map(s => {
+                    const rawCat = (s.category || 'General').replace(/kd1s/gi, '').trim();
+                    const rawName = (s.name || '').replace(/kd1s/gi, '').trim();
+                    const platform = detectPlatform(rawCat, rawName);
+                    const svcType = detectServiceType(rawCat, rawName);
+                    return {
+                        ...s,
+                        rawCat,
+                        rawName,
+                        platform,
+                        svcType,
+                        orderRank: getServiceOrderRank(svcType)
+                    };
+                });
+
+                renderTypePills();
+                renderCategoriesAndServices();
+            } catch (_) {
+                selectEl.innerHTML = `<option value="">${t.apiError}</option>`;
+                catEl.innerHTML = `<option value="">${t.apiError}</option>`;
+            }
+        }
+
+        function getFilteredServicesList() {
+            const q = document.getElementById('serviceSearch').value.trim().toLowerCase();
+
+            return allServices.filter(s => {
+                const matchPlatform = (currentPlatform === 'All') ? true : (s.platform === currentPlatform);
+                const matchType = (currentType === 'all') ? true : (s.svcType === currentType);
+                if (!matchPlatform || !matchType) return false;
+
+                if (!q) return true;
+                const idStr = String(s.service || s.id);
+                const arText = (s.rawName + ' ' + s.rawCat).toLowerCase();
+                const enText = (formatServiceText(s.rawName, 'en') + ' ' + formatServiceText(s.rawCat, 'en')).toLowerCase();
+                return idStr.includes(q) || arText.includes(q) || enText.includes(q);
+            });
+        }
+
+        function renderCategoriesAndServices() {
+            const catEl = document.getElementById('categorySelect');
+            const filtered = getFilteredServicesList();
+
+            const catRankMap = new Map();
+            filtered.forEach(s => {
+                const prevRank = catRankMap.get(s.rawCat) || 99;
+                if (s.orderRank < prevRank) {
+                    catRankMap.set(s.rawCat, s.orderRank);
+                }
+            });
+
+            const sortedCats = Array.from(catRankMap.keys()).sort((a, b) => {
+                return catRankMap.get(a) - catRankMap.get(b);
+            });
+
+            catEl.innerHTML = '';
+            sortedCats.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = formatServiceText(cat, currentLang);
+                catEl.appendChild(opt);
+            });
+
+            if (sortedCats.length > 0) {
+                catEl.selectedIndex = 0;
+            }
+            renderServicesOnly();
+        }
+
+        function renderServicesOnly() {
+            const selectEl = document.getElementById('serviceSelect');
+            const selectedCat = document.getElementById('categorySelect').value;
+            selectEl.innerHTML = '';
+
+            const filtered = getFilteredServicesList()
+                .filter(s => !selectedCat || s.rawCat === selectedCat)
+                .sort((a, b) => {
+                    if (a.orderRank !== b.orderRank) return a.orderRank - b.orderRank;
+                    return parseFloat(a.rate || 0) - parseFloat(b.rate || 0);
+                });
+
+            filtered.forEach(s => {
+                const finalRate = parseFloat(s.rate || 0).toFixed(3);
+                const displayName = formatServiceText(s.rawName, currentLang);
+
+                const opt = document.createElement('option');
+                opt.value = s.service || s.id;
+                opt.textContent = `#${s.service || s.id} - ${displayName} ($${finalRate})`;
+                selectEl.appendChild(opt);
+            });
+
+            updateServiceInfo();
+        }
+
+        function updateServiceInfo() {
+            const selectEl = document.getElementById('serviceSelect');
+            const sId = selectEl.value;
+            const t = translations[currentLang];
+            currentService = allServices.find(s => String(s.service || s.id) === String(sId));
+
+            if (currentService) {
+                const minVal = parseInt(currentService.min) || 50;
+                const maxVal = parseInt(currentService.max) || 200000;
+                document.getElementById('infoMinMax').innerText = `${minVal.toLocaleString()} - ${maxVal.toLocaleString()}`;
+                document.getElementById('orderQuantity').value = minVal;
+                document.getElementById('infoStart').innerText = t.startVal;
+
+                const lower = (currentService.rawName + ' ' + currentService.rawCat).toLowerCase();
+                const noWarranty = currentService.refill === false || lower.includes('no refill') || lower.includes('بدون ضمان') || /\bnr\b/.test(lower);
+                const wEl = document.getElementById('txtYes');
+                wEl.innerText = noWarranty ? t.noWarranty : t.yes;
+                wEl.style.color = noWarranty ? '#ef4444' : 'var(--success)';
+
+                calculateTotal();
+            } else {
+                document.getElementById('infoStart').innerText = t.startVal;
+                document.getElementById('txtYes').innerText = t.yes;
+                calculateTotal();
+            }
+        }
+
+        function calculateTotal() {
+            const t = translations[currentLang];
+            if (!currentService) {
+                document.getElementById('orderCost').innerText = `${t.totalWord}: $0.00`;
+                return;
+            }
+            const qty = Math.max(0, parseFloat(document.getElementById('orderQuantity').value) || 0);
+            const finalRate = parseFloat(currentService.rate || 0);
+            const total = (qty / 1000) * finalRate;
+            document.getElementById('orderCost').innerText = `${t.totalWord}: $${total.toFixed(4)}`;
+        }
+
+        async function fetchAndRenderHistory() {
+            const box = document.getElementById('historyBox');
+            const t = translations[currentLang];
+            if (!telegramId) return;
+
+            try {
+                const res = await fetch(`${SERVER_URL}/api/orders/${telegramId}`);
+                const data = await res.json();
+                const orders = (data && data.orders) ? data.orders : [];
+
+                if (orders.length === 0) {
+                    box.style.textAlign = 'center';
+                    box.style.padding = '40px 20px';
+                    box.innerHTML = `
+                        <span style="font-size: 32px;">🕒</span>
+                        <h3 style="margin: 12px 0 6px 0; font-size: 15px;">${t.historyEmpty}</h3>
+                        <p style="font-size: 12px; color: var(--text-muted);">${t.historySub}</p>
+                    `;
+                    return;
+                }
+
+                box.style.textAlign = 'inherit';
+                box.style.padding = '16px';
+                box.innerHTML = orders.map(item => `
+                    <div class="history-item">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <span style="font-weight: 700; font-size: 12px; color: #a78bfa;">#${item.orderId}</span>
+                            <span style="font-size: 11px; color: ${item.status === 'In Progress' ? '#10b981' : '#f59e0b'}; font-weight:700;">${item.status || 'In Progress'}</span>
+                        </div>
+                        <div style="font-weight: 700; font-size: 13px; color: #fff; margin-bottom: 4px;">
+                            ${formatServiceText(item.serviceName || '', currentLang)}
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-muted); word-break: break-all; margin-bottom: 6px;">
+                            ${item.link}
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
+                            <span style="color: var(--accent);">Qty: ${item.quantity}</span>
+                            <span style="color: var(--success);">$${parseFloat(item.cost).toFixed(3)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (_) {}
+        }
+
+        async function submitOrder() {
+            const link = document.getElementById('orderLink').value.trim();
+            const quantity = parseInt(document.getElementById('orderQuantity').value, 10);
+            const msg = document.getElementById('msg');
+            const btn = document.getElementById('submitBtnText');
+            const t = translations[currentLang];
+
+            if (!link) {
+                msg.style.color = '#ef4444';
+                msg.innerText = t.errorLink;
+                return;
+            }
+            if (!currentService) {
+                msg.style.color = '#ef4444';
+                msg.innerText = t.errorService;
+                return;
+            }
+
+            const minVal = parseInt(currentService.min) || 1;
+            const maxVal = parseInt(currentService.max) || 1000000;
+            if (isNaN(quantity) || quantity < minVal || quantity > maxVal) {
+                msg.style.color = '#ef4444';
+                msg.innerText = t.errorMinMax.replace('{min}', minVal).replace('{max}', maxVal);
+                return;
+            }
+
+            const finalRate = parseFloat(currentService.rate || 0);
+            const cost = parseFloat(((quantity / 1000) * finalRate).toFixed(4));
+            
+            if (userBalance < cost) {
+                msg.style.color = '#ef4444';
+                msg.innerText = t.errorBalance;
+                return;
+            }
+
+            btn.disabled = true;
+            msg.style.color = '#38bdf8';
+            msg.innerText = '...';
+
+            const serviceId = currentService.service || currentService.id;
+
+            try {
+                const res = await fetch(`${SERVER_URL}/api/order`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        telegramId: telegramId,
+                        username: username,
+                        serviceId: serviceId,
                         link: link,
                         quantity: quantity
                     })
                 });
                 const data = await res.json();
 
-                if (res.ok) {
-                    notif.innerText = "✅ داواکاری ب سەرکەفتیانە هاتە هنارتن!";
-                    notif.style.color = "#4ade80";
+                if (data && data.success) {
+                    setBalanceDisplay(data.newBalance);
+                    msg.style.color = '#10b981';
+                    msg.innerText = data.pending
+                        ? t.pendingSuccess
+                        : t.success.replace('{orderId}', data.orderId);
+                    document.getElementById('orderLink').value = '';
                 } else {
-                    notif.innerText = `❌ هەلە: ${data.error || 'نکارست داواکاری بنێرێت'}`;
-                    notif.style.color = "#f87171";
+                    msg.style.color = '#ef4444';
+                    msg.innerText = data.error || 'Order failed!';
                 }
-            } catch (err) {
-                notif.innerText = "❌ تعذر الاتصال بالسيرفر";
-                notif.style.color = "#f87171";
+            } catch (_) {
+                msg.style.color = '#ef4444';
+                msg.innerText = t.apiError;
+            } finally {
+                btn.disabled = false;
             }
         }
 
-        let clickCount = 0;
-        function checkAdminTrigger() {
-            clickCount++;
-            if (clickCount >= 5) {
-                alert("پەنێلی ئەدمن لێرە دکرێتەوە (یان پاسوۆرد داخواز بکە)");
-                clickCount = 0;
+        async function submitRefill() {
+            const method = document.getElementById('refillMethod').value;
+            const amount = parseFloat(document.getElementById('refillAmount').value);
+            const note = document.getElementById('refillNote').value.trim();
+            const refillMsg = document.getElementById('refillMsg');
+            const btn = document.getElementById('txtRefillBtn');
+            const t = translations[currentLang];
+
+            if (isNaN(amount) || amount <= 0) return;
+
+            btn.disabled = true;
+            refillMsg.style.color = '#38bdf8';
+            refillMsg.innerText = '...';
+
+            try {
+                const res = await fetch(`${SERVER_URL}/api/refill-request`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        telegramId: telegramId,
+                        username: username,
+                        method: method,
+                        amount: amount,
+                        note: note
+                    })
+                });
+                const data = await res.json();
+                if (data && data.success) {
+                    refillMsg.style.color = '#10b981';
+                    refillMsg.innerText = t.refillSuccess;
+                    document.getElementById('refillNote').value = '';
+                } else {
+                    refillMsg.style.color = '#ef4444';
+                    refillMsg.innerText = data.error || 'Error';
+                }
+            } catch (_) {
+                refillMsg.style.color = '#ef4444';
+                refillMsg.innerText = t.apiError;
+            } finally {
+                btn.disabled = false;
             }
         }
 
-        window.onload = fetchServices;
+        setLang(currentLang);
+        syncUserWithServer();
+        fetchKD1SServices();
     </script>
 </body>
 </html>
