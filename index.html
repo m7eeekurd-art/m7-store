@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M7 Store - Secure Balance Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
+
+        :root {
+            --bg-deep: #05070b;
+            --surface: rgba(19, 27, 46, 0.85);
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.6);
+            --accent: #3b82f6;
+            --success: #10b981;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            margin: 0;
+            padding: 12px;
+            overflow-x: hidden;
+        }
+
+        #welcomeIntro {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a103c 0%, #05070b 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            animation: cinematicFadeOut 0.8s cubic-bezier(0.77, 0, 0.175, 1) 1.6s forwards;
+        }
+
+        .cinematic-glow {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            background: var(--primary);
+            filter: blur(90px);
+            border-radius: 50%;
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        .intro-logo-box, .profile-logo {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .intro-logo-box {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 0 40px var(--primary-glow);
+            animation: introLogoAnim 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .intro-title {
+            margin-top: 20px;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: introTextAnim 0.9s ease 0.25s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .intro-sub {
+            font-size: 13px;
+            color: #38bdf8;
+            margin-top: 6px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: introTextAnim 0.9s ease 0.45s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes introLogoAnim {
+            0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+            70% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes introTextAnim {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            from { transform: scale(0.8); opacity: 0.5; }
+            to { transform: scale(1.2); opacity: 0.9; }
+        }
+
+        @keyframes cinematicFadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--surface);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 16px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26, 34, 56, 0.7);
+            padding: 14px 18px;
+            border-radius: 18px;
+            margin-bottom: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .balance-box-top {
+            background: rgba(19, 27, 46, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            padding: 8px 14px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .balance-box-top span { font-size: 11px; color: var(--text-muted); }
+        .balance-box-top h3 { margin: 0; color: var(--success); font-size: 16px; font-weight: 700; }
+
+        .profile-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .profile-info .name { font-weight: 700; font-size: 14px; }
+        .profile-info .id { font-size: 11px; color: var(--accent); }
+
+        .lang-dropdown-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .lang-drop-btn {
+            background: rgba(26, 34, 56, 0.8);
+            color: white;
+            border: 1px solid var(--border);
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lang-content {
+            display: none;
+            position: absolute;
+            min-width: 130px;
+            background: #131b2e;
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.6);
+            border-radius: 12px;
+            z-index: 99;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        [dir="rtl"] .lang-content { right: 0; }
+        [dir="ltr"] .lang-content { left: 0; }
+
+        .lang-content button {
+            color: white;
+            padding: 10px 14px;
+            display: block;
+            width: 100%;
+            background: none;
+            border: none;
+            text-align: inherit;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .lang-content button:hover { background: var(--primary); }
+        .show { display: block; }
+
+        .menu-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .menu-btn {
+            flex: 1;
+            background: rgba(26, 34, 56, 0.7);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 12px 6px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.25s ease;
+        }
+
+        .menu-btn.active {
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .section-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .platform-card {
+            background: rgba(26, 34, 56, 0.6);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 12px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .platform-card:hover, .platform-card.selected {
+            border-color: var(--primary);
+            background: rgba(34, 45, 74, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .platform-icon-box {
+            width: 38px;
+            height: 38px;
+            margin: 0 auto 6px auto;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .platform-icon-box svg {
+            width: 21px;
+            height: 21px;
+            fill: currentColor;
+        }
+
+        .platform-card span.title {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .types-grid {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+            padding-bottom: 5px;
+        }
+
+        .type-pill {
+            background: rgba(26, 34, 56, 0.6);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .type-pill.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .order-card-box {
+            background: rgba(26, 34, 56, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: rgba(13, 19, 33, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+        
+        .service-details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            background: rgba(13, 19, 33, 0.7);
+            padding: 12px;
+            border-radius: 14px;
+            text-align: center;
+            margin-top: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .detail-item div:first-child { font-size: 10px; color: var(--text-muted); }
+        .detail-item div:last-child { font-size: 12px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 12px;
+            font-size: 14px;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .payment-method-box {
+            background: rgba(13, 19, 33, 0.8);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item {
+            background: rgba(13, 19, 33, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        #adminModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 7, 11, 0.92);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-box {
+            background: #131b2e;
+            border: 2px solid var(--primary);
+            padding: 20px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 0 35px var(--primary-glow);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        #msg { text-align: center; font-size: 12px; margin-top: 10px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div id="welcomeIntro">
+        <div class="cinematic-glow"></div>
+        <div class="intro-logo-box" onclick="handleLogoClick()">M7</div>
+        <div class="intro-title">M7 STORE</div>
+        <div class="intro-sub">Next-Gen Digital Hub</div>
+    </div>
+
+    <!-- Admin Panel (5 clicks on M7 logo) -->
+    <div id="adminModal">
+        <div class="admin-box">
+            <h3 style="margin-top: 0; color: var(--primary);">⚙️ Admin Panel (MongoDB Sync)</h3>
+            
+            <div class="form-group" style="background: rgba(139, 92, 246, 0.1); padding: 10px; border-radius: 10px; border: 1px solid var(--primary);">
+                <label style="color: #a78bfa; font-weight: bold;">➕ Add Balance to User (MongoDB):</label>
+                <input type="text" id="targetUserId" class="form-control" placeholder="Telegram ID (e.g. 35213000)" style="margin-bottom: 8px;">
+                <input type="number" step="0.5" id="addBalanceAmount" class="form-control" placeholder="Amount ($) e.g. 10" style="margin-bottom: 8px;">
+                <button class="submit-btn" style="padding: 8px;" onclick="adminAddBalance()">Send Balance 🚀</button>
+            </div>
+
+            <div class="form-group">
+                <label>Profit Percentage (% e.g. 40 = 40%):</label>
+                <input type="number" step="1" id="adminProfitInput" class="form-control" value="40">
+            </div>
+            <div class="form-group">
+                <label>Fib / ZainCash / QiCard:</label>
+                <input type="text" id="adminFibInput" class="form-control" value="07500000000">
+            </div>
+            <div class="form-group">
+                <label>USDT (TRC20) Address:</label>
+                <input type="text" id="adminUsdtInput" class="form-control" value="TYourAdminWalletAddressHere...">
+            </div>
+            <button class="submit-btn" onclick="saveAdminSettings()">💾 Save & Reload Services</button>
+            <button onclick="closeAdminPanel()" style="width:100%; background:none; border:none; color:#ef4444; margin-top:10px; cursor:pointer; font-weight:bold;">Exit</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="lang-dropdown-wrapper">
+            <button onclick="toggleLangMenu()" class="lang-drop-btn">
+                🌐 <span id="currentLangTitle">العربية</span> ▼
+            </button>
+            <div id="langDropdownMenu" class="lang-content">
+                <button onclick="setLang('ar')">العربية</button>
+                <button onclick="setLang('en')">English</button>
+            </div>
+        </div>
+
+        <div class="header-top">
+            <div class="balance-box-top" onclick="switchTab('refill')">
+                <span>➕</span>
+                <div>
+                    <span id="txtBalance">رصيدك</span>
+                    <h3 id="userBalance">$0.00</h3>
+                </div>
+            </div>
+            <div class="profile-right">
+                <div class="profile-info">
+                    <div class="name" id="userNameDisplay">M7 Store</div>
+                    <div class="id" id="userIdDisplay">ID: ...</div>
+                </div>
+                <div class="profile-logo" id="userInitial" onclick="handleLogoClick()">M7</div>
+            </div>
+        </div>
+
+        <div class="menu-buttons">
+            <button class="menu-btn active" id="btnNewOrder" onclick="switchTab('order')">طلب جديد ⚡</button>
+            <button class="menu-btn" id="btnRefill" onclick="switchTab('refill')">شحن رصيد 💳</button>
+            <button class="menu-btn" id="btnHistory" onclick="switchTab('history')">سجلاتي 🕒</button>
+        </div>
+
+        <!-- New Order Section -->
+        <div id="orderSection">
+            <div class="section-title" id="txtSelectPlatform">اختر المنصة:</div>
+            <div class="platforms-grid">
+                <div class="platform-card selected" onclick="selectPlatform('Instagram', this)">
+                    <div class="platform-icon-box" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff;">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </div>
+                    <span class="title" id="pInsta">إنستغرام</span>
+                </div>
+
+                <div class="platform-card" onclick="selectPlatform('TikTok', this)">
+                    <div class="platform-icon-box" style="background: #000000; color: #ffffff; border: 1px solid rgba(255,255,255,0.2);">
+                        <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                    </div>
+                    <span class="title" id="pTiktok">تيك توك</span>
+                </div>
+
+                <div class="platform-card" onclick="selectPlatform('Telegram', this)">
+                    <div class="platform-icon-box" style="background: #229ED9; color: #ffffff;">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.5
