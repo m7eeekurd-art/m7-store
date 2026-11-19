@@ -114,7 +114,7 @@ const T = {
     qty: "بڕ (Quantity):", st: "دەستپێکردن", stV: "دەستبەجێ (0 - 15 خولەک)", wr: "گەرەنتی",
     yes: "هەیە", noW: "بێ گەرەنتی", mm: "کەمترین / زۆرترین", tot: "کۆی گشتی",
     sub: "تەواوکردنی داواکاری ⚡", rTit: "پڕکردنەوەی باڵانسی هەژمار 💳", rSub: "ژمارەی QiCard یان ناونیشانی USDT کۆپی بکە و پارەکە بنێرە",
-    cpy: "📋 کۆپی", pay: "شێوازی پارەدان:", rAmt: "بڕی پڕکردنەوە ($):", note: "ژمارەی مامەڵە / ناوی نێرەر:",
+    pay: "شێوازی پارەدان:", rAmt: "بڕی پڕکردنەوە ($):", note: "ژمارەی مامەڵە / ناوی نێرەر:",
     notePh: "ژمارەی حەواڵە یان ناوی نێرەر بنووسە...", rBtn: "ناردنی داواکاری پڕکردنەوە 🚀",
     hEmp: "تۆماری داواکارییەکان بەتاڵە", hSub: "داواکارییەکانت لێرە دەردەکەون",
     tAll: "هەموو", tFol: "فۆڵۆوەرز", tLik: "لایک", tViw: "بینین", tCom: "کۆمێنت", tShr: "بڵاوکردنەوە",
@@ -288,4 +288,4 @@ function detType(c, n) {
   if (f.includes('like') || f.includes('لايك') || f.includes('اعجاب') || f.includes('تفاعل')) return 'like';
   if (f.includes('view') || f.includes('مشاهد') || f.includes('story') || f.includes('ستوري') || f.includes('reel')) return 'view';
   if (f.includes('comment') || f.includes('تعليق')) return 'comment';
-  if (f.inclu
+  if (f.includes('share') || 
