@@ -1,6 +1,6 @@
 let allServices=[],curPlat='Instagram',curType='all',curSvc=null,userBal=0,creds={username:'',password:''},trCache={};
 let lang='ar';
-try{lang=localStorage.getItem('m7_lang')||'ar';trCache=JSON.parse(localStorage.getItem('m7_trc_v2')||'{}');}catch(e){}
+try{lang=localStorage.getItem('m7_lang')||'ar';trCache=JSON.parse(localStorage.getItem('m7_trc_v3')||'{}');}catch(e){}
 const tg=window.Telegram&&window.Telegram.WebApp;
 if(tg){tg.ready();tg.expand();}
 
@@ -21,10 +21,10 @@ function copyText(t,btn){if(!t)return;if(navigator.clipboard)navigator.clipboard
 function fmtBal(n){const v=parseFloat(n)||0;if(v===0)return'$0.00';const s=v.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');const p=s.split('.');return!p[1]?'$'+p[0]+'.00':(p[1].length===1?'$'+s+'0':'$'+s);}
 
 const T={
-  ar:{lang:"العربية",dir:"rtl",bal:"رصيدك",ord:"طلب جديد ⚡",ref:"شحن رصيد 💳",his:"سجلاتي 🕒",selP:"اختر المنصة:",selT:"اختر نوع الخدمة:",srch:"🔍 ابحث باسم الخدمة أو الرقم...",cat:"القسم:",oTit:"إنشاء طلب جديد",oSub:"اختر الخدمة واكتب الرابط الخاص بك",svc:"الخدمة:",lnk:"الرابط:",lnkPh:"ضع الرابط هنا \u200Ehttps://...\u200E",qty:"الكمية:",st:"البدء",stV:"فوري (0 - 15 د)",wr:"الضمان",yes:"متوفر",noW:"بدون ضمان",mm:"الحد الأدنى / الأقصى",tot:"الإجمالي",sub:"تأكيد الطلب ⚡",rTit:"شحن رصيد الحساب 💳",rSub:"انسخ رقم QiCard أو عنوان USDT وأرسل المبلغ",cpy:"📋 نسخ",pay:"طريقة الدفع:",rAmt:"مبلغ الشحن ($):",note:"رقم العملية / اسم المرسل:",notePh:"اكتب رقم الحوالة أو اسم المرسل...",rBtn:"إرسال طلب الشحن 🚀",hEmp:"سجل الطلبات فارغ",hSub:"الطلبات التي تقوم بتثبيتها ستظهر هنا",tAll:"الكل",tFol:"متابعين",tLik:"لايكات",tViw:"مشاهدات",tCom:"تعليقات",pIg:"إنستغرام",pTt:"تيك توك",pTg:"تيليجرام",pYt:"يوتيوب",pFb:"فيسبوك",pSc:"سناب شات",pTw:"تويتر / X",pWa:"واتساب",pAl:"الكل / عام",errFill:"يرجى إدخال الرابط واختيار الخدمة!",okPend:"⏳ بانتظار الموافقة",okOrd:"✅ تم تنفيذ الطلب #",errFail:"فشل تنفيذ الطلب",errConn:"خطأ في الاتصال",okRef:"✅ تم الإرسال بنجاح!",errRef:"❌ خطأ في الإرسال",stProg:"قيد التنفيذ",stPend:"بانتظار الموافقة",stDone:"مكتمل"},
-  en:{lang:"English",dir:"ltr",bal:"Balance",ord:"New Order ⚡",ref:"Top Up 💳",his:"History 🕒",selP:"Select Platform:",selT:"Service Type:",srch:"🔍 Search service name or ID...",cat:"Category:",oTit:"Create New Order",oSub:"Select a service and enter your link",svc:"Service:",lnk:"Link:",lnkPh:"Paste link here https://...",qty:"Quantity:",st:"Start",stV:"Instant (0 - 15m)",wr:"Guarantee",yes:"Available",noW:"No Refill",mm:"Min / Max",tot:"Total",sub:"Submit Order ⚡",rTit:"Top Up Balance 💳",rSub:"Copy QiCard or USDT (TRC20) and send payment",cpy:"📋 Copy",pay:"Payment Method:",rAmt:"Amount ($):",note:"Transaction ID / Sender Name:",notePh:"Enter transaction ID or sender name...",rBtn:"Send Top-Up Request 🚀",hEmp:"Order history is empty",hSub:"Your submitted orders will appear here",tAll:"All",tFol:"Followers",tLik:"Likes",tViw:"Views",tCom:"Comments",pIg:"Instagram",pTt:"TikTok",pTg:"Telegram",pYt:"YouTube",pFb:"Facebook",pSc:"Snapchat",pTw:"Twitter / X",pWa:"WhatsApp",pAl:"All / General",errFill:"Please enter link and select a service!",okPend:"⏳ Pending Approval",okOrd:"✅ Order #",errFail:"Order Failed",errConn:"Connection Error",okRef:"✅ Request Sent!",errRef:"❌ Error",stProg:"In Progress",stPend:"Pending Approval",stDone:"Completed"},
-  ku_b:{lang:"کوردی (بادینی)",dir:"rtl",bal:"باڵانسێ تە",ord:"داواکارییا نوو ⚡",ref:"پڕکرنا باڵانسی 💳",his:"تۆمارێن من 🕒",selP:"پلاتفۆرمی هەلبژێرە:",selT:"جۆرێ خزمەتگوزاریێ:",srch:"🔍 ل ناڤ یان ژمارا خزمەتگوزاریێ بگەڕێ...",cat:"بەش:",oTit:"داواکارییەکا نوو چێکە",oSub:"خزمەتگوزاریێ هەلبژێرە و لینکی بنڤیسە",svc:"خزمەتگوزاری:",lnk:"لینک:",lnkPh:"لینکی ل ڤێرێ دانێ \u200Ehttps://...\u200E",qty:"چەنداتی:",st:"دەستپێکرن",stV:"ئێکسەر (0 - 15 خولەک)",wr:"گەرەنتی",yes:"هەیە",noW:"بێ گەرەنتی",mm:"کێمترین / زۆرترین",tot:"کۆمێ گشتی",sub:"پشتڕاستکرنا داواکاریێ ⚡",rTit:"پڕکرنا باڵانسێ هەژمارێ 💳",rSub:"ژمارا QiCard یان ناونیشانێ USDT کۆپی بکە و پارەی فرێکە",cpy:"📋 کۆپی",pay:"ڕێکا پارەدانێ:",rAmt:"بڕێ پڕکرنێ ($):",note:"ژمارا پرۆسێ / ناڤێ هنێرەری:",notePh:"ژمارا حەواڵێ یان ناڤێ خۆ بنڤیسە...",rBtn:"هنارتنا داواکارییا پڕکرنێ 🚀",hEmp:"تۆمارا داواکارییان یا ڤالایە",hSub:"داواکاریێن تە ل ڤێرێ دێ دیار بن",tAll:"هەمی",tFol:"فۆڵۆوەرز",tLik:"لایک",tViw:"بینین",tCom:"کۆمێنت",pIg:"ئینستاگرام",pTt:"تیک تۆک",pTg:"تێلیگرام",pYt:"یوتیوب",pFb:"فەیسبووک",pSc:"سناب چات",pTw:"تویتەر / X",pWa:"واتساب",pAl:"هەمی / گشتی",errFill:"هیڤیدارین لینکی بنڤیسە و خزمەتگوزاریێ هەلبژێرە!",okPend:"⏳ ل هیڤییا ڕەزامەندیێ یە",okOrd:"✅ داواکاری هاتە هنارتن #",errFail:"داواکاری سەرنەکەفت",errConn:"خەلەتی د پەیوەندیێ دا",okRef:"✅ داواکاری هاتە هنارتن!",errRef:"❌ خەلەتی روویدا",stProg:"د قۆناغا جێبەجێکرنێ دایە",stPend:"ل هیڤییا ڕەزامەندیێ یە",stDone:"ب دووماهیک هات"},
-  ku_s:{lang:"کوردی (سۆرانی)",dir:"rtl",bal:"باڵانسەکەت",ord:"داواکاری نوێ ⚡",ref:"پڕکردنەوەی باڵانس 💳",his:"تۆمارەکانم 🕒",selP:"پلاتفۆرم هەڵبژێرە:",selT:"جۆری خزمەتگوزاری:",srch:"🔍 گەڕان بە ناو یان ژمارەی خزمەتگوزاری...",cat:"بەش:",oTit:"دروستکردنی داواکاری نوێ",oSub:"خزمەتگوزاری هەڵبژێرە و لینکەکەت بنووسە",svc:"خزمەتگوزاری:",lnk:"لینک:",lnkPh:"لینکەکە لێرە دابنێ \u200Ehttps://...\u200E",qty:"بڕ:",st:"دەستپێکردن",stV:"دەستبەجێ (0 - 15 خولەک)",wr:"گەرەنتی",yes:"هەیە",noW:"بێ گەرەنتی",mm:"کەمترین / زۆرترین",tot:"کۆی گشتی",sub:"تەواوکردنی داواکاری ⚡",rTit:"پڕکردنەوەی باڵانسی هەژمار 💳",rSub:"ژمارەی QiCard یان ناونیشانی USDT کۆپی بکە و پارەکە بنێرە",cpy:"📋 کۆپی",pay:"شێوازی پارەدان:",rAmt:"بڕی پڕکردنەوە ($):",note:"ژمارەی مامەڵە / ناوی نێرەر:",notePh:"ژمارەی حەواڵە یان ناوی نێرەر بنووسە...",rBtn:"ناردنی داواکاری پڕکردنەوە 🚀",hEmp:"تۆماری داواکارییەکان بەتاڵە",hSub:"داواکارییەکانت لێرە دەردەکەون",tAll:"هەموو",tFol:"فۆڵۆوەرز",tLik:"لایک",tViw:"بینین",tCom:"کۆمێنت",pIg:"ئینستاگرام",pTt:"تیک تۆک",pTg:"تێلیگرام",pYt:"یوتیوب",pFb:"فەیسبووک",pSc:"سناب چات",pTw:"تویتەر / X",pWa:"واتساب",pAl:"هەموو / گشتی",errFill:"تکایە لینک بنووسە و خزمەتگوزاری هەڵبژێرە!",okPend:"⏳ چاوەڕێی پەسەندکردنە",okOrd:"✅ داواکاری نێردرا #",errFail:"داواکاری سەرکەوتوو نەبوو",errConn:"هەڵە لە پەیوەندیکردن",okRef:"✅ داواکاری نێردرا!",errRef:"❌ هەڵە ڕوویدا",stProg:"لە جێبەجێکردندایە",stPend:"چاوەڕێی پەسەندکردنە",stDone:"تەواوبوو"}
+  ar:{lang:"العربية",dir:"rtl",bal:"رصيدك",ord:"طلب جديد ⚡",ref:"شحن رصيد 💳",his:"سجلاتي 🕒",selP:"اختر المنصة:",selT:"اختر نوع الخدمة:",srch:"🔍 ابحث باسم الخدمة أو الرقم...",cat:"القسم:",loadCat:"جاري تحميل الأقسام...",loadSvc:"جاري جلب الخدمات...",oTit:"إنشاء طلب جديد",oSub:"اختر الخدمة واكتب الرابط الخاص بك",svc:"الخدمة:",lnk:"الرابط:",lnkPh:"ضع الرابط هنا \u200Ehttps://...\u200E",qty:"الكمية:",st:"البدء",stV:"فوري (0 - 15 د)",wr:"الضمان",yes:"متوفر",noW:"بدون ضمان",mm:"الحد الأدنى / الأقصى",tot:"الإجمالي",sub:"تأكيد الطلب ⚡",rTit:"شحن رصيد الحساب 💳",rSub:"انسخ رقم QiCard أو عنوان USDT وأرسل المبلغ",cpy:"📋 نسخ",pay:"طريقة الدفع:",rAmt:"مبلغ الشحن ($):",note:"رقم العملية / اسم المرسل:",notePh:"اكتب رقم الحوالة أو اسم المرسل...",rBtn:"إرسال طلب الشحن 🚀",hEmp:"سجل الطلبات فارغ",hSub:"الطلبات التي تقوم بتثبيتها ستظهر هنا",tAll:"الكل",tFol:"متابعين",tLik:"لايكات",tViw:"مشاهدات",tCom:"تعليقات",pIg:"إنستغرام",pTt:"تيك توك",pTg:"تيليجرام",pYt:"يوتيوب",pFb:"فيسبوك",pSc:"سناب شات",pTw:"تويتر / X",pWa:"واتساب",pAl:"الكل / عام",errFill:"يرجى إدخال الرابط واختيار الخدمة!",okPend:"⏳ بانتظار الموافقة",okOrd:"✅ تم تنفيذ الطلب #",errFail:"فشل تنفيذ الطلب",errConn:"خطأ في الاتصال",okRef:"✅ تم الإرسال بنجاح!",errRef:"❌ خطأ في الإرسال",stProg:"قيد التنفيذ",stPend:"بانتظار الموافقة",stDone:"مكتمل"},
+  en:{lang:"English",dir:"ltr",bal:"Balance",ord:"New Order ⚡",ref:"Top Up 💳",his:"History 🕒",selP:"Select Platform:",selT:"Service Type:",srch:"🔍 Search service name or ID...",cat:"Category:",loadCat:"Loading categories...",loadSvc:"Loading services...",oTit:"Create New Order",oSub:"Select a service and enter your link",svc:"Service:",lnk:"Link:",lnkPh:"Paste link here https://...",qty:"Quantity:",st:"Start",stV:"Instant (0 - 15m)",wr:"Guarantee",yes:"Available",noW:"No Refill",mm:"Min / Max",tot:"Total",sub:"Submit Order ⚡",rTit:"Top Up Balance 💳",rSub:"Copy QiCard or USDT (TRC20) and send payment",cpy:"📋 Copy",pay:"Payment Method:",rAmt:"Amount ($):",note:"Transaction ID / Sender Name:",notePh:"Enter transaction ID or sender name...",rBtn:"Send Top-Up Request 🚀",hEmp:"Order history is empty",hSub:"Your submitted orders will appear here",tAll:"All",tFol:"Followers",tLik:"Likes",tViw:"Views",tCom:"Comments",pIg:"Instagram",pTt:"TikTok",pTg:"Telegram",pYt:"YouTube",pFb:"Facebook",pSc:"Snapchat",pTw:"Twitter / X",pWa:"WhatsApp",pAl:"All / General",errFill:"Please enter link and select a service!",okPend:"⏳ Pending Approval",okOrd:"✅ Order #",errFail:"Order Failed",errConn:"Connection Error",okRef:"✅ Request Sent!",errRef:"❌ Error",stProg:"In Progress",stPend:"Pending Approval",stDone:"Completed"},
+  ku_b:{lang:"کوردی (بادینی)",dir:"rtl",bal:"باڵانسێ تە",ord:"داواکارییا نوو ⚡",ref:"پڕکرنا باڵانسی 💳",his:"تۆمارێن من 🕒",selP:"پلاتفۆرمی هەلبژێرە:",selT:"جۆرێ خزمەتگوزاریێ:",srch:"🔍 ل ناڤ یان ژمارا خزمەتگوزاریێ بگەڕێ...",cat:"بەش:",loadCat:"بەش دهێنە بارکرن...",loadSvc:"خزمەتگوزاری دهێنە بارکرن...",oTit:"داواکارییەکا نوو چێکە",oSub:"خزمەتگوزاریێ هەلبژێرە و لینکی بنڤیسە",svc:"خزمەتگوزاری:",lnk:"لینک:",lnkPh:"لینکی ل ڤێرێ دانێ \u200Ehttps://...\u200E",qty:"چەنداتی:",st:"دەستپێکرن",stV:"ئێکسەر (0 - 15 خولەک)",wr:"گەرەنتی",yes:"هەیە",noW:"بێ گەرەنتی",mm:"کێمترین / زۆرترین",tot:"کۆمێ گشتی",sub:"پشتڕاستکرنا داواکاریێ ⚡",rTit:"پڕکرنا باڵانسێ هەژمارێ 💳",rSub:"ژمارا QiCard یان ناونیشانێ USDT کۆپی بکە و پارەی فرێکە",cpy:"📋 کۆپی",pay:"ڕێکا پارەدانێ:",rAmt:"بڕێ پڕکرنێ ($):",note:"ژمارا پرۆسێ / ناڤێ هنێرەری:",notePh:"ژمارا حەواڵێ یان ناڤێ خۆ بنڤیسە...",rBtn:"هنارتنا داواکارییا پڕکرنێ 🚀",hEmp:"تۆمارا داواکارییان یا ڤالایە",hSub:"داواکاریێن تە ل ڤێرێ دێ دیار بن",tAll:"هەمی",tFol:"فۆڵۆوەرز",tLik:"لایک",tViw:"بینین",tCom:"کۆمێنت",pIg:"ئینستاگرام",pTt:"تیک تۆک",pTg:"تێلیگرام",pYt:"یوتیوب",pFb:"فەیسبووک",pSc:"سناب چات",pTw:"تویتەر / X",pWa:"واتساب",pAl:"هەمی / گشتی",errFill:"هیڤیدارین لینکی بنڤیسە و خزمەتگوزاریێ هەلبژێرە!",okPend:"⏳ ل هیڤییا ڕەزامەندیێ یە",okOrd:"✅ داواکاری هاتە هنارتن #",errFail:"داواکاری سەرنەکەفت",errConn:"خەلەتی د پەیوەندیێ دا",okRef:"✅ داواکاری هاتە هنارتن!",errRef:"❌ خەلەتی روویدا",stProg:"د قۆناغا جێبەجێکرنێ دایە",stPend:"ل هیڤییا ڕەزامەندیێ یە",stDone:"ب دووماهیک هات"},
+  ku_s:{lang:"کوردی (سۆرانی)",dir:"rtl",bal:"باڵانسەکەت",ord:"داواکاری نوێ ⚡",ref:"پڕکردنەوەی باڵانس 💳",his:"تۆمارەکانم 🕒",selP:"پلاتفۆرم هەڵبژێرە:",selT:"جۆری خزمەتگوزاری:",srch:"🔍 گەڕان بە ناو یان ژمارەی خزمەتگوزاری...",cat:"بەش:",loadCat:"بەشەکان باردەکرێن...",loadSvc:"خزمەتگوزارییەکان باردەکرێن...",oTit:"دروستکردنی داواکاری نوێ",oSub:"خزمەتگوزاری هەڵبژێرە و لینکەکەت بنووسە",svc:"خزمەتگوزاری:",lnk:"لینک:",lnkPh:"لینکەکە لێرە دابنێ \u200Ehttps://...\u200E",qty:"بڕ:",st:"دەستپێکردن",stV:"دەستبەجێ (0 - 15 خولەک)",wr:"گەرەنتی",yes:"هەیە",noW:"بێ گەرەنتی",mm:"کەمترین / زۆرترین",tot:"کۆی گشتی",sub:"تەواوکردنی داواکاری ⚡",rTit:"پڕکردنەوەی باڵانسی هەژمار 💳",rSub:"ژمارەی QiCard یان ناونیشانی USDT کۆپی بکە و پارەکە بنێرە",cpy:"📋 کۆپی",pay:"شێوازی پارەدان:",rAmt:"بڕی پڕکردنەوە ($):",note:"ژمارەی مامەڵە / ناوی نێرەر:",notePh:"ژمارەی حەواڵە یان ناوی نێرەر بنووسە...",rBtn:"ناردنی داواکاری پڕکردنەوە 🚀",hEmp:"تۆماری داواکارییەکان بەتاڵە",hSub:"داواکارییەکانت لێرە دەردەکەون",tAll:"هەموو",tFol:"فۆڵۆوەرز",tLik:"لایک",tViw:"بینین",tCom:"کۆمێنت",pIg:"ئینستاگرام",pTt:"تیک تۆک",pTg:"تێلیگرام",pYt:"یوتیوب",pFb:"فەیسبووک",pSc:"سناب چات",pTw:"تویتەر / X",pWa:"واتساب",pAl:"هەموو / گشتی",errFill:"تکایە لینک بنووسە و خزمەتگوزاری هەڵبژێرە!",okPend:"⏳ چاوەڕێی پەسەندکردنە",okOrd:"✅ داواکاری نێردرا #",errFail:"داواکاری سەرکەوتوو نەبوو",errConn:"هەڵە لە پەیوەندیکردن",okRef:"✅ داواکاری نێردرا!",errRef:"❌ هەڵە ڕوویدا",stProg:"لە جێبەجێکردندایە",stPend:"چاوەڕێی پەسەندکردنە",stDone:"تەواوبوو"}
 };
 
 function normAr(s){
@@ -37,10 +37,12 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 يعمل بعد التحديث|تعمل بعد التحديث|شغال بعد التحديث|Working After Update|يعمل بعد التحديث|پشتی نووکرنێ کار دکەت|دوای نوێکردنەوە کار دەکات
 تعمل علي|يعمل علي|Working on|تعمل على|کار دکەت ل سەر|کار دەکات لەسەر
 تحديث جديد|التحديث الجديد|New Update|تحديث جديد|نووکرنا نوو|نوێکردنەوەی نوێ
+ضمان مدي الحياة|ضمان مدي الحياه|Lifetime Guarantee|ضمان مدى الحياة|گەرەنتی هەتاهەتایی|گەرەنتی هەمیشەیی
+مدي الحياة|مدي الحياه|Lifetime|مدى الحياة|هەتاهەتایی|هەمیشەیی
+اعادة نشر|اعاده نشر|ري بوست|ريبوست|repost|Repost|إعادة نشر|دووبارە بەلاڤکرن|دووبارە بڵاوکردنەوە
 تعويض تلقايي|Auto Refill|تعويض تلقائي|قەرەبووکرنا خودکار|قەرەبووکردنەوەی خۆکار
 زر التعويض|زر تعويض|Refill Button|زر التعويض|دوگمەیا قەرەبووکرنێ|دوگمەی قەرەبووکردنەوە
 اعادة تعبية|اعاده تعبيه|Refill|إعادة تعبئة|قەرەبووکرن|قەرەبووکردنەوە
-ضمان مدي الحياة|Lifetime Guarantee|ضمان مدى الحياة|گەرەنتی هەتاهەتایی|گەرەنتی هەمیشەیی
 بدون ضمان|لا يوجد ضمان|بدون تعويض|لا يوجد تعويض|غير مضمون|غير مضمونة|no refill|No Refill|بدون ضمان|بێ گەرەنتی|بێ گەرەنتی
 بدون نقص|بدون هبوط|عدم النقص|لا ينقص|non-drop|non drop|Non-Drop|بدون نقص|بێ کێمبوون|بێ کەمبوون
 نقص قليل|نقص منخفض|قليل النقص|Low Drop|نقص قليل|کێمبوونا کێم|کەمبوونی کەم
@@ -49,6 +51,8 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 جودة عالية|جوده عاليه|عالية الجودة|عاليه الجوده|high quality|hq|High Quality|جودة عالية|کوالێتی بلند|کوالێتی بەرز
 جودة متوسطة|جوده متوسطه|Medium Quality|جودة متوسطة|کوالێتی ناڤنجی|کوالێتی مامناوەند
 جودة منخفضة|جوده منخفضه|Low Quality|جودة منخفضة|کوالێتی نزم|کوالێتی نزم
+مشاهدات بوست صوره|مشاهدات بوست صورة|Photo Post Views|مشاهدات منشور صورة|بینینا پۆستێ وێنەی|بینینی پۆستی وێنە
+بوست صوره|بوست صورة|Photo Post|منشور صورة|پۆستێ وێنەی|پۆستی وێنە
 مشاهدات ستوري|مشاهدات الستوري|story views|story view|Story Views|مشاهدات ستوري|بینینا ستۆری|بینینی ستۆری
 مشاهدات ريلز|مشاهدات الريلز|reels views|reel views|Reels Views|مشاهدات ريلز|بینینا ڕیلز|بینینی ڕیڵز
 مشاهدات فيديو|مشاهدات الفيديو|video views|video view|Video Views|مشاهدات فيديو|بینینا ڤیدیۆیێ|بینینی ڤیدیۆ
@@ -85,7 +89,10 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 تويتش|twitch|Twitch|تويتش|تویچ|تویچ
 كواي|kwai|Kwai|كواي|کوای|کوای
 طواري|طوارء|emergency|Emergency|طوارئ|تەنگاڤی|فریاگوزاری
-مجانية|مجاني|مجانيه|free|Free|مجاني|بێ بەرامبەر|بەخۆڕایی
+دايما|دايم|طوال الوقت|always|Always|دائماً|هەردەم|هەمیشە
+صوره|صورة|صور|photo|photos|image|Photo|صورة|وێنە|وێنە
+نشر|publish|Publish|نشر|بەلاڤکرن|بڵاوکردنەوە
+مجانية|مجاني|مجانيه|مجانا|free|Free|مجاني|بێ بەرامبەر|بەخۆڕایی
 المسوقيين|المسوقين|مسوقين|مسوق|marketers|marketer|Marketers|المسوقين|بازاڕکەران|بەبازاڕکەران
 الموزعين|موزعين|resellers|Resellers|الموزعين|بەلاڤکەران|دابەشکاران
 بكجات|باقات|بكج|باقة|باقه|packages|package|Packages|باقات|پاکێج|پاکێج
@@ -145,7 +152,7 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 بنات|نساء|فتيات|female|Female|بنات|کچ|کچ
 شباب|ذكور|رجال|male|Male|شباب|کوڕ|کوڕ
 موثق|موثقة|توثيق|verified|Verified|موثق|پشتڕاستکری|پشتڕاستکراو
-ارخص|رخيص|رخيصة|رخيصه|cheapest|cheap|Cheapest|الأرخص|ئەرزانترین|هەرزانترین
+ارخص|رخيص|رخيصة|rخيصه|cheapest|cheap|Cheapest|الأرخص|ئەرزانترین|هەرزانترین
 افضل|ممتاز|ممتازة|ممتازه|best|Best|الأفضل|باشترین|باشترین
 اسرع|fastest|Fastest|الأسرع|بلەزترین|خێراترین
 اقوى|قوي|قوية|strong|Strong|قوي|بهێز|بەهێز
@@ -185,24 +192,38 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 
 const RULES=RAW.trim().split('\n').map(l=>{
   const p=l.split('|');
-  const a=p.slice(0,-4).map(x=>{const nx=normAr(x);return/^[a-z0-9 /-]+$/i.test(nx)?'\\b'+nx.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b':'(?:ال)?'+nx;});
-  return[new RegExp(a.join('|'),'gi'),p[p.length-4],p[p.length-3],p[p.length-2],p[p.length-1]];
-});
+  const al=p.slice(0,-4).map(normAr);
+  const mx=Math.max(...al.map(x=>x.length));
+  const a=al.map(nx=>/^[a-z0-9 /-]+$/i.test(nx)?'\\b'+nx.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b':'(?:ال)?'+nx);
+  return{mx,re:new RegExp(a.join('|'),'gi'),v:[p[p.length-4],p[p.length-3],p[p.length-2],p[p.length-1]]};
+}).sort((a,b)=>b.mx-a.mx);
 
 function sor2bad(s){
-  return s.replace(/یەکان|یەکان/g,'یێن').replace(/ەکان|ەکانی/g,'ێن').replace(/کردنەوەی|کردنی|کردن/g,'کرن')
+  return s.replace(/یەکان|ەکان|ەکانی/g,'ێن').replace(/کردنەوەی|کردنی|کردن/g,'کرن')
     .replace(/کراوە|کراو/g,'کری').replace(/هەموو/g,'هەمی').replace(/نوێ/g,'نوو').replace(/خێرا/g,'بلەز')
     .replace(/بەرز/g,'بلند').replace(/ئەمڕۆ/g,'ئەڤرۆ').replace(/عێراق/g,'عیراق').replace(/کاتژمێر/g,'دەمژمێر')
     .replace(/دەستبەجێ/g,'ئێکسەر').replace(/پشتگیری/g,'پشتەڤانی').replace(/بەبازاڕکەران/g,'بازاڕکەران')
-    .replace(/بەخۆڕایی/g,'بێ بەرامبەر').replace(/فریاگوزاری/g,'تەنگاڤی');
+    .replace(/بەخۆڕایی/g,'بێ بەرامبەر').replace(/فریاگوزاری/g,'تەنگاڤی').replace(/هەمیشە/g,'هەردەم')
+    .replace(/وێنەکان/g,'وێنە').replace(/بڵاوکردنەوە/g,'بەلاڤکرن');
+}
+
+function cleanOut(s){
+  return String(s).replace(/\s+/g,' ').trim().replace(/(^|\s)(\S+)(?:\s+\2)+(?=\s|$)/gi,'$1$2');
 }
 
 function trDict(s){
   if(!s)return s;
   const idx=lang==='en'?1:(lang==='ar'?2:(lang==='ku_b'?3:4));
   let o=normAr(s);
-  for(let i=0;i<RULES.length;i++)o=o.replace(RULES[i][0],RULES[i][idx]);
-  return o;
+  for(let i=0;i<RULES.length;i++)o=o.replace(RULES[i].re,RULES[i].v[idx]);
+  return cleanOut(o);
+}
+
+function needsAutoTr(d){
+  if(lang==='en')return/[\u0600-\u06FF]/.test(d);
+  const noCode=d.replace(/\b(VIP|HQ|SMM|ID|HD|4K|TRC20|USDT|QiCard|X)\b/gi,'');
+  if(lang==='ar')return/[a-zA-Z]{2,}/.test(noCode);
+  return/[a-zA-Z]{2,}/.test(noCode)||/[ثذصضطظةىأإآؤكي]/.test(d)||/(^|\s)(في|من|الى|علي|على|عن|مع|غير|بدون|تعمل|يعمل|نشر|حياة|الحياة|مدي|مدى|دايما|دائما|صوره|صورة|اعادة|إعادة|كل|جميع|فقط|جدا|اليوم)(\s|$)/.test(d);
 }
 
 function tr(s){
@@ -213,15 +234,7 @@ function tr(s){
 let trBusy=false;
 async function liveTranslate(list){
   if(trBusy||!list||!list.length)return;
-  const need=[];
-  list.forEach(raw=>{
-    if(!raw||trCache[lang+':'+raw])return;
-    const d=trDict(raw);
-    const hasAr=/[\u0600-\u06FF]/.test(d)&&!/[پچژڤگڵڕۆێ]/.test(d);
-    const hasEn=/[a-zA-Z]{3,}/.test(d.replace(/\b(VIP|HQ|SMM|ID|HD|4K|TRC20|USDT|QiCard|X)\b/gi,''));
-    if((lang==='en'&&hasAr)||(lang!=='en'&&hasEn)||(lang==='ku_b'&&hasAr)||(lang==='ku_s'&&hasAr))need.push(raw);
-  });
-  const uniq=[...new Set(need)];
+  const uniq=[...new Set(list.filter(raw=>raw&&!trCache[lang+':'+raw]&&needsAutoTr(trDict(raw))))];
   if(!uniq.length)return;
   const batch=uniq.slice(0,25);
   trBusy=true;
@@ -230,22 +243,22 @@ async function liveTranslate(list){
     const res=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl='+tl+'&dt=t&q='+encodeURIComponent(batch.join('\n')));
     const data=await res.json();
     if(data&&Array.isArray(data[0])){
-      const joined=data[0].map(x=>x[0]).join('');
-      const parts=joined.split('\n');
+      const parts=data[0].map(x=>x[0]).join('').split('\n');
       if(parts.length===batch.length){
         batch.forEach((orig,i)=>{
           let val=parts[i].trim();
-          if(lang==='ku_b')val=sor2bad(trDict(val));
-          else if(lang==='ku_s')val=trDict(val);
+          if(lang==='ku_b')val=cleanOut(sor2bad(trDict(val)));
+          else if(lang==='ku_s')val=cleanOut(trDict(val));
+          else val=cleanOut(val);
           if(val)trCache[lang+':'+orig]=val;
         });
-        try{localStorage.setItem('m7_trc_v2',JSON.stringify(trCache));}catch(e){}
+        try{localStorage.setItem('m7_trc_v3',JSON.stringify(trCache));}catch(e){}
         updateSelectTexts();
       }
     }
   }catch(e){}
   trBusy=false;
-  if(uniq.length>25)setTimeout(()=>liveTranslate(uniq.slice(25)),250);
+  if(uniq.length>25)setTimeout(()=>liveTranslate(uniq.slice(25)),200);
 }
 
 function updateSelectTexts(){
@@ -296,7 +309,9 @@ function setLang(l){
   document.getElementById('pFacebook').innerText=t.pFb;document.getElementById('pSnapchat').innerText=t.pSc;
   document.getElementById('pTwitter').innerText=t.pTw;document.getElementById('pWhatsapp').innerText=t.pWa;
   document.getElementById('pAll').innerText=t.pAl;
-  renderPills();if(allServices.length)renderCats();else updateInfo();
+  renderPills();
+  if(allServices.length)renderCats();
+  else{setOpt(document.getElementById('categorySelect'),t.loadCat);setOpt(document.getElementById('serviceSelect'),t.loadSvc);updateInfo();}
 }
 
 function renderPills(){
