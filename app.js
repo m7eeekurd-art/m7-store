@@ -1,6 +1,9 @@
-let allServices=[],curPlat='Instagram',curType='all',curSvc=null,userBal=0,creds={username:'',password:''},trCache={};
+let allServices=[],curPlat='Instagram',curType='all',curSvc=null,userBal=0,creds={username:'',password:''};
 let lang='ar';
-try{lang=localStorage.getItem('m7_lang')||'ar';trCache=JSON.parse(localStorage.getItem('m7_trc_v3')||'{}');}catch(e){}
+try{
+  lang=localStorage.getItem('m7_lang')||'ar';
+  ['m7_trc','m7_trc_v2','m7_trc_v3'].forEach(k=>localStorage.removeItem(k));
+}catch(e){}
 const tg=window.Telegram&&window.Telegram.WebApp;
 if(tg){tg.ready();tg.expand();}
 
@@ -152,7 +155,7 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 بنات|نساء|فتيات|female|Female|بنات|کچ|کچ
 شباب|ذكور|رجال|male|Male|شباب|کوڕ|کوڕ
 موثق|موثقة|توثيق|verified|Verified|موثق|پشتڕاستکری|پشتڕاستکراو
-ارخص|رخيص|رخيصة|rخيصه|cheapest|cheap|Cheapest|الأرخص|ئەرزانترین|هەرزانترین
+ارخص|رخيص|رخيصة|رخيصه|cheapest|cheap|Cheapest|الأرخص|ئەرزانترین|هەرزانترین
 افضل|ممتاز|ممتازة|ممتازه|best|Best|الأفضل|باشترین|باشترین
 اسرع|fastest|Fastest|الأسرع|بلەزترین|خێراترین
 اقوى|قوي|قوية|strong|Strong|قوي|بهێز|بەهێز
@@ -198,75 +201,12 @@ const RULES=RAW.trim().split('\n').map(l=>{
   return{mx,re:new RegExp(a.join('|'),'gi'),v:[p[p.length-4],p[p.length-3],p[p.length-2],p[p.length-1]]};
 }).sort((a,b)=>b.mx-a.mx);
 
-function sor2bad(s){
-  return s.replace(/یەکان|ەکان|ەکانی/g,'ێن').replace(/کردنەوەی|کردنی|کردن/g,'کرن')
-    .replace(/کراوە|کراو/g,'کری').replace(/هەموو/g,'هەمی').replace(/نوێ/g,'نوو').replace(/خێرا/g,'بلەز')
-    .replace(/بەرز/g,'بلند').replace(/ئەمڕۆ/g,'ئەڤرۆ').replace(/عێراق/g,'عیراق').replace(/کاتژمێر/g,'دەمژمێر')
-    .replace(/دەستبەجێ/g,'ئێکسەر').replace(/پشتگیری/g,'پشتەڤانی').replace(/بەبازاڕکەران/g,'بازاڕکەران')
-    .replace(/بەخۆڕایی/g,'بێ بەرامبەر').replace(/فریاگوزاری/g,'تەنگاڤی').replace(/هەمیشە/g,'هەردەم')
-    .replace(/وێنەکان/g,'وێنە').replace(/بڵاوکردنەوە/g,'بەلاڤکرن');
-}
-
-function cleanOut(s){
-  return String(s).replace(/\s+/g,' ').trim().replace(/(^|\s)(\S+)(?:\s+\2)+(?=\s|$)/gi,'$1$2');
-}
-
-function trDict(s){
+function tr(s){
   if(!s)return s;
   const idx=lang==='en'?1:(lang==='ar'?2:(lang==='ku_b'?3:4));
   let o=normAr(s);
   for(let i=0;i<RULES.length;i++)o=o.replace(RULES[i].re,RULES[i].v[idx]);
-  return cleanOut(o);
-}
-
-function needsAutoTr(d){
-  if(lang==='en')return/[\u0600-\u06FF]/.test(d);
-  const noCode=d.replace(/\b(VIP|HQ|SMM|ID|HD|4K|TRC20|USDT|QiCard|X)\b/gi,'');
-  if(lang==='ar')return/[a-zA-Z]{2,}/.test(noCode);
-  return/[a-zA-Z]{2,}/.test(noCode)||/[ثذصضطظةىأإآؤكي]/.test(d)||/(^|\s)(في|من|الى|علي|على|عن|مع|غير|بدون|تعمل|يعمل|نشر|حياة|الحياة|مدي|مدى|دايما|دائما|صوره|صورة|اعادة|إعادة|كل|جميع|فقط|جدا|اليوم)(\s|$)/.test(d);
-}
-
-function tr(s){
-  if(!s)return s;
-  return trCache[lang+':'+s]||trDict(s);
-}
-
-let trBusy=false;
-async function liveTranslate(list){
-  if(trBusy||!list||!list.length)return;
-  const uniq=[...new Set(list.filter(raw=>raw&&!trCache[lang+':'+raw]&&needsAutoTr(trDict(raw))))];
-  if(!uniq.length)return;
-  const batch=uniq.slice(0,25);
-  trBusy=true;
-  const tl=lang==='en'?'en':(lang==='ar'?'ar':'ckb');
-  try{
-    const res=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl='+tl+'&dt=t&q='+encodeURIComponent(batch.join('\n')));
-    const data=await res.json();
-    if(data&&Array.isArray(data[0])){
-      const parts=data[0].map(x=>x[0]).join('').split('\n');
-      if(parts.length===batch.length){
-        batch.forEach((orig,i)=>{
-          let val=parts[i].trim();
-          if(lang==='ku_b')val=cleanOut(sor2bad(trDict(val)));
-          else if(lang==='ku_s')val=cleanOut(trDict(val));
-          else val=cleanOut(val);
-          if(val)trCache[lang+':'+orig]=val;
-        });
-        try{localStorage.setItem('m7_trc_v3',JSON.stringify(trCache));}catch(e){}
-        updateSelectTexts();
-      }
-    }
-  }catch(e){}
-  trBusy=false;
-  if(uniq.length>25)setTimeout(()=>liveTranslate(uniq.slice(25)),200);
-}
-
-function updateSelectTexts(){
-  document.querySelectorAll('#categorySelect option').forEach(o=>{if(o.value)o.textContent=tr(o.value);});
-  document.querySelectorAll('#serviceSelect option').forEach(o=>{
-    const s=allServices.find(x=>String(x.service||x.id)===String(o.value));
-    if(s)o.textContent='#'+(s.service||s.id)+' - '+tr(s.cleanName)+' ($'+parseFloat(s.rate||0).toFixed(3)+')';
-  });
+  return o.replace(/\s+/g,' ').trim().replace(/(^|\s)(\S+)(?:\s+\2)+(?=\s|$)/gi,'$1$2');
 }
 
 function setLang(l){
@@ -377,14 +317,13 @@ function getFiltered(){
 function renderCats(){
   const cEl=document.getElementById('categorySelect'),prev=cEl.value,cats=[...new Set(getFiltered().map(s=>s.cleanCat))];cEl.innerHTML='';
   if(!cats.length)setOpt(cEl,'---');else{cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=tr(c);cEl.appendChild(o);});if(cats.includes(prev))cEl.value=prev;}
-  renderSvcs(cats);
+  renderSvcs();
 }
 
-function renderSvcs(catsList){
+function renderSvcs(){
   const sEl=document.getElementById('serviceSelect'),prev=sEl.value,cat=document.getElementById('categorySelect').value,list=getFiltered().filter(s=>!cat||s.cleanCat===cat);sEl.innerHTML='';
   if(!list.length)setOpt(sEl,'---');else{list.forEach(s=>{const o=document.createElement('option');o.value=s.service||s.id;o.textContent='#'+(s.service||s.id)+' - '+tr(s.cleanName)+' ($'+parseFloat(s.rate||0).toFixed(3)+')';sEl.appendChild(o);});if(list.some(s=>String(s.service||s.id)===String(prev)))sEl.value=prev;}
   updateInfo();
-  liveTranslate([...(catsList||[]),...list.map(s=>s.cleanName)]);
 }
 
 function updateInfo(){
