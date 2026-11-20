@@ -4,7 +4,6 @@ try{
   const saved=localStorage.getItem('m7_lang');
   lang=(saved==='ar'||saved==='en'||saved==='ku_b')?saved:'ar';
   localStorage.setItem('m7_lang',lang);
-  localStorage.removeItem('m7_tr_pure_v1');
 }catch(e){}
 
 const tg=window.Telegram&&window.Telegram.WebApp;
@@ -33,8 +32,8 @@ const T={
   ku_b:{lang:"کوردی (بادینی)",dir:"rtl",bal:"باڵانسێ تە",ord:"داواکارییا نوو ⚡",ref:"پڕکرنا باڵانسی 💳",his:"تۆمارێن من 🕒",selP:"پلاتفۆرمی هەلبژێرە:",selT:"جۆرێ خزمەتگوزاریێ:",srch:"🔍 ل ناڤ یان ژمارا خزمەتگوزاریێ بگەڕێ...",cat:"بەش:",loadCat:"بارکرن...",loadSvc:"بارکرن...",oTit:"داواکارییەکا نوو چێکە",oSub:"خزمەتگوزاریێ هەلبژێرە و لینکی بنڤیسە",svc:"خزمەتگوزاری:",lnk:"لینک:",lnkPh:"لینکی ل ڤێرێ دانێ \u200Ehttps://...\u200E",qty:"چەنداتی:",st:"دەستپێکرن",stV:"ئێکسەر (0 - 15 خولەک)",wr:"گەرەنتی",yes:"هەیە",noW:"بێ گەرەنتی",mm:"کێمترین / زۆرترین",tot:"کۆمێ گشتی",sub:"پشتڕاستکرنا داواکاریێ ⚡",rTit:"پڕکرنا باڵانسێ هەژمارێ 💳",rSub:"ژمارا QiCard یان ناونیشانێ USDT کۆپی بکە و پارەی فرێکە",cpy:"📋 کۆپی",pay:"ڕێکا پارەدانێ:",rAmt:"بڕێ پڕکرنێ ($):",note:"ژمارا پرۆسێ / ناڤێ هنێرەری:",notePh:"ژمارا حەواڵێ یان ناڤێ خۆ بنڤیسە...",rBtn:"هنارتنا داواکارییا پڕکرنێ 🚀",hEmp:"تۆمارا داواکارییان یا ڤالایە",hSub:"داواکاریێن تە ل ڤێرێ دێ دیار بن",tAll:"هەمی",tFol:"فۆڵۆوەرز",tLik:"لایک",tViw:"بینین",tCom:"کۆمێنت",pIg:"ئینستاگرام",pTt:"تیک تۆک",pTg:"تێلیگرام",pYt:"یوتیوب",pFb:"فەیسبووک",pSc:"سناب چات",pTw:"تویتەر / X",pWa:"واتساب",pAl:"هەمی / گشتی",errFill:"هیڤیدارین لینکی بنڤیسە و خزمەتگوزاریێ هەلبژێرە!",okPend:"⏳ ل هیڤییا ڕەزامەندیێ یە",okOrd:"✅ داواکاری هاتە هنارتن #",errFail:"داواکاری سەرنەکەفت",errConn:"خەلەتی د پەیوەندیێ دا",okRef:"✅ داواکاری هاتە هنارتن!",errRef:"❌ خەلەتی روویدا",stProg:"د قۆناغا جێبەجێکرنێ دایە",stPend:"ل هیڤییا ڕەزامەندیێ یە",stDone:"ب دووماهیک هات"}
 };
 
-// Comprehensive Multi-Word Phrases (Checked Longest-First -> Zero Mixed Words)
-// [source_pattern, English, Arabic, Kurdish_Badini]
+// Multi-Word Phrases (Checked Longest-First -> 100% Pure Badini / English / Arabic)
+// [normalized_pattern, English, Arabic, Kurdish_Badini]
 const PHRASES=[
   ["طفي زر مراجعة المتابعين قبل الطلب","Turn off follower review button before ordering","أوقف زر مراجعة المتابعين قبل الطلب","دوگمەیا پێداچوونا فۆڵۆوەران بگرە بەری داواکاریێ"],
   ["اطفي زر مراجعة المتابعين قبل الطلب","Turn off follower review button before ordering","أوقف زر مراجعة المتابعين قبل الطلب","دوگمەیا پێداچوونا فۆڵۆوەران بگرە بەری داواکاریێ"],
@@ -42,24 +41,32 @@ const PHRASES=[
   ["اذا طلبت والزر مفعل فلا نستطيع اصلاح طلبك","If ordered while active we cannot fix your order","إذا طلبت والزر مفعل فلا نستطيع إصلاح طلبك","ئەگەر تە داواکاری کر و دوگمە چالاک بیت نەشێین داواکارییا تە چاک بکەین"],
   ["يجب ان يكون الحساب عام","Account must be public","يجب أن يكون الحساب عاماً","پێدڤییە هەژمار یا گشتی بیت"],
   ["لا تضع اكثر من طلب لنفس الرابط","Do not place multiple orders for the same link","لا تضع أكثر من طلب لنفس الرابط","زێدەتر ژ داواکارییەکێ بۆ هەمان لینکی دانەنێ"],
+  ["خدمات الدعم الممول","Sponsored Boost Services","خدمات الدعم الممول","خزمەتگوزاریێن پشتەڤانییا سپۆنسەرکری"],
+  ["الدعم الممول","Sponsored Boost","الدعم الممول","پشتەڤانییا سپۆنسەرکری"],
+  ["دعم ممول","Sponsored Boost","الدعم الممول","پشتەڤانییا سپۆنسەرکری"],
   ["خدمات مصغرة احترافية","Professional Micro Services","خدمات مصغرة احترافية","خزمەتگوزاریێن بچووک یێن پیشەیی"],
   ["المصغرة الاحترافية","Professional Micro","المصغرة الاحترافية","بچووکێن پیشەیی"],
   ["تثبيت تطبيقات الهاتف","Mobile App Installs","تثبيت تطبيقات الهاتف","دامەزراندنا ئەپێن مۆبایلێ"],
   ["رفع حساب اكسبلور","Boost Account to Explore","رفع حساب إكسبلور","بلندکرنا هەژماری بۆ ئێکسپلۆر"],
+  ["الارخص مبيعا اليوم","Cheapest Best Sellers Today","الأرخص مبيعاً اليوم","ئەرزانترین فرۆتنا ئەڤرۆ"],
   ["ارخص مبيعا اليوم","Cheapest Best Sellers Today","الأرخص مبيعاً اليوم","ئەرزانترین فرۆتنا ئەڤرۆ"],
+  ["الاكثر مبيعا اليوم","Best Sellers Today","الأكثر مبيعاً اليوم","زۆرترین فرۆتنا ئەڤرۆ"],
   ["اكثر مبيعا اليوم","Best Sellers Today","الأكثر مبيعاً اليوم","زۆرترین فرۆتنا ئەڤرۆ"],
+  ["الاكثر مبيعا","Best Sellers","الأكثر مبيعاً","زۆرترین فرۆتن"],
   ["اكثر مبيعا","Best Sellers","الأكثر مبيعاً","زۆرترین فرۆتن"],
+  ["الاكثر طلبا","Most Ordered","الأكثر طلباً","زۆرترین داواکاری"],
   ["اكثر طلبا","Most Ordered","الأكثر طلباً","زۆرترین داواکاری"],
-  ["تعمل علي تحديث جديد","Working on New Update","تعمل على التحديث الجديد","کار دکەت ل سەر نووکرنا نوو"],
-  ["يعمل علي تحديث جديد","Working on New Update","يعمل على التحديث الجديد","کار دکەت ل سەر نووکرنا نوو"],
-  ["تعمل على التحديث الجديد","Working on New Update","تعمل على التحديث الجديد","کار دکەت ل سەر نووکرنا نوو"],
-  ["تعمل بعد التحديث","Working After Update","تعمل بعد التحديث","پشتی نووکرنێ کار دکەت"],
-  ["يعمل بعد التحديث","Working After Update","يعمل بعد التحديث","پشتی نووکرنێ کار دکەت"],
-  ["تعمل بعد تحديث","Working After Update","تعمل بعد التحديث","پشتی نووکرنێ کار دکەت"],
-  ["يعمل بعد تحديث","Working After Update","يعمل بعد التحديث","پشتی نووکرنێ کار دکەت"],
-  ["ضمان مدى الحياة","Lifetime Guarantee","ضمان مدى الحياة","گەرەنتی هەتاهەتایی"],
+  ["تعمل علي التحديث الجديد","Working After New Update","تعمل على التحديث الجديد","پشتی ئەپدەیتا نوو کار دکەن"],
+  ["يعمل علي التحديث الجديد","Working After New Update","يعمل على التحديث الجديد","پشتی ئەپدەیتا نوو کار دکەن"],
+  ["تعمل علي تحديث جديد","Working After New Update","تعمل على التحديث الجديد","پشتی ئەپدەیتا نوو کار دکەن"],
+  ["يعمل علي تحديث جديد","Working After New Update","يعمل على التحديث الجديد","پشتی ئەپدەیتا نوو کار دکەن"],
+  ["تعمل بعد التحديث","Working After Update","تعمل بعد التحديث","پشتی ئەپدەیتێ کار دکەن"],
+  ["يعمل بعد التحديث","Working After Update","يعمل بعد التحديث","پشتی ئەپدەیتێ کار دکەن"],
+  ["تعمل بعد تحديث","Working After Update","تعمل بعد التحديث","پشتی ئەپدەیتێ کار دکەن"],
+  ["يعمل بعد تحديث","Working After Update","يعمل بعد التحديث","پشتی ئەپدەیتێ کار دکەن"],
+  ["ضمان مدي الحياة","Lifetime Guarantee","ضمان مدى الحياة","گەرەنتی هەتاهەتایی"],
   ["ضمان مدي حياة","Lifetime Guarantee","ضمان مدى الحياة","گەرەنتی هەتاهەتایی"],
-  ["مدى الحياة","Lifetime","مدى الحياة","هەتاهەتایی"],
+  ["مدي الحياة","Lifetime","مدى الحياة","هەتاهەتایی"],
   ["مدي حياة","Lifetime","مدى الحياة","هەتاهەتایی"],
   ["تعويض تلقائي","Auto Refill","تعويض تلقائي","قەرەبووکرنا خودکار"],
   ["زر التعويض","Refill Button","زر التعويض","دوگمەیا قەرەبووکرنێ"],
@@ -118,9 +125,9 @@ const PHRASES=[
   ["انت تكتبها","You Write Them","أنت تكتبها","تو دنڤیسی"],
   ["في اليوم","Per Day","يومياً","د ڕۆژێ دا"],
   ["في الساعة","Per Hour","بالساعة","د دەمژمێرێ دا"],
-  ["تحديث جديد","New Update","تحديث جديد","نووکرنا نوو"],
+  ["تحديث جديد","New Update","تحديث جديد","ئەپدەیتا نوو"],
   ["حركة اكسبلور","Explore Traffic","حركة الإكسبلور","لڤینا ئێکسپلۆر"],
-  ["نقاط تحديثات","Update Points","نقاط التحديثات","خاڵێن نویکرنێ"],
+  ["نقاط تحديثات","Update Points","نقاط التحديثات","خاڵێن ئەپدەیتان"],
   ["جوجل بلاي","Google Play","جوجل بلاي","گۆگڵ پلەی"],
   ["اب ستور","App Store","آب ستور","ئەپ ستۆر"],
   ["خرائط جوجل","Google Maps","خرائط جوجل","نەخشێن گۆگڵی"]
@@ -152,7 +159,7 @@ const WORDS={
   "google":["Google","جوجل","گۆگڵ"],"جوجل":["Google","جوجل","گۆگڵ"],"قوقل":["Google","جوجل","گۆگڵ"],
   "followers":["Followers","متابعين","فۆڵۆوەرز"],"متابعين":["Followers","متابعين","فۆڵۆوەرز"],"متابع":["Followers","متابعين","فۆڵۆوەرز"],
   "subscribers":["Subscribers","مشتركين","سەبسکرایب"],"مشتركين":["Subscribers","مشتركين","سەبسکرایب"],"مشترك":["Subscribers","مشتركين","سەبسکرایب"],
-  "members":["Members","أعضاء","ئەندام"],"اعضاء":["Members","أعضاء","ئەندام"],"أعضاء":["Members","أعضاء","ئەندام"],"عضو":["Members","أعضاء","ئەندام"],
+  "members":["Members","أعضاء","ئەندام"],"اعضاء":["Members","أعضاء","ئەندام"],"عضو":["Members","أعضاء","ئەندام"],
   "likes":["Likes","لايكات","لایک"],"لايكات":["Likes","لايكات","لایک"],"لايك":["Likes","لايكات","لایک"],"اعجابات":["Likes","لايكات","لایک"],"اعجاب":["Likes","لايكات","لایک"],
   "views":["Views","مشاهدات","بینین"],"مشاهدات":["Views","مشاهدات","بینین"],"مشاهدة":["Views","مشاهدات","بینین"],
   "comments":["Comments","تعليقات","کۆمێنت"],"تعليقات":["Comments","تعليقات","کۆمێنت"],"تعليق":["Comments","تعليقات","کۆمێنت"],"كومنتات":["Comments","تعليقات","کۆمێنت"],"كومنت":["Comments","تعليقات","کۆمێنت"],
@@ -201,6 +208,10 @@ const WORDS={
   "free":["Free","مجاني","بێ بەرامبەر"],"مجاني":["Free","مجاني","بێ بەرامبەر"],"مجانية":["Free","مجاني","بێ بەرامبەر"],"مجانا":["Free","مجاني","بێ بەرامبەر"],
   "services":["Services","خدمات","خزمەتگوزاری"],"خدمات":["Services","خدمات","خزمەتگوزاری"],"خدمة":["Service","خدمة","خزمەتگوزاری"],
   "packages":["Packages","باقات","پاکێج"],"باقات":["Packages","باقات","پاکێج"],"بكجات":["Packages","باقات","پاکێج"],"بکچات":["Packages","باقات","پاکێج"],
+  "assorted":["Assorted","متنوعة","جۆراوجۆر"],"منوعة":["Assorted","متنوعة","جۆراوجۆر"],"متنوعة":["Assorted","متنوعة","جۆراوجۆر"],"منوع":["Assorted","متنوع","جۆراوجۆر"],
+  "emergency":["Emergency","طوارئ","تەنگاڤی"],"طواري":["Emergency","طوارئ","تەنگاڤی"],"طوارئ":["Emergency","طوارئ","تەنگاڤی"],
+  "boost":["Boost","دعم","پشتەڤانی"],"دعم":["Boost","دعم","پشتەڤانی"],
+  "sponsored":["Sponsored","ممول","سپۆنسەرکری"],"ممول":["Sponsored","ممول","سپۆنسەرکری"],"ممولة":["Sponsored","ممول","سپۆنسەرکری"],
   "offers":["Offers","عروض","ئۆفەر"],"عروض":["Offers","عروض","ئۆفەر"],"عرض":["Offer","عرض","ئۆفەر"],
   "iraqi":["Iraqi","العراق","عیراق"],"عراقي":["Iraqi","العراق","عیراق"],"عراقية":["Iraqi","العراق","عیراق"],"عراقيين":["Iraqi","العراق","عیراق"],"عراق":["Iraq","العراق","عیراق"],
   "saudi":["Saudi","السعودية","سعودی"],"سعودي":["Saudi","السعودية","سعودی"],"سعودية":["Saudi","السعودية","سعودی"],"سعوديين":["Saudi","السعودية","سعودی"],
@@ -240,7 +251,7 @@ const WORDS={
   "year":["Year","سنة","ساڵ"],"سنة":["Year","سنة","ساڵ"],
   "only":["Only","فقط","بتنێ"],"فقط":["Only","فقط","بتنێ"],
   "working":["Working","شغال","کار دکەت"],"شغال":["Working","شغال","کار دکەت"],"شغالة":["Working","شغال","کار دکەت"],"يعمل":["Working","شغال","کار دکەت"],"تعمل":["Working","شغال","کار دکەت"],
-  "updated":["Updated","محدث","نووکری"],"محدث":["Updated","محدث","نووکری"],"تحديث":["Update","تحديث","نووکرن"],
+  "updated":["Updated","محدث","ئەپدەیتکری"],"محدث":["Updated","محدث","ئەپدەیتکری"],"تحديث":["Update","تحديث","ئەپدەیت"],
   "custom":["Custom","مخصص","تایبەت"],"مخصص":["Custom","مخصص","تایبەت"],"مخصصة":["Custom","مخصص","تایبەت"],
   "random":["Random","عشوائي","هەڕەمەکی"],"عشوائي":["Random","عشوائي","هەڕەمەکی"],"عشوائية":["Random","عشوائي","هەڕەمەکی"],
   "direct":["Direct","مباشر","ڕاستەوخۆ"],"مباشر":["Direct","مباشر","ڕاستەوخۆ"],"مباشرة":["Direct","مباشر","ڕاستەوخۆ"],
@@ -250,7 +261,6 @@ const WORDS={
   "premium":["Premium","بريميوم","پریمیۆم"],"بريميوم":["Premium","بريميوم","پریمیۆم"],
   "stars":["Stars","نجوم","ستێر"],"نجوم":["Stars","نجوم","ستێر"],
   "boosts":["Boosts","تعزيزات","بەهێزکرن"],"تعزيزات":["Boosts","تعزيزات","بەهێزکرن"],
-  "sponsored":["Sponsored","ممول","سپۆنسەرکری"],"ممول":["Sponsored","ممول","سپۆنسەرکری"],"ممولة":["Sponsored","ممول","سپۆنسەرکری"],
   "ads":["Ads","إعلانات","ڕیکلام"],"اعلانات":["Ads","إعلانات","ڕیکلام"],
   "marketers":["Marketers","المسوقين","بازاڕکەران"],"مسوقين":["Marketers","المسوقين","بازاڕکەران"],"مسوقيين":["Marketers","المسوقين","بازاڕکەران"],
   "resellers":["Resellers","الموزعين","بەلاڤکەران"],"موزعين":["Resellers","الموزعين","بەلاڤکەران"],
@@ -265,11 +275,10 @@ const WORDS={
   "after":["After","بعد","پشتی"],"بعد":["After","بعد","پشتی"],
   "before":["Before","قبل","بەری"],"قبل":["Before","قبل","بەری"],
   "or":["Or","أو","یان"],"او":["Or","أو","یان"],
-  "a":["",""],
-  "the":["",""],
   "for":["For","لـ","بۆ"],
   "and":["And","و","و"],
-  "of":["",""]
+  "today":["Today","اليوم","ئەڤرۆ"],"اليوم":["Today","اليوم","ئەڤرۆ"],
+  "a":["","",""],"the":["","",""],"of":["","",""]
 };
 
 function normText(s){
@@ -292,6 +301,10 @@ Object.keys(WORDS).forEach(k=>{
 });
 
 const SORTED_PHRASES=PHRASES.map(p=>[normText(p[0]).toLowerCase(),p[1],p[2],p[3]]).sort((a,b)=>b[0].length-a[0].length);
+
+function stripAl(w){
+  return w.length>3&&w.startsWith('ال')?w.slice(2):w;
+}
 
 function translateOne(raw,targetLang){
   if(!raw)return'';
@@ -319,17 +332,15 @@ function translateOne(raw,targetLang){
   for(let i=0;i<tokens.length;i++){
     const tok=tokens[i];
     if(!tok||/^[\s•\-()[\]/:,+]+$/.test(tok)){out.push(tok);continue;}
-    // Check 2-word combination
     if(i+2<tokens.length&&tokens[i+1]===' '){
-      const two=(tok+' '+tokens[i+2]).toLowerCase().replace(/^ال/,'');
+      const two=stripAl((tok+' '+tokens[i+2]).toLowerCase());
       if(FAST_WORDS[two]){if(FAST_WORDS[two][idx])out.push(FAST_WORDS[two][idx]);i+=2;continue;}
     }
-    const k=tok.toLowerCase().replace(/^ال/,'');
+    const k=stripAl(tok.toLowerCase());
     if(FAST_WORDS[k]){
       if(FAST_WORDS[k][idx])out.push(FAST_WORDS[k][idx]);
       continue;
     }
-    // Strip untranslated foreign script tokens so languages NEVER mix
     if(targetLang==='en'&&/[\u0600-\u06FF]/.test(tok))continue;
     if(targetLang!=='en'&&/[a-zA-Z]{2,}/.test(tok)&&!/^(VIP|USA|UK|UAE|USDT|TRC20|ID|M7|HD|4K|HQ|LQ|MQ|X|\d+[KMB])$/i.test(tok))continue;
     out.push(tok);
@@ -341,9 +352,10 @@ function translateOne(raw,targetLang){
     .replace(/^[\s•\-:|+,]+|[\s•\-:|+,]+$/g,'')
     .trim();
 
-  // Badini final polish
+  // Badini final polish: remove any stray Arabic "ال" prefix attached to Kurdish words
   if(targetLang==='ku_b'){
     res=res
+      .replace(/(^|\s)ال(?=[\u0621-\u064A\u067E\u0686\u0698\u06A9\u06AF\u06C6\u06CE\u06D5]{2,})/g,'$1')
       .replace(/خزم[هە]\s*تگوزاری/g,'خزمەتگوزاری')
       .replace(/\u06D5\s+(?=[\u0621-\u064A\u067E\u0686\u0698\u06A9\u06AF\u06C6\u06CE\u06D5])/g,'\u06D5');
   }
@@ -443,7 +455,6 @@ function detType(c,n){
 
 function setOpt(el,txt){if(!el)return;el.innerHTML='';const o=document.createElement('option');o.value='';o.textContent=txt;el.appendChild(o);}
 
-// Pre-compute all 3 languages once on load so switching/rendering is 0ms lag
 function mapServices(rawList){
   return rawList.map(s=>{
     const cat=String(s.category||'General');
