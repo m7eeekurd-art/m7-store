@@ -16,10 +16,11 @@ const uObj=getTgUser();
 const telegramId=uObj&&uObj.id?String(uObj.id):'';
 const username=(uObj&&(uObj.username||uObj.first_name))||'User';
 const firstName=(uObj&&uObj.first_name)||'M7 Store';
-document.getElementById('userIdDisplay').innerText=telegramId?('ID: '+telegramId+' 📋'):'ID: Guest';
-document.getElementById('userNameDisplay').innerText=firstName;
+const setTxt=(id,v)=>{const el=document.getElementById(id);if(el)el.innerText=v;};
+setTxt('userIdDisplay',telegramId?('ID: '+telegramId+' 📋'):'ID: Guest');
+setTxt('userNameDisplay',firstName);
 
-window.onclick=function(e){if(!e.target.closest('.lang-wrap'))document.getElementById('langMenu').classList.remove('show');};
+window.onclick=function(e){if(!e.target.closest('.lang-wrap')){const m=document.getElementById('langMenu');if(m)m.classList.remove('show');}};
 function copyText(t,btn){if(!t)return;if(navigator.clipboard)navigator.clipboard.writeText(t.trim()).catch(()=>{});if(btn){const o=btn.innerText;btn.innerText='✅';setTimeout(()=>btn.innerText=o,1400);}}
 function fmtBal(n){const v=parseFloat(n)||0;if(v===0)return'$0.00';const s=v.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');const p=s.split('.');return!p[1]?'$'+p[0]+'.00':(p[1].length===1?'$'+s+'0':'$'+s);}
 
@@ -30,32 +31,29 @@ const T={
   ku_s:{lang:"کوردی (سۆرانی)",dir:"rtl",bal:"باڵانسەکەت",ord:"داواکاری نوێ ⚡",ref:"پڕکردنەوەی باڵانس 💳",his:"تۆمارەکانم 🕒",selP:"پلاتفۆرم هەڵبژێرە:",selT:"جۆری خزمەتگوزاری:",srch:"🔍 گەڕان بە ناو یان ژمارەی خزمەتگوزاری...",cat:"بەش:",loadCat:"بەشەکان باردەکرێن...",loadSvc:"خزمەتگوزارییەکان باردەکرێن...",oTit:"دروستکردنی داواکاری نوێ",oSub:"خزمەتگوزاری هەڵبژێرە و لینکەکەت بنووسە",svc:"خزمەتگوزاری:",lnk:"لینک:",lnkPh:"لینکەکە لێرە دابنێ \u200Ehttps://...\u200E",qty:"بڕ:",st:"دەستپێکردن",stV:"دەستبەجێ (0 - 15 خولەک)",wr:"گەرەنتی",yes:"هەیە",noW:"بێ گەرەنتی",mm:"کەمترین / زۆرترین",tot:"کۆی گشتی",sub:"تەواوکردنی داواکاری ⚡",rTit:"پڕکردنەوەی باڵانسی هەژمار 💳",rSub:"ژمارەی QiCard یان ناونیشانی USDT کۆپی بکە و پارەکە بنێرە",cpy:"📋 کۆپی",pay:"شێوازی پارەدان:",rAmt:"بڕی پڕکردنەوە ($):",note:"ژمارەی مامەڵە / ناوی نێرەر:",notePh:"ژمارەی حەواڵە یان ناوی نێرەر بنووسە...",rBtn:"ناردنی داواکاری پڕکردنەوە 🚀",hEmp:"تۆماری داواکارییەکان بەتاڵە",hSub:"داواکارییەکانت لێرە دەردەکەون",tAll:"هەموو",tFol:"فۆڵۆوەرز",tLik:"لایک",tViw:"بینین",tCom:"کۆمێنت",pIg:"ئینستاگرام",pTt:"تیک تۆک",pTg:"تێلیگرام",pYt:"یوتیوب",pFb:"فەیسبووک",pSc:"سناب چات",pTw:"تویتەر / X",pWa:"واتساب",pAl:"هەموو / گشتی",errFill:"تکایە لینک بنووسە و خزمەتگوزاری هەڵبژێرە!",okPend:"⏳ چاوەڕێی پەسەندکردنە",okOrd:"✅ داواکاری نێردرا #",errFail:"داواکاری سەرکەوتوو نەبوو",errConn:"هەڵە لە پەیوەندیکردن",okRef:"✅ داواکاری نێردرا!",errRef:"❌ هەڵە ڕوویدا",stProg:"لە جێبەجێکردندایە",stPend:"چاوەڕێی پەسەندکردنە",stDone:"تەواوبوو"}
 };
 
-function normAr(s){
-  return String(s).replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[أإآٱ]/g,'ا').replace(/[ىيیئ]/g,'ي').replace(/ک/g,'ك').replace(/[ةۀ]/g,'ة').replace(/ؤ/g,'و');
-}
-
-const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأرخص مبيعاً اليوم|ئەرزانترین فرۆتنا ئەڤرۆ|هەرزانترین فرۆشی ئەمڕۆ
-الاكثر مبيعا|Best Sellers|الأكثر مبيعاً|زۆرترین فرۆتن|زۆرترین فرۆش
-تعمل علي تحديث جديد|يعمل علي تحديث جديد|Working on New Update|تعمل على التحديث الجديد|کار دکەت ل سەر نووکرنا نوو|کار دەکات لەسەر نوێکردنەوەی نوێ
-يعمل بعد التحديث|تعمل بعد التحديث|شغال بعد التحديث|Working After Update|يعمل بعد التحديث|پشتی نووکرنێ کار دکەت|دوای نوێکردنەوە کار دەکات
-تعمل علي|يعمل علي|Working on|تعمل على|کار دکەت ل سەر|کار دەکات لەسەر
-تحديث جديد|التحديث الجديد|New Update|تحديث جديد|نووکرنا نوو|نوێکردنەوەی نوێ
-ضمان مدي الحياة|ضمان مدي الحياه|Lifetime Guarantee|ضمان مدى الحياة|گەرەنتی هەتاهەتایی|گەرەنتی هەمیشەیی
-مدي الحياة|مدي الحياه|Lifetime|مدى الحياة|هەتاهەتایی|هەمیشەیی
-اعادة نشر|اعاده نشر|ري بوست|ريبوست|repost|Repost|إعادة نشر|دووبارە بەلاڤکرن|دووبارە بڵاوکردنەوە
-تعويض تلقايي|Auto Refill|تعويض تلقائي|قەرەبووکرنا خودکار|قەرەبووکردنەوەی خۆکار
-زر التعويض|زر تعويض|Refill Button|زر التعويض|دوگمەیا قەرەبووکرنێ|دوگمەی قەرەبووکردنەوە
-اعادة تعبية|اعاده تعبيه|Refill|إعادة تعبئة|قەرەبووکرن|قەرەبووکردنەوە
-بدون ضمان|لا يوجد ضمان|بدون تعويض|لا يوجد تعويض|غير مضمون|غير مضمونة|no refill|No Refill|بدون ضمان|بێ گەرەنتی|بێ گەرەنتی
-بدون نقص|بدون هبوط|عدم النقص|لا ينقص|non-drop|non drop|Non-Drop|بدون نقص|بێ کێمبوون|بێ کەمبوون
-نقص قليل|نقص منخفض|قليل النقص|Low Drop|نقص قليل|کێمبوونا کێم|کەمبوونی کەم
-بدء فوري|بداية فورية|بدايه فوريه|instant start|Instant Start|بدء فوري|دەستپێکرنا ئێکسەر|دەستپێکردنی دەستبەجێ
-سريع جدا|سريعة جدا|super fast|Super Fast|سريع جداً|گەلەک بلەز|زۆر خێرا
+const RAW=`الارخص مبيعا اليوم|ارخص مبيعا اليوم|Cheapest Best Sellers Today|الأرخص مبيعاً اليوم|ئەرزانترین فرۆتنا ئەڤرۆ|هەرزانترین فرۆشی ئەمڕۆ
+الاكثر مبيعا|اكثر مبيعا|Best Sellers|الأكثر مبيعاً|زۆرترین فرۆتن|زۆرترین فرۆش
+تعمل علي تحديث جديد|يعمل علي تحديث جديد|تعمل على التحديث الجديد|يعمل على التحديث الجديد|Working on New Update|تعمل على التحديث الجديد|کار دکەت ل سەر نووکرنا نوو|کار دەکات لەسەر نوێکردنەوەی نوێ
+يعمل بعد التحديث|تعمل بعد التحديث|شغال بعد التحديث|شغالة بعد التحديث|working after update|Working After Update|يعمل بعد التحديث|پشتی نووکرنێ کار دکەت|دوای نوێکردنەوە کار دەکات
+تعمل علي|يعمل علي|working on|Working on|تعمل على|کار دکەت ل سەر|کار دەکات لەسەر
+تحديث جديد|التحديث الجديد|new update|New Update|تحديث جديد|نووکرنا نوو|نوێکردنەوەی نوێ
+ضمان مدي الحياة|ضمان مدي الحياه|lifetime guarantee|lifetime refill|Lifetime Guarantee|ضمان مدى الحياة|گەرەنتی هەتاهەتایی|گەرەنتی هەمیشەیی
+مدي الحياة|مدي الحياه|lifetime|Lifetime|مدى الحياة|هەتاهەتایی|هەمیشەیی
+اعادة نشر|اعاده نشر|ري بوست|ريبوست|repost|reposts|Repost|إعادة نشر|دووبارە بەلاڤکرن|دووبارە بڵاوکردنەوە
+اعادة تغريد|اعاده تغريد|ريتويت|retweets|retweet|Retweet|إعادة تغريد|ڕیتویت|ڕیتویت
+تعويض تلقائي|تعويض تلقايي|auto refill|Auto Refill|تعويض تلقائي|قەرەبووکرنا خودکار|قەرەبووکردنەوەی خۆکار
+زر التعويض|زر تعويض|refill button|Refill Button|زر التعويض|دوگمەیا قەرەبووکرنێ|دوگمەی قەرەبووکردنەوە
+اعادة تعبئة|اعاده تعبيه|اعادة تعبية|Refill|إعادة تعبئة|قەرەبووکرن|قەرەبووکردنەوە
+بدون ضمان|لا يوجد ضمان|بدون تعويض|لا يوجد تعويض|غير مضمون|غير مضمونة|no refill|non refill|No Refill|بدون ضمان|بێ گەرەنتی|بێ گەرەنتی
+بدون نقص|بدون هبوط|عدم النقص|لا ينقص|non-drop|non drop|nondrop|no drop|Non-Drop|بدون نقص|بێ کێمبوون|بێ کەمبوون
+نقص قليل|نقص منخفض|قليل النقص|low drop|Low Drop|نقص قليل|کێمبوونا کێم|کەمبوونی کەم
+بدء فوري|بداية فورية|بدايه فوريه|سريع البدء|instant start|Instant Start|بدء فوري|دەستپێکرنا ئێکسەر|دەستپێکردنی دەستبەجێ
+سريع جدا|سريعة جدا|فائق السرعة|super fast|superfast|ultra fast|Super Fast|سريع جداً|گەلەک بلەز|زۆر خێرا
 جودة عالية|جوده عاليه|عالية الجودة|عاليه الجوده|high quality|hq|High Quality|جودة عالية|کوالێتی بلند|کوالێتی بەرز
-جودة متوسطة|جوده متوسطه|Medium Quality|جودة متوسطة|کوالێتی ناڤنجی|کوالێتی مامناوەند
-جودة منخفضة|جوده منخفضه|Low Quality|جودة منخفضة|کوالێتی نزم|کوالێتی نزم
-مشاهدات بوست صوره|مشاهدات بوست صورة|Photo Post Views|مشاهدات منشور صورة|بینینا پۆستێ وێنەی|بینینی پۆستی وێنە
-بوست صوره|بوست صورة|Photo Post|منشور صورة|پۆستێ وێنەی|پۆستی وێنە
+جودة متوسطة|جوده متوسطه|متوسطة الجودة|medium quality|mq|Medium Quality|جودة متوسطة|کوالێتی ناڤنجی|کوالێتی مامناوەند
+جودة منخفضة|جوده منخفضه|منخفضة الجودة|low quality|lq|Low Quality|جودة منخفضة|کوالێتی نزم|کوالێتی نزم
+مشاهدات بوست صورة|مشاهدات بوست صوره|مشاهدات منشور صورة|photo post views|Photo Post Views|مشاهدات منشور صورة|بینینا پۆستێ وێنەی|بینینی پۆستی وێنە
+بوست صورة|بوست صوره|منشور صورة|photo post|Photo Post|منشور صورة|پۆستێ وێنەی|پۆستی وێنە
 مشاهدات ستوري|مشاهدات الستوري|story views|story view|Story Views|مشاهدات ستوري|بینینا ستۆری|بینینی ستۆری
 مشاهدات ريلز|مشاهدات الريلز|reels views|reel views|Reels Views|مشاهدات ريلز|بینینا ڕیلز|بینینی ڕیڵز
 مشاهدات فيديو|مشاهدات الفيديو|video views|video view|Video Views|مشاهدات فيديو|بینینا ڤیدیۆیێ|بینینی ڤیدیۆ
@@ -65,19 +63,19 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 اعضاء قناة|اعضاء قناه|channel members|channel member|Channel Members|أعضاء قناة|ئەندامێن کەنالی|ئەندامانی کەناڵ
 اعضاء مجموعة|اعضاء مجموعه|اعضاء جروب|اعضاء كروب|group members|group member|Group Members|أعضاء مجموعة|ئەندامێن گرووپی|ئەندامانی گرووپ
 تعليقات مخصصة|تعليقات مخصصه|custom comments|custom comment|Custom Comments|تعليقات مخصصة|کۆمێنتێن تایبەت|کۆمێنتی تایبەت
-تعليقات عشوايية|تعليقات عشواييه|random comments|random comment|Random Comments|تعليقات عشوائية|کۆمێنتێن هەڕەمەکی|کۆمێنتی هەڕەمەکی
+تعليقات عشوائية|تعليقات عشوايية|تعليقات عشواييه|random comments|random comment|Random Comments|تعليقات عشوائية|کۆمێنتێن هەڕەمەکی|کۆمێنتی هەڕەمەکی
 حسابات حقيقية|حسابات حقيقيه|real accounts|real account|Real Accounts|حسابات حقيقية|هەژمارێن ڕاستەقینە|هەژماری ڕاستەقینە
 حسابات قديمة|حسابات قديمه|old accounts|old account|Old Accounts|حسابات قديمة|هەژمارێن کەڤن|هەژماری کۆن
 زيارات الملف الشخصي|زيارات بروفايل|profile visits|profile visit|Profile Visits|زيارات بروفايل|سەرەدانێن پڕۆفایلی|سەردانی پڕۆفایل
-حفظ المنشور|حفظ البوست|post saves|Post Saves|حفظ المنشور|پاشەکەوتکرنا پۆستی|پاشەکەوتکردنی پۆست
-عروض خاصة|عروض خاصه|عرض خاص|special offers|Special Offers|عروض خاصة|ئۆفەرێن تایبەت|ئۆفەری تایبەت
-الدعم الممول|دعم ممول|Sponsored Boost|الدعم الممول|پشتەڤانییا سپۆنسەرکری|پشتگیری سپۆنسەرکراو
+حفظ المنشور|حفظ البوست|post saves|post save|Post Saves|حفظ المنشور|پاشەکەوتکرنا پۆستی|پاشەکەوتکردنی پۆست
+عروض خاصة|عروض خاصه|عرض خاص|special offers|special offer|Special Offers|عروض خاصة|ئۆفەرێن تایبەت|ئۆفەری تایبەت
+الدعم الممول|دعم ممول|sponsored boost|Sponsored Boost|الدعم الممول|پشتەڤانییا سپۆنسەرکری|پشتگیری سپۆنسەرکراو
 بكجات منوعة|باقات متنوعة|mixed packages|Mixed Packages|باقات متنوعة|پاکێجێن جۆراوجۆر|پاکێجی جۆراوجۆر
-تحقيق الربح|تفعيل الربح|Monetization|تحقيق الربح|چالاککرنا قازانجی|چالاککردنی قازانج
+تحقيق الربح|تفعيل الربح|monetization|Monetization|تحقيق الربح|چالاککرنا قازانجی|چالاککردنی قازانج
 الحد الاقصي|Max|الحد الأقصى|زۆرترین|زۆرترین
 الحد الادني|Min|الحد الأدنى|کێمترین|کەمترین
-باليوم|في اليوم|يوميا|/day|per day|/Day|يومياً|د ڕۆژێ دا|لە ڕۆژێکدا
-بالساعة|في الساعة|/hour|per hour|/Hour|بالساعة|د دەمژمێرێ دا|لە کاتژمێرێکدا
+باليوم|في اليوم|يوميا|per day|Per Day|يومياً|د ڕۆژێ دا|لە ڕۆژێکدا
+بالساعة|في الساعة|per hour|Per Hour|بالساعة|د دەمژمێرێ دا|لە کاتژمێرێکدا
 انستقرام|انستغرام|انستجرام|instagram|Instagram|إنستغرام|ئینستاگرام|ئینستاگرام
 تيك توك|تيكتوك|tiktok|TikTok|تيك توك|تیک تۆک|تیک تۆک
 تيليجرام|تليجرام|تلجرام|telegram|Telegram|تيليجرام|تێلیگرام|تێلیگرام
@@ -91,17 +89,17 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 ديسكورد|discord|Discord|ديسكورد|دیسکۆرد|دیسکۆرد
 تويتش|twitch|Twitch|تويتش|تویچ|تویچ
 كواي|kwai|Kwai|كواي|کوای|کوای
-طواري|طوارء|emergency|Emergency|طوارئ|تەنگاڤی|فریاگوزاری
-دايما|دايم|طوال الوقت|always|Always|دائماً|هەردەم|هەمیشە
-صوره|صورة|صور|photo|photos|image|Photo|صورة|وێنە|وێنە
+طوارئ|طواري|طوارء|emergency|Emergency|طوارئ|تەنگاڤی|فریاگوزاری
+دائما|دايما|دايم|طوال الوقت|always|Always|دائماً|هەردەم|هەمیشە
+صورة|صوره|صور|photo|photos|image|Photo|صورة|وێنە|وێنە
 نشر|publish|Publish|نشر|بەلاڤکرن|بڵاوکردنەوە
 مجانية|مجاني|مجانيه|مجانا|free|Free|مجاني|بێ بەرامبەر|بەخۆڕایی
-المسوقيين|المسوقين|مسوقين|مسوق|marketers|marketer|Marketers|المسوقين|بازاڕکەران|بەبازاڕکەران
-الموزعين|موزعين|resellers|Resellers|الموزعين|بەلاڤکەران|دابەشکاران
+المسوقيين|مسوقين|مسوق|marketers|marketer|Marketers|المسوقين|بازاڕکەران|بەبازاڕکەران
+موزعين|موزع|resellers|reseller|Resellers|الموزعين|بەلاڤکەران|دابەشکاران
 بكجات|باقات|بكج|باقة|باقه|packages|package|Packages|باقات|پاکێج|پاکێج
 منوعة|متنوعة|منوع|متنوع|assorted|Assorted|متنوعة|جۆراوجۆر|جۆراوجۆر
-ممول|ممولة|مموله|sponsored|Sponsored|ممول|سپۆنسەرکری|سپۆنسەرکراو
-الدعم|دعم|boost|Boost|دعم|پشتەڤانی|پشتگیری
+ممولة|مموله|ممول|sponsored|Sponsored|ممول|سپۆنسەرکری|سپۆنسەرکراو
+دعم|boost|Boost|دعم|پشتەڤانی|پشتگیری
 ترويج|اعلانات|اعلان|promotion|ads|Promotion|ترويج|ڕیکلام|ڕیکلام
 متابعين|متابع|followers|follower|Followers|متابعين|فۆڵۆوەرز|فۆڵۆوەرز
 مشتركين|مشترك|اشتراك|subscribers|subscriber|Subscribers|مشتركين|سەبسکرایب|سەبسکرایب
@@ -113,7 +111,6 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 حفظ|saves|save|Saves|حفظ|پاشەکەوتکرن|پاشەکەوتکردن
 تفاعلات|تفاعل|رياكشنات|رياكشن|reactions|reaction|Reactions|تفاعلات|کارڤەدان|کاردانەوە
 اكسبلور|explore|Explore|اكسبلور|ئێکسپلۆر|ئێکسپلۆر
-ريتويت|اعادة تغريد|retweets|retweet|Retweets|ريتويت|ڕیتویت|ڕیتویت
 زيارات|زيارة|زياره|visits|visit|Visits|زيارات|سەرەدان|سەردان
 تقييمات|تقييم|ratings|rating|Ratings|تقييمات|هەلسەنگاندن|هەڵسەنگاندن
 تصويت|استطلاع|votes|vote|Votes|تصويت|دەنگدان|دەنگدان
@@ -129,20 +126,20 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 يوزر|اسم مستخدم|username|Username|يوزر|ناڤێ بکارهێنەری|ناوی بەکارهێنەر
 بروفايل|profile|Profile|بروفايل|پڕۆفایل|پڕۆفایل
 بث|لايف|live|Live|بث|لایڤ|پەخش
-مع ضمان|بضمان|ضمان|تعويض|guaranteed|guarantee|refill|Refill|ضمان|گەرەنتی|گەرەنتی
+ضمان|تعويض|guaranteed|guarantee|refill|Refill|ضمان|گەرەنتی|گەرەنتی
 بدون|لا يوجد|without|Without|بدون|بێ|بێ
-ثابت|ثابتة|ثابته|مستقر|مستقرة|stable|Stable|ثابت|جێگیر|جێگیر
-فوري|فورية|فوريه|instant|Instant|فوري|ئێکسەر|دەستبەجێ
-سريع|سريعة|سريعه|fast|Fast|سريع|بلەز|خێرا
-بطيي|بطيئة|بطيئه|slow|Slow|بطيء|هێدی|هێواش
-متوسط|متوسطة|متوسطه|medium|Medium|متوسط|ناڤنجی|مامناوەند
-منخفض|منخفضة|منخفضه|low|Low|منخفض|نزم|نزم
-السرعة|السرعه|سرعة|سرعه|speed|Speed|السرعة|لەزاتی|خێرایی
-حقيقيين|حقيقي|حقيقية|حقيقيه|real|Real|حقيقي|ڕاستەقینە|ڕاستەقینە
-نشطين|نشط|متفاعلين|متفاعل|active|Active|نشط|چالاک|چالاک
-وهميين|وهمي|وهمية|وهميه|بوتات|بوت|bots|bot|Bot|بوتات|بۆت|بۆت
-مكس|مختلط|مختلطة|mixed|Mixed|مكس|تێکەل|تێکەڵ
-عالميين|عالمي|عالمية|اجانب|اجنبي|worldwide|global|Worldwide|عالمي|جیهانی|جیهانی
+ثابتة|ثابته|مستقرة|ثابت|مستقر|stable|Stable|ثابت|جێگیر|جێگیر
+فورية|فوريه|فوري|instant|Instant|فوري|ئێکسەر|دەستبەجێ
+سريعة|سريعه|سريع|fast|Fast|سريع|بلەز|خێرا
+بطيئة|بطيئه|بطيء|بطيي|slow|Slow|بطيء|هێدی|هێواش
+متوسطة|متوسطه|متوسط|medium|Medium|متوسط|ناڤنجی|مامناوەند
+منخفضة|منخفضه|منخفض|low|Low|منخفض|نزم|نزم
+سرعة|سرعه|speed|Speed|السرعة|لەزاتی|خێرایی
+حقيقيين|حقيقية|حقيقيه|حقيقي|real|Real|حقيقي|ڕاستەقینە|ڕاستەقینە
+نشطين|نشطة|متفاعلين|متفاعل|نشط|active|Active|نشط|چالاک|چالاک
+وهميين|وهمية|وهميه|وهمي|بوتات|بوت|bots|bot|Bot|بوتات|بۆت|بۆت
+مكس|مختلطة|مختلط|mixed|Mixed|مكس|تێکەل|تێکەڵ
+عالميين|عالمية|عالمي|اجانب|اجنبي|worldwide|global|Worldwide|عالمي|جیهانی|جیهانی
 عربية|عربيه|عربي|عرب|arab|arabic|Arab|عربي|عەرەبی|عەرەبی
 خليجيين|خليجية|خليجي|gulf|Gulf|خليجي|کەنداوی|کەنداوی
 عيراقية|عيراقيه|عراقية|عراقيه|عراقيين|عراقي|عراق|iraqi|iraq|Iraq|العراق|عیراق|عێراق
@@ -151,14 +148,14 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 تركية|تركيه|اتراك|تركي|تركيا|turkish|turkey|Turkey|تركيا|تورکی|تورکی
 امريكية|امريكيه|امريكيين|امريكي|usa|american|USA|أمريكي|ئەمریکی|ئەمریکی
 روسية|روسيه|روسي|روسيا|russian|russia|Russia|روسيا|رووسی|ڕووسی
-هندية|هنديه|هندي|الهند|indian|india|India|هندي|هندی|هیندی
+هندية|هنديه|هندي|هند|indian|india|India|هندي|هندی|هیندی
 بنات|نساء|فتيات|female|Female|بنات|کچ|کچ
 شباب|ذكور|رجال|male|Male|شباب|کوڕ|کوڕ
-موثق|موثقة|توثيق|verified|Verified|موثق|پشتڕاستکری|پشتڕاستکراو
-ارخص|رخيص|رخيصة|رخيصه|cheapest|cheap|Cheapest|الأرخص|ئەرزانترین|هەرزانترین
-افضل|ممتاز|ممتازة|ممتازه|best|Best|الأفضل|باشترین|باشترین
+موثقة|موثق|توثيق|verified|Verified|موثق|پشتڕاستکری|پشتڕاستکراو
+ارخص|رخيصة|رخيصه|رخيص|cheapest|cheap|Cheapest|الأرخص|ئەرزانترین|هەرزانترین
+افضل|ممتازة|ممتازه|ممتاز|best|Best|الأفضل|باشترین|باشترین
 اسرع|fastest|Fastest|الأسرع|بلەزترین|خێراترین
-اقوى|قوي|قوية|strong|Strong|قوي|بهێز|بەهێز
+اقوى|قوية|قوي|strong|Strong|قوي|بهێز|بەهێز
 جديدة|جديده|جديد|new|New|جديد|نوو|نوێ
 قديمة|قديمه|قديم|old|Old|قديم|کەڤن|کۆن
 حصرية|حصريه|حصري|exclusive|Exclusive|حصري|تایبەت|تایبەت
@@ -168,20 +165,19 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 سيرفرات|سيرفر|servers|server|Server|سيرفر|سێرڤەر|سێرڤەر
 خدمات|خدمة|خدمه|services|service|Services|خدمات|خزمەتگوزاری|خزمەتگوزاری
 اقسام|قسم|categories|category|Category|أقسام|بەش|بەش
-اليوم|today|Today|اليوم|ئەڤرۆ|ئەمڕۆ
-ايام|يوم|days|day|Days|يوم|ڕۆژ|ڕۆژ
+يوم|ايام|days|day|Days|يوم|ڕۆژ|ڕۆژ
 ساعات|ساعة|ساعه|hours|hour|Hours|ساعة|دەمژمێر|کاتژمێر
-دقايق|دقيقة|دقيقه|minutes|minute|Minutes|دقيقة|خولەک|خولەک
-شغال|شغالة|يعمل|تعمل|working|Working|شغال|کار دکەت|کار دەکات
+دقائق|دقايق|دقيقة|دقيقه|minutes|minute|Minutes|دقيقة|خولەک|خولەک
+شغالة|شغال|يعمل|تعمل|working|Working|شغال|کار دکەت|کار دەکات
 متوقف|صيانة|maintenance|Maintenance|صيانة|چاککرن|چاککردنەوە
 تحديث|updated|update|Updated|تحديث|نووکری|نوێکراوە
 فقط|only|Only|فقط|بتنێ|تەنها
-شامل|شاملة|كامل|كاملة|full|Full|كامل|تەواو|تەواو
-مباشر|مباشرة|direct|Direct|مباشر|ڕاستەوخۆ|ڕاستەوخۆ
-تلقايي|تلقايية|auto|Auto|تلقائي|خودکار|خۆکار
-يدوي|يدوية|manual|Manual|يدوي|دەستی|دەستی
-مخصص|مخصصة|custom|Custom|مخصص|تایبەت|تایبەت
-عشوايي|عشوايية|random|Random|عشوائي|هەڕەمەکی|هەڕەمەکی
+شاملة|شامل|كاملة|كامل|full|Full|كامل|تەواو|تەواو
+مباشرة|مباشر|direct|Direct|مباشر|ڕاستەوخۆ|ڕاستەوخۆ
+تلقائية|تلقايي|تلقائي|auto|Auto|تلقائي|خودکار|خۆکار
+يدوية|يدوي|manual|Manual|يدوي|دەستی|دەستی
+مخصصة|مخصص|custom|Custom|مخصص|تایبەت|تایبەت
+عشوائية|عشوايي|عشوائي|random|Random|عشوائي|هەڕەمەکی|هەڕەمەکی
 نقص|هبوط|drop|Drop|نقص|کێمبوون|کەمبوون
 بدء|بداية|start|Start|بدء|دەستپێکرن|دەستپێکردن
 كل|جميع|all|All|الكل|هەمی|هەموو
@@ -193,69 +189,77 @@ const RAW=`الارخص مبيعا اليوم|Cheapest Best Sellers Today|الأ
 بعد|after|After|بعد|پشتی|دوای
 قبل|before|Before|قبل|بەری|پێش`;
 
+function arPat(w){
+  return w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')
+    .replace(/ا/g,'[اأإآٱ]')
+    .replace(/ي/g,'[يىيیئ]')
+    .replace(/ة/g,'[ةهۀ]')
+    .replace(/ك/g,'[كک]')
+    .replace(/و/g,'[ووؤ]');
+}
+
+const DELIM='[\\s|\\[\\]\\(\\)\\/\\-.,:•✨🔥⚡👑💎🚀⭐✅🆕]';
 const RULES=RAW.trim().split('\n').map(l=>{
   const p=l.split('|');
-  const al=p.slice(0,-4).map(normAr);
+  const al=p.slice(0,-4).sort((a,b)=>b.length-a.length);
   const mx=Math.max(...al.map(x=>x.length));
-  const a=al.map(nx=>/^[a-z0-9 /-]+$/i.test(nx)?'\\b'+nx.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b':'(?:ال)?'+nx);
-  return{mx,re:new RegExp(a.join('|'),'gi'),v:[p[p.length-4],p[p.length-3],p[p.length-2],p[p.length-1]]};
+  const a=al.map(nx=>/^[a-z0-9 /-]+$/i.test(nx)?nx.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'):'(?:و|ب|ل|ف)?(?:ال|لل)?'+arPat(nx));
+  return{mx,re:new RegExp('(^|'+DELIM+')('+a.join('|')+')(?=$|'+DELIM+')','gi'),v:[p[p.length-4],p[p.length-3],p[p.length-2],p[p.length-1]]};
 }).sort((a,b)=>b.mx-a.mx);
 
 function tr(s){
   if(!s)return s;
   const idx=lang==='en'?1:(lang==='ar'?2:(lang==='ku_b'?3:4));
-  let o=normAr(s);
-  for(let i=0;i<RULES.length;i++)o=o.replace(RULES[i].re,RULES[i].v[idx]);
+  let o=String(s);
+  for(let i=0;i<RULES.length;i++)o=o.replace(RULES[i].re,(m,p1)=>p1+RULES[i].v[idx]);
   return o.replace(/\s+/g,' ').trim().replace(/(^|\s)(\S+)(?:\s+\2)+(?=\s|$)/gi,'$1$2');
 }
 
 function setLang(l){
   lang=T[l]?l:'ar';try{localStorage.setItem('m7_lang',lang);}catch(e){}
-  document.getElementById('langMenu').classList.remove('show');
+  const menu=document.getElementById('langMenu');if(menu)menu.classList.remove('show');
   const t=T[lang];
-  document.getElementById('htmlRoot').dir=t.dir;
-  document.getElementById('currentLangTitle').innerText=t.lang;
-  document.getElementById('txtBalance').innerText=t.bal;
-  document.getElementById('btnNewOrder').innerText=t.ord;
-  document.getElementById('btnRefill').innerText=t.ref;
-  document.getElementById('btnHistory').innerText=t.his;
-  document.getElementById('txtSelectPlatform').innerText=t.selP;
-  document.getElementById('txtSelectType').innerText=t.selT;
-  document.getElementById('serviceSearch').placeholder=t.srch;
-  document.getElementById('txtCategoryLabel').innerText=t.cat;
-  document.getElementById('txtNewOrderTitle').innerText=t.oTit;
-  document.getElementById('txtNewOrderSub').innerText=t.oSub;
-  document.getElementById('txtServiceLabel').innerText=t.svc;
-  document.getElementById('txtLinkLabel').innerText=t.lnk;
-  document.getElementById('orderLink').placeholder=t.lnkPh;
-  document.getElementById('txtQtyLabel').innerText=t.qty;
-  document.getElementById('txtStart').innerText=t.st;
-  document.getElementById('infoStart').innerText=t.stV;
-  document.getElementById('txtWarranty').innerText=t.wr;
-  document.getElementById('txtMinMax').innerText=t.mm;
-  document.getElementById('submitBtnText').innerText=t.sub;
-  document.getElementById('txtRefillTitle').innerText=t.rTit;
-  document.getElementById('txtRefillSub').innerText=t.rSub;
-  document.getElementById('txtPayMethodLabel').innerText=t.pay;
-  document.getElementById('txtRefillLabel').innerText=t.rAmt;
-  document.getElementById('txtRefillNoteLabel').innerText=t.note;
-  document.getElementById('refillNote').placeholder=t.notePh;
-  document.getElementById('txtRefillBtn').innerText=t.rBtn;
+  const root=document.getElementById('htmlRoot');if(root)root.dir=t.dir;
+  setTxt('currentLangTitle',t.lang);
+  setTxt('txtBalance',t.bal);
+  setTxt('btnNewOrder',t.ord);
+  setTxt('btnRefill',t.ref);
+  setTxt('btnHistory',t.his);
+  setTxt('txtSelectPlatform',t.selP);
+  setTxt('txtSelectType',t.selT);
+  const sr=document.getElementById('serviceSearch');if(sr)sr.placeholder=t.srch;
+  setTxt('txtCategoryLabel',t.cat);
+  setTxt('txtNewOrderTitle',t.oTit);
+  setTxt('txtNewOrderSub',t.oSub);
+  setTxt('txtServiceLabel',t.svc);
+  setTxt('txtLinkLabel',t.lnk);
+  const ol=document.getElementById('orderLink');if(ol)ol.placeholder=t.lnkPh;
+  setTxt('txtQtyLabel',t.qty);
+  setTxt('txtStart',t.st);
+  setTxt('infoStart',t.stV);
+  setTxt('txtWarranty',t.wr);
+  setTxt('txtMinMax',t.mm);
+  setTxt('submitBtnText',t.sub);
+  setTxt('txtRefillTitle',t.rTit);
+  setTxt('txtRefillSub',t.rSub);
+  setTxt('txtPayMethodLabel',t.pay);
+  setTxt('txtRefillLabel',t.rAmt);
+  setTxt('txtRefillNoteLabel',t.note);
+  const rn=document.getElementById('refillNote');if(rn)rn.placeholder=t.notePh;
+  setTxt('txtRefillBtn',t.rBtn);
   document.querySelectorAll('.copy-btn').forEach(b=>b.innerText=t.cpy);
-  const he=document.getElementById('txtHistEmpty'),hs=document.getElementById('txtHistSub');
-  if(he)he.innerText=t.hEmp;if(hs)hs.innerText=t.hSub;
-  document.getElementById('pInsta').innerText=t.pIg;document.getElementById('pTiktok').innerText=t.pTt;
-  document.getElementById('pTelegram').innerText=t.pTg;document.getElementById('pYoutube').innerText=t.pYt;
-  document.getElementById('pFacebook').innerText=t.pFb;document.getElementById('pSnapchat').innerText=t.pSc;
-  document.getElementById('pTwitter').innerText=t.pTw;document.getElementById('pWhatsapp').innerText=t.pWa;
-  document.getElementById('pAll').innerText=t.pAl;
+  setTxt('txtHistEmpty',t.hEmp);
+  setTxt('txtHistSub',t.hSub);
+  setTxt('pInsta',t.pIg);setTxt('pTiktok',t.pTt);setTxt('pTelegram',t.pTg);
+  setTxt('pYoutube',t.pYt);setTxt('pFacebook',t.pFb);setTxt('pSnapchat',t.pSc);
+  setTxt('pTwitter',t.pTw);setTxt('pWhatsapp',t.pWa);setTxt('pAll',t.pAl);
   renderPills();
   if(allServices.length)renderCats();
   else{setOpt(document.getElementById('categorySelect'),t.loadCat);setOpt(document.getElementById('serviceSelect'),t.loadSvc);updateInfo();}
 }
 
 function renderPills(){
-  const t=T[lang],box=document.getElementById('typesContainer');box.innerHTML='';
+  const t=T[lang],box=document.getElementById('typesContainer');if(!box)return;box.innerHTML='';
   [{id:'all',n:t.tAll},{id:'follower',n:t.tFol},{id:'like',n:t.tLik},{id:'view',n:t.tViw},{id:'comment',n:t.tCom}].forEach(x=>{
     const d=document.createElement('div');d.className='type-pill'+(curType===x.id?' selected':'');d.textContent=x.n;
     d.onclick=()=>{curType=x.id;renderPills();renderCats();};box.appendChild(d);
@@ -263,7 +267,7 @@ function renderPills(){
 }
 
 function switchTab(t){
-  ['btnNewOrder','btnRefill','btnHistory'].forEach(i=>document.getElementById(i).classList.remove('active'));
+  ['btnNewOrder','btnRefill','btnHistory'].forEach(i=>{const el=document.getElementById(i);if(el)el.classList.remove('active');});
   document.getElementById('orderSection').style.display=t==='order'?'block':'none';
   document.getElementById('refillSection').style.display=t==='refill'?'block':'none';
   document.getElementById('historySection').style.display=t==='history'?'block':'none';
@@ -296,7 +300,7 @@ function detType(c,n){
   return'other';
 }
 
-function setOpt(el,txt){el.innerHTML='';const o=document.createElement('option');o.value='';o.textContent=txt;el.appendChild(o);}
+function setOpt(el,txt){if(!el)return;el.innerHTML='';const o=document.createElement('option');o.value='';o.textContent=txt;el.appendChild(o);}
 
 async function fetchServices(){
   const sEl=document.getElementById('serviceSelect'),cEl=document.getElementById('categorySelect');
@@ -330,18 +334,18 @@ function updateInfo(){
   const id=document.getElementById('serviceSelect').value,t=T[lang];
   curSvc=allServices.find(s=>String(s.service||s.id)===String(id));
   if(curSvc){
-    document.getElementById('infoMinMax').innerText=(curSvc.min||50)+' - '+(curSvc.max||200000);
+    setTxt('infoMinMax',(curSvc.min||50)+' - '+(curSvc.max||200000));
     document.getElementById('orderQuantity').value=curSvc.min||100;
     const low=(curSvc.cleanName+' '+curSvc.cleanCat).toLowerCase(),noW=curSvc.refill===false||low.includes('no refill')||low.includes('بدون ضمان')||low.includes('بدون تعويض')||low.includes('لا يوجد ضمان');
-    const wEl=document.getElementById('txtYes');wEl.innerText=noW?t.noW:t.yes;wEl.style.color=noW?'#ef4444':'var(--ok)';
+    const wEl=document.getElementById('txtYes');if(wEl){wEl.innerText=noW?t.noW:t.yes;wEl.style.color=noW?'#ef4444':'var(--ok)';}
   }
   calcTotal();
 }
 
 function calcTotal(){
-  const w=T[lang].tot;if(!curSvc){document.getElementById('orderCost').innerText=w+': $0.00';return;}
+  const w=T[lang].tot;if(!curSvc){setTxt('orderCost',w+': $0.00');return;}
   const q=Math.max(0,parseFloat(document.getElementById('orderQuantity').value)||0);
-  document.getElementById('orderCost').innerText=w+': $'+((q/1000)*parseFloat(curSvc.rate||0)).toFixed(4);
+  setTxt('orderCost',w+': $'+((q/1000)*parseFloat(curSvc.rate||0)).toFixed(4));
 }
 
 async function syncUser(){
@@ -349,7 +353,7 @@ async function syncUser(){
   try{
     const r=await fetch('/api/user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telegramId,username,firstName})});
     const d=await r.json();
-    if(d&&d.success){userBal=parseFloat(d.balance)||0;document.getElementById('userBalance').innerText=fmtBal(userBal);if(d.settings){if(d.settings.qicard)document.getElementById('displayQicard').innerText=d.settings.qicard;if(d.settings.usdt)document.getElementById('displayUsdt').innerText=d.settings.usdt;}}
+    if(d&&d.success){userBal=parseFloat(d.balance)||0;setTxt('userBalance',fmtBal(userBal));if(d.settings){if(d.settings.qicard)setTxt('displayQicard',d.settings.qicard);if(d.settings.usdt)setTxt('displayUsdt',d.settings.usdt);}}
   }catch(e){}
 }
 
@@ -360,7 +364,7 @@ async function submitOrder(){
   try{
     const r=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telegramId,username,serviceId:curSvc.service||curSvc.id,link,quantity})});
     const d=await r.json();
-    if(d&&d.success){if(d.newBalance!==undefined){userBal=parseFloat(d.newBalance);document.getElementById('userBalance').innerText=fmtBal(userBal);}msg.style.color='#10b981';msg.innerText=d.pending?t.okPend:(t.okOrd+(d.orderId||'')+' 🎉');document.getElementById('orderLink').value='';}
+    if(d&&d.success){if(d.newBalance!==undefined){userBal=parseFloat(d.newBalance);setTxt('userBalance',fmtBal(userBal));}msg.style.color='#10b981';msg.innerText=d.pending?t.okPend:(t.okOrd+(d.orderId||'')+' 🎉');document.getElementById('orderLink').value='';}
     else{msg.style.color='#ef4444';msg.innerText=(d&&d.error)||t.errFail;}
   }catch(e){msg.style.color='#ef4444';msg.innerText=t.errConn;}
 }
