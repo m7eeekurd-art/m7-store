@@ -565,6 +565,7 @@ function renderCats(){
 
 function renderSvcs(){
   const sEl=document.getElementById('serviceSelect'),prev=sEl.value,cat=document.getElementById('categorySelect').value,list=getFiltered().filter(s=>!cat||s.cleanCat===cat);
+  list.sort((a,b)=>(parseFloat(a.rate)||0)-(parseFloat(b.rate)||0));
   const frag=document.createDocumentFragment();
   if(!list.length){const o=document.createElement('option');o.value='';o.textContent='---';frag.appendChild(o);}
   else{
