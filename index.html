@@ -1,229 +1,427 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="htmlRoot">
+<html id="htmlRoot" lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>M7 Store</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap');
-:root{--bg:#05070b;--surf:rgba(19,27,46,.9);--pri:#8b5cf6;--glow:rgba(139,92,246,.55);--acc:#3b82f6;--ok:#10b981;--txt:#fff;--mut:#94a3b8;--brd:rgba(255,255,255,.1)}
-*{box-sizing:border-box}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:12px;overflow-x:hidden}
-#welcomeIntro{position:fixed;inset:0;background:radial-gradient(circle at center,#1a103c 0%,#05070b 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:99999;animation:fadeIntro .5s ease 1s forwards;pointer-events:none}
-.intro-logo{width:82px;height:82px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;color:#fff;box-shadow:0 0 35px var(--glow)}
-.intro-title{margin-top:14px;font-size:24px;font-weight:800;letter-spacing:2px}
-.intro-sub{font-size:11px;color:#38bdf8;margin-top:4px;letter-spacing:2px}
-@keyframes fadeIntro{to{opacity:0;visibility:hidden}}
-.container{max-width:600px;margin:0 auto;background:var(--surf);backdrop-filter:blur(20px);padding:16px;border-radius:24px;border:1px solid var(--brd);box-shadow:0 20px 50px rgba(0,0,0,.7)}
-.lang-wrap{position:relative;display:inline-block;margin-bottom:12px}
-.lang-btn{background:rgba(26,34,56,.9);color:#fff;border:1px solid var(--brd);padding:7px 14px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer}
-.lang-menu{display:none;position:absolute;min-width:145px;background:#131b2e;border:1px solid var(--brd);border-radius:12px;z-index:99;margin-top:5px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.6)}
-[dir="rtl"] .lang-menu{right:0}[dir="ltr"] .lang-menu{left:0}
-.lang-menu.show{display:block}
-.lang-menu button{width:100%;background:none;border:none;color:#fff;padding:10px 14px;text-align:inherit;cursor:pointer;font-size:12px;font-weight:600}
-.lang-menu button:hover{background:var(--pri)}
-.header-top{display:flex;justify-content:space-between;align-items:center;background:rgba(26,34,56,.75);padding:14px 16px;border-radius:18px;margin-bottom:14px;border:1px solid var(--brd)}
-.balance-box{background:rgba(19,27,46,.95);border:1px solid rgba(16,185,129,.45);padding:8px 14px;border-radius:14px;display:flex;align-items:center;gap:10px;cursor:pointer}
-.balance-box .lbl{font-size:11px;color:var(--mut);display:block}
-.balance-box h3{margin:0;color:var(--ok);font-size:16px;font-weight:800}
-.profile-right{display:flex;align-items:center;gap:10px}
-.profile-logo{width:46px;height:46px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;cursor:pointer;user-select:none}
-.profile-info .name{font-weight:700;font-size:14px}
-.profile-info .id{font-size:12px;color:#38bdf8;font-weight:700;cursor:pointer;margin-top:2px}
-.menu-buttons{display:flex;gap:8px;margin-bottom:16px}
-.menu-btn{flex:1;background:rgba(26,34,56,.75);color:var(--mut);border:1px solid var(--brd);padding:12px 6px;border-radius:14px;cursor:pointer;font-weight:700;font-size:12px;transition:.2s}
-.menu-btn.active{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border-color:var(--pri);box-shadow:0 6px 18px rgba(124,58,237,.4)}
-.section-title{font-size:13px;color:var(--mut);margin-bottom:10px;font-weight:700}
-.platforms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px}
-.platform-card{background:rgba(26,34,56,.65);border:2px solid var(--brd);border-radius:16px;padding:11px 6px;text-align:center;cursor:pointer;transition:.2s}
-.platform-card.selected{border-color:var(--pri);background:rgba(34,45,74,.95);box-shadow:0 0 18px rgba(139,92,246,.4)}
-.p-icon{width:38px;height:38px;margin:0 auto 6px;border-radius:11px;display:flex;align-items:center;justify-content:center}
-.p-icon svg{width:21px;height:21px}
-.platform-card .title{display:block;font-size:11.5px;font-weight:700;color:#fff}
-.types-grid{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px}
-.type-pill{background:rgba(26,34,56,.65);border:1px solid var(--brd);padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;white-space:nowrap}
-.type-pill.selected{background:var(--pri);color:#fff;border-color:var(--pri)}
-.card-box{background:rgba(26,34,56,.65);border:1px solid var(--brd);border-radius:18px;padding:16px;margin-bottom:14px}
-.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:1px solid var(--brd);padding-bottom:10px}
-.form-group{margin-bottom:13px}
-.form-group label{display:block;font-size:12px;color:var(--mut);margin-bottom:6px;font-weight:600}
-.form-control{width:100%;padding:12px;background:rgba(13,19,33,.95);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:12px;font-size:13px;outline:none;font-family:inherit}
-.form-control:focus{border-color:var(--pri)}
-.details-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(13,19,33,.75);padding:11px;border-radius:14px;text-align:center;margin-top:10px;border:1px solid var(--brd)}
-.details-grid div div:first-child{font-size:10px;color:var(--mut)}
-.details-grid div div:last-child{font-size:12px;font-weight:700;color:var(--acc);margin-top:4px}
-.submit-btn{width:100%;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;padding:14px;border-radius:14px;font-weight:800;cursor:pointer;margin-top:10px;font-size:14px}
-.pay-box{background:rgba(13,19,33,.9);border:1px solid var(--brd);padding:13px;border-radius:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.copy-btn{background:linear-gradient(135deg,#7c3aed,#3b82f6);color:#fff;border:none;padding:8px 13px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
-.history-item{background:rgba(13,19,33,.88);border:1px solid var(--brd);border-radius:14px;padding:12px;margin-bottom:10px;text-align:inherit}
-#adminModal{display:none;position:fixed;inset:0;background:rgba(5,7,11,.95);z-index:999999;justify-content:center;align-items:center;padding:12px}
-.admin-box{background:#131b2e;border:2px solid var(--pri);padding:18px;border-radius:20px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto}
-#msg{text-align:center;font-size:12px;margin-top:10px;font-weight:700}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>M7 Store</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090b10;
+      --card: #11151f;
+      --card-2: #171c29;
+      --border: rgba(255,255,255,0.08);
+      --accent: #7c3aed;
+      --accent-2: #3b82f6;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --ok: #10b981;
+      --err: #ef4444;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0; padding: 0 0 36px;
+      background: radial-gradient(circle at top right, rgba(124,58,237,0.14), transparent 45%), var(--bg);
+      color: var(--text);
+      font-family: 'Cairo', 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    .app-wrap { max-width: 520px; margin: 0 auto; padding: 14px; }
+
+    /* Top App Bar */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(17,21,31,0.88); backdrop-filter: blur(14px);
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: 12px 14px; margin-bottom: 12px; position: sticky; top: 8px; z-index: 40;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+    .brand-logo {
+      width: 40px; height: 40px; border-radius: 13px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 16px; color: #fff;
+      box-shadow: 0 6px 18px rgba(124,58,237,0.35);
+    }
+    .brand-info h1 { margin: 0; font-size: 15px; font-weight: 800; line-height: 1.2; }
+    .brand-info span { font-size: 11px; color: var(--muted); cursor: pointer; }
+
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .bal-pill {
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3);
+      padding: 6px 11px; border-radius: 12px; text-align: center;
+    }
+    .bal-pill small { display: block; font-size: 10px; color: #6ee7b7; line-height: 1.1; }
+    .bal-pill b { font-size: 13px; color: #fff; font-family: 'Inter', sans-serif; }
+
+    /* Language Dropdown (3 Languages Only) */
+    .lang-wrap { position: relative; }
+    .lang-btn {
+      background: var(--card-2); border: 1px solid var(--border); color: var(--text);
+      padding: 8px 11px; border-radius: 12px; font-size: 12px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: inherit;
+    }
+    .lang-menu {
+      display: none; position: absolute; top: 115%; inset-inline-end: 0;
+      background: #161b28; border: 1px solid var(--border); border-radius: 14px;
+      min-width: 148px; padding: 6px; box-shadow: 0 14px 34px rgba(0,0,0,0.65); z-index: 60;
+    }
+    .lang-menu.show { display: block; }
+    .lang-item {
+      padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: 0.15s;
+    }
+    .lang-item:hover { background: rgba(124,58,237,0.2); }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      background: var(--card); padding: 6px; border-radius: 16px;
+      border: 1px solid var(--border); margin-bottom: 14px;
+    }
+    .nav-btn {
+      background: transparent; border: none; color: var(--muted);
+      padding: 10px 6px; border-radius: 12px; font-size: 12.5px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: 0.2s;
+    }
+    .nav-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff; box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+    }
+
+    /* Section Labels */
+    .sec-lbl { font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 10px 2px 8px; display: block; }
+
+    /* Platform Grid */
+    .platforms-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;
+    }
+    .platform-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 10px 6px; text-align: center; cursor: pointer; transition: 0.18s;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .platform-card svg { width: 22px; height: 22px; }
+    .platform-card span { font-size: 11.5px; font-weight: 700; color: var(--text); }
+    .platform-card.selected {
+      background: rgba(124,58,237,0.16); border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    /* Type Pills */
+    .types-row {
+      display: flex; gap: 7px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 10px;
+      scrollbar-width: none;
+    }
+    .types-row::-webkit-scrollbar { display: none; }
+    .type-pill {
+      background: var(--card); border: 1px solid var(--border); color: var(--muted);
+      padding: 7px 14px; border-radius: 99px; font-size: 12px; font-weight: 700;
+      white-space: nowrap; cursor: pointer; transition: 0.15s;
+    }
+    .type-pill.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* Card Box */
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+      padding: 15px; margin-bottom: 12px;
+    }
+    .card-head { margin-bottom: 12px; }
+    .card-head h2 { margin: 0 0 3px; font-size: 15.5px; font-weight: 800; }
+    .card-head p { margin: 0; font-size: 12px; color: var(--muted); }
+
+    .inp, .sel {
+      width: 100%; background: var(--card-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: 13px; padding: 12px 13px;
+      font-size: 13.5px; font-family: inherit; outline: none; transition: 0.15s;
+    }
+    .inp:focus, .sel:focus { border-color: var(--accent); }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+    /* Specs Row */
+    .specs-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0;
+    }
+    .spec-box {
+      background: var(--card-2); border: 1px solid var(--border); border-radius: 12px;
+      padding: 9px 6px; text-align: center;
+    }
+    .spec-box small { display: block; font-size: 10.5px; color: var(--muted); margin-bottom: 3px; }
+    .spec-box b { font-size: 11.5px; font-weight: 700; color: var(--text); }
+
+    /* Cost & Primary Button */
+    .cost-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.3);
+      border-radius: 14px; padding: 11px 14px; margin-bottom: 12px;
+      font-weight: 800; font-size: 14px; color: #e9d5ff;
+    }
+    .btn-main {
+      width: 100%; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border: none; color: #fff; padding: 14px; border-radius: 14px;
+      font-size: 14.5px; font-weight: 800; font-family: inherit; cursor: pointer;
+      box-shadow: 0 8px 22px rgba(124,58,237,0.35); transition: 0.15s;
+    }
+    .btn-main:active { transform: scale(0.98); }
+
+    /* Payment Cards */
+    .pay-box {
+      background: var(--card-2); border: 1px solid var(--border); border-radius: 14px;
+      padding: 11px 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .pay-box small { display: block; font-size: 11px; color: var(--muted); }
+    .pay-box code { font-family: 'Inter', sans-serif; font-size: 12.5px; color: #fff; word-break: break-all; }
+    .copy-btn {
+      background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.4);
+      color: #fff; padding: 7px 10px; border-radius: 10px; font-size: 11.5px;
+      font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit;
+    }
+
+    /* History */
+    .history-item {
+      background: var(--card-2); border: 1px solid var(--border); border-radius: 13px;
+      padding: 11px 13px; margin-bottom: 8px; font-size: 13px;
+    }
+    .history-item small { color: var(--muted); word-break: break-all; }
+    .status-msg { text-align: center; font-size: 13px; font-weight: 700; margin-top: 10px; min-height: 18px; }
+
+    /* Admin Modal */
+    #adminModal {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.82);
+      z-index: 99; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+      width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto; padding: 16px;
+    }
+  </style>
 </head>
 <body>
+  <div class="app-wrap">
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="brand" onclick="handleLogoClick()">
+        <div class="brand-logo">M7</div>
+        <div class="brand-info">
+          <h1 id="userNameDisplay">M7 Store</h1>
+          <span id="userIdDisplay" onclick="event.stopPropagation();copyText(telegramId,this)">ID: ...</span>
+        </div>
+      </div>
 
-<div id="welcomeIntro">
-<div class="intro-logo">M7</div>
-<div class="intro-title">M7 STORE</div>
-<div class="intro-sub">NEXT-GEN DIGITAL HUB</div>
-</div>
+      <div class="top-actions">
+        <div class="bal-pill">
+          <small id="txtBalance">رصيدك</small>
+          <b id="userBalance">$0.00</b>
+        </div>
+        <div class="lang-wrap">
+          <button class="lang-btn" onclick="document.getElementById('langMenu').classList.toggle('show')">
+            🌐 <span id="currentLangTitle">العربية</span>
+          </button>
+          <div id="langMenu" class="lang-menu">
+            <div class="lang-item" onclick="setLang('ar')">🇮🇶 العربية</div>
+            <div class="lang-item" onclick="setLang('en')">🇺🇸 English</div>
+            <div class="lang-item" onclick="setLang('ku_b')">☀️ کوردی (بادینی)</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div id="adminModal">
-<div class="admin-box">
-<h3 style="margin-top:0;color:var(--pri)">⚙️ Admin Panel (M7 Store)</h3>
-<div class="form-group" style="background:rgba(139,92,246,.12);padding:10px;border-radius:12px">
-<label style="color:#a78bfa">➕ Add Balance by User ID:</label>
-<input type="text" id="targetUserId" class="form-control" placeholder="User Telegram ID" style="margin-bottom:6px">
-<input type="number" step="0.5" id="addBalanceAmount" class="form-control" placeholder="Amount ($)" style="margin-bottom:6px">
-<button class="submit-btn" style="padding:10px" onclick="adminAddBalance()">Send Balance 🚀</button>
-</div>
-<div class="form-group"><label>Order Mode:</label><select id="adminApprovalMode" class="form-control"><option value="auto">Auto Execute & Deduct</option><option value="manual">Manual Approval</option></select></div>
-<div class="form-group"><label>Profit (%):</label><input type="number" id="adminProfitInput" class="form-control" value="40"></div>
-<div class="form-group"><label>QiCard Number:</label><input type="text" id="adminQicardInput" class="form-control"></div>
-<div class="form-group"><label>USDT (TRC20) Address:</label><input type="text" id="adminUsdtInput" class="form-control"></div>
-<div class="form-group"><label>Bot Token:</label><input type="text" id="adminBotTokenInput" class="form-control"></div>
-<div class="form-group"><label>Admin Telegram ID:</label><input type="text" id="adminChatIdInput" class="form-control"></div>
-<button class="submit-btn" onclick="saveAdminSettings()">💾 Save Settings</button>
-<button onclick="document.getElementById('adminModal').style.display='none'" style="width:100%;background:none;border:none;color:#ef4444;margin-top:10px;cursor:pointer;font-weight:bold">Exit</button>
-</div>
-</div>
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <button id="btnNewOrder" class="nav-btn active" onclick="switchTab('order')">طلب جديد ⚡</button>
+      <button id="btnRefill" class="nav-btn" onclick="switchTab('refill')">شحن رصيد 💳</button>
+      <button id="btnHistory" class="nav-btn" onclick="switchTab('history')">سجلاتي 🕒</button>
+    </div>
 
-<div class="container">
-<div class="lang-wrap">
-<button onclick="document.getElementById('langMenu').classList.toggle('show')" class="lang-btn">🌐 <span id="currentLangTitle">العربية</span> ▼</button>
-<div id="langMenu" class="lang-menu">
-<button onclick="setLang('ar')">العربية</button>
-<button onclick="setLang('en')">English</button>
-<button onclick="setLang('ku_b')">کوردی (بادینی)</button>
-<button onclick="setLang('ku_s')">کوردی (سۆرانی)</button>
-</div>
-</div>
+    <!-- ORDER SECTION -->
+    <div id="orderSection">
+      <span id="txtSelectPlatform" class="sec-lbl">اختر المنصة:</span>
+      <div class="platforms-grid">
+        <div class="platform-card selected" onclick="selectPlatform('Instagram',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#e1306c" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          <span id="pInsta">إنستغرام</span>
+        </div>
+        <div class="platform-card" onclick="selectPlatform('TikTok',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+          <span id="pTiktok">تيك توك</span>
+        </div>
+        <div class="platform-card" onclick="selectPlatform('Telegram',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#229ed9" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          <span id="pTelegram">تيليجرام</span>
+        </div>
+        <div class="platform-card" onclick="selectPlatform('YouTube',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="4"/><polygon points="10 9 15 12 10 15 10 9" fill="#ef4444"/></svg>
+          <span id="pYoutube">يوتيوب</span>
+        </div>
+        <div class="platform-card" onclick="selectPlatform('Facebook',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          <span id="pFacebook">فيسبوك</span>
+        </div>
+        <div class="platform-card" onclick="selectPlatform('Snapchat',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2"><path d="M12 3c-3 0-5 2.2-5 5.2 0 .9.2 1.8.2 2.3-.4.3-1.2.4-1.7.6-.4.2-.5.6-.2.9.5.4 1.4.7 1.7 1.1-.4 1.5-1.8 2.8-3.5 3.3-.4.1-.5.6-.1.9 1.2.7 2.8 1 4.1 1.1.4.8 1.2 1.6 2.5 1.6h4c1.3 0 2.1-.8 2.5-1.6 1.3-.1 2.9-.4 4.1-1.1.4-.3.3-.8-.1-.9-1.7-.5-3.1-1.8-3.5-3.3.3-.4 1.2-.7 1.7-1.1.3-.3.2-.7-.2-.9-.5-.2-1.3-.3-1.7-.6 0-.5.2-1.4.2-2.3C17 5.2 15 3 12 3z"/></svg>
+          <span id="pSnapchat">سناب شات</span>
+        </div>
+        <div class="platform-card" onclick="selectPlatform('Twitter',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" stroke-width="2"><path d="M4 4l16 16M20 4L4 20"/></svg>
+          <span id="pTwitter">تويتر / X</span>
+        </div>
+        <div class="platform-card" onclick="selectPlatform('WhatsApp',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <span id="pWhatsapp">واتساب</span>
+        </div>
+        <div class="platform-card" onclick="selectPlatform('All',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+          <span id="pAll">الكل / عام</span>
+        </div>
+      </div>
 
-<div class="header-top">
-<div class="balance-box" onclick="switchTab('refill')">
-<span>➕</span>
-<div><span class="lbl" id="txtBalance">رصيدك</span><h3 id="userBalance">$0.00</h3></div>
-</div>
-<div class="profile-right">
-<div class="profile-info">
-<div class="name" id="userNameDisplay">M7 Store</div>
-<div class="id" id="userIdDisplay" onclick="copyText(telegramId,this)">ID: ...</div>
-</div>
-<div class="profile-logo" onclick="handleLogoClick()">M7</div>
-</div>
-</div>
+      <span id="txtSelectType" class="sec-lbl">اختر نوع الخدمة:</span>
+      <div id="typesContainer" class="types-row"></div>
 
-<div class="menu-buttons">
-<button class="menu-btn active" id="btnNewOrder" onclick="switchTab('order')">طلب جديد ⚡</button>
-<button class="menu-btn" id="btnRefill" onclick="switchTab('refill')">شحن رصيد 💳</button>
-<button class="menu-btn" id="btnHistory" onclick="switchTab('history')">سجلاتي 🕒</button>
-</div>
+      <div class="field">
+        <input id="serviceSearch" class="inp" type="text" placeholder="🔍 ابحث باسم الخدمة أو الرقم..." oninput="renderCats()" />
+      </div>
 
-<div id="orderSection">
-<div class="section-title" id="txtSelectPlatform">اختر المنصة:</div>
-<div class="platforms-grid">
-<div class="platform-card selected" onclick="selectPlatform('Instagram',this)">
-<div class="p-icon" style="background:linear-gradient(45deg,#f09433,#dc2743,#bc1888);color:#fff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></div>
-<span class="title" id="pInsta">إنستغرام</span>
-</div>
-<div class="platform-card" onclick="selectPlatform('TikTok',this)">
-<div class="p-icon" style="background:#000;color:#fff;border:1px solid #333"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.3 0 .59.04.88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg></div>
-<span class="title" id="pTiktok">تيك توك</span>
-</div>
-<div class="platform-card" onclick="selectPlatform('Telegram',this)">
-<div class="p-icon" style="background:#229ED9;color:#fff"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
-<span class="title" id="pTelegram">تيليجرام</span>
-</div>
-<div class="platform-card" onclick="selectPlatform('YouTube',this)">
-<div class="p-icon" style="background:#FF0000;color:#fff"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg></div>
-<span class="title" id="pYoutube">يوتيوب</span>
-</div>
-<div class="platform-card" onclick="selectPlatform('Facebook',this)">
-<div class="p-icon" style="background:#1877F2;color:#fff"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4v-8.5z"/></svg></div>
-<span class="title" id="pFacebook">فيسبوك</span>
-</div>
-<div class="platform-card" onclick="selectPlatform('Snapchat',this)">
-<div class="p-icon" style="background:#FFFC00;color:#000"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-3.1 0-5.4 2.2-5.4 5.4 0 .9.2 1.8.3 2.5-.3.1-.7.2-1 .2-.6 0-1.1.3-1.1.8 0 .5.5.8 1.2 1.1.5.2.9.4.8.9-.2.9-1.5 2.4-3.6 2.9-.5.1-.7.5-.6.9.2.6 1.2 1.1 3 1.4.2.4.3 1.1.8 1.1.4 0 .9-.2 1.7-.2.9 0 1.7.7 3.7.7s2.8-.7 3.7-.7c.8 0 1.3.2 1.7.2.5 0 .6-.7.8-1.1 1.8-.3 2.8-.8 3-1.4.1-.4-.1-.8-.6-.9-2.1-.5-3.4-2-3.6-2.9-.1-.5.3-.7.8-.9.7-.3 1.2-.6 1.2-1.1 0-.5-.5-.8-1.1-.8-.3 0-.7-.1-1-.2.1-.7.3-1.6.3-2.5C17.4 4.2 15.1 2 12 2z"/></svg></div>
-<span class="title" id="pSnapchat">سناب شات</span>
-</div>
-<div class="platform-card" onclick="selectPlatform('Twitter',this)">
-<div class="p-icon" style="background:#0f1419;color:#fff;border:1px solid #333"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
-<span class="title" id="pTwitter">تويتر / X</span>
-</div>
-<div class="platform-card" onclick="selectPlatform('WhatsApp',this)">
-<div class="p-icon" style="background:#25D366;color:#fff"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.5 14.2c-.2.6-1.3 1.2-1.8 1.3-.5.1-1.1.1-1.8-.1-1.6-.5-3.5-1.8-4.8-3.5-1.1-1.4-1.6-2.7-1.6-3.7 0-1 .5-1.5.8-1.8.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.4.6c-.1.2-.2.3-.1.5.4.7 1 1.4 1.7 2 .8.6 1.5.9 2.1 1.1.2.1.4 0 .5-.1l.6-.7c.2-.2.4-.2.6-.1l1.8.9c.2.1.4.2.4.4 0 .2-.1.7-.3 1.2z"/></svg></div>
-<span class="title" id="pWhatsapp">واتساب</span>
-</div>
-<div class="platform-card" onclick="selectPlatform('All',this)">
-<div class="p-icon" style="background:#475569;color:#fff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-<span class="title" id="pAll">الكل / عام</span>
-</div>
-</div>
+      <div class="card">
+        <div class="card-head">
+          <h2 id="txtNewOrderTitle">إنشاء طلب جديد</h2>
+          <p id="txtNewOrderSub">اختر الخدمة واكتب الرابط الخاص بك</p>
+        </div>
 
-<div class="section-title" id="txtSelectType">اختر نوع الخدمة:</div>
-<div class="types-grid" id="typesContainer"></div>
+        <div class="field">
+          <label id="txtCategoryLabel">القسم:</label>
+          <select id="categorySelect" class="sel" onchange="renderSvcs()"></select>
+        </div>
 
-<div class="form-group"><input type="text" id="serviceSearch" class="form-control" placeholder="🔍 ابحث باسم الخدمة أو الرقم..." oninput="renderCats()"></div>
-<div class="form-group"><label id="txtCategoryLabel">القسم (Category):</label><select id="categorySelect" class="form-control" onchange="renderSvcs()"><option value="">جاري تحميل الأقسام...</option></select></div>
+        <div class="field">
+          <label id="txtServiceLabel">الخدمة:</label>
+          <select id="serviceSelect" class="sel" onchange="updateInfo()"></select>
+        </div>
 
-<div class="card-box">
-<div class="card-header">
-<div><div style="font-weight:700;font-size:14px" id="txtNewOrderTitle">إنشاء طلب جديد</div><div style="font-size:11px;color:var(--mut)" id="txtNewOrderSub">اختر الخدمة واكتب الرابط الخاص بك</div></div>
-<span style="font-size:20px">🛒</span>
-</div>
-<div class="form-group"><label id="txtServiceLabel">الخدمة (Service):</label><select id="serviceSelect" class="form-control" onchange="updateInfo()"><option value="">جاري جلب الخدمات...</option></select></div>
-<div class="form-group"><label id="txtLinkLabel">الرابط (Link):</label><input type="text" id="orderLink" class="form-control" placeholder="https://..."></div>
-<div class="form-group"><label id="txtQtyLabel">الكمية (Quantity):</label><input type="number" id="orderQuantity" class="form-control" value="1000" oninput="calcTotal()"></div>
-<div class="details-grid">
-<div><div id="txtStart">البدء</div><div id="infoStart">فوري (0 - 15 د)</div></div>
-<div><div id="txtWarranty">الضمان</div><div style="color:var(--ok)" id="txtYes">متوفر</div></div>
-<div><div id="txtMinMax">الحد الأدنى / الأقصى</div><div id="infoMinMax">50 - 200,000</div></div>
-</div>
-<p id="orderCost" style="color:#34d399;font-weight:800;margin:14px 0 6px;font-size:15px">الإجمالي: $0.00</p>
-<button class="submit-btn" id="submitBtnText" onclick="submitOrder()">تأكيد الطلب ⚡</button>
-<p id="msg"></p>
-</div>
-</div>
+        <div class="field">
+          <label id="txtLinkLabel">الرابط:</label>
+          <input id="orderLink" class="inp" type="text" placeholder="ضع الرابط هنا https://..." />
+        </div>
 
-<div id="refillSection" style="display:none">
-<div class="card-box">
-<div class="card-header">
-<div><div style="font-weight:700;font-size:14px" id="txtRefillTitle">شحن رصيد الحساب 💳</div><div style="font-size:11px;color:var(--mut)" id="txtRefillSub">انسخ رقم QiCard أو عنوان USDT وأرسل المبلغ</div></div>
-<span style="font-size:20px">💳</span>
-</div>
-<div class="pay-box"><div><strong style="color:#f59e0b;font-size:13px">💳 QiCard</strong><div id="displayQicard" style="font-size:13px;color:#fff;font-weight:700;margin-top:4px;direction:ltr">0000000000</div></div><button type="button" class="copy-btn" onclick="copyText(document.getElementById('displayQicard').innerText,this)">📋 نسخ</button></div>
-<div class="pay-box"><div style="min-width:0"><strong style="color:#22c55e;font-size:13px">💎 USDT (TRC20)</strong><div id="displayUsdt" style="font-size:11px;color:#fff;font-weight:600;margin-top:4px;word-break:break-all;direction:ltr">TYourAdminWalletAddressHere...</div></div><button type="button" class="copy-btn" onclick="copyText(document.getElementById('displayUsdt').innerText,this)">📋 نسخ</button></div>
-<div class="form-group"><label id="txtPayMethodLabel">طريقة الدفع:</label><select id="refillMethod" class="form-control"><option value="QiCard">QiCard</option><option value="USDT (TRC20)">USDT (TRC20)</option></select></div>
-<div class="form-group"><label id="txtRefillLabel">مبلغ الشحن ($):</label><input type="number" id="refillAmount" class="form-control" value="10" min="1"></div>
-<div class="form-group"><label id="txtRefillNoteLabel">رقم العملية / اسم المرسل:</label><input type="text" id="refillNote" class="form-control" placeholder="..."></div>
-<button class="submit-btn" id="txtRefillBtn" onclick="submitRefill()">إرسال طلب الشحن 🚀</button>
-<p id="refillMsg" style="text-align:center;font-size:12px;margin-top:10px;font-weight:700"></p>
-</div>
-</div>
+        <div class="field">
+          <label id="txtQtyLabel">الكمية:</label>
+          <input id="orderQuantity" class="inp" type="number" value="100" oninput="calcTotal()" />
+        </div>
 
-<div id="historySection" style="display:none">
-<div class="card-box" id="historyBox" style="text-align:center;padding:35px 16px">
-<span style="font-size:32px">🕒</span>
-<h3 id="txtHistEmpty" style="margin:10px 0 6px;font-size:15px">سجل الطلبات فارغ</h3>
-<p id="txtHistSub" style="font-size:12px;color:var(--mut)">الطلبات التي تقوم بتثبيتها ستظهر هنا</p>
-</div>
-</div>
-</div>
+        <div class="specs-grid">
+          <div class="spec-box">
+            <small id="txtStart">البدء</small>
+            <b id="infoStart">فوري (0 - 15 د)</b>
+          </div>
+          <div class="spec-box">
+            <small id="txtWarranty">الضمان</small>
+            <b id="txtYes" style="color:var(--ok)">متوفر</b>
+          </div>
+          <div class="spec-box">
+            <small id="txtMinMax">الحد الأدنى / الأقصى</small>
+            <b id="infoMinMax">50 - 200000</b>
+          </div>
+        </div>
 
-<script src="/app.js?v=24"></script>
+        <div class="cost-bar">
+          <span id="orderCost">الإجمالي: $0.00</span>
+          <span>M7 VIP</span>
+        </div>
+
+        <button class="btn-main" onclick="submitOrder()">
+          <span id="submitBtnText">تأكيد الطلب ⚡</span>
+        </button>
+        <div id="msg" class="status-msg"></div>
+      </div>
+    </div>
+
+    <!-- REFILL SECTION -->
+    <div id="refillSection" style="display:none;">
+      <div class="card">
+        <div class="card-head">
+          <h2 id="txtRefillTitle">شحن رصيد الحساب 💳</h2>
+          <p id="txtRefillSub">انسخ رقم QiCard أو عنوان USDT وأرسل المبلغ</p>
+        </div>
+
+        <div class="pay-box">
+          <div>
+            <small>QiCard / MasterCard</small>
+            <code id="displayQicard">---</code>
+          </div>
+          <button class="copy-btn" onclick="copyText(document.getElementById('displayQicard').innerText,this)">📋 نسخ</button>
+        </div>
+
+        <div class="pay-box">
+          <div>
+            <small>USDT (TRC20)</small>
+            <code id="displayUsdt">---</code>
+          </div>
+          <button class="copy-btn" onclick="copyText(document.getElementById('displayUsdt').innerText,this)">📋 نسخ</button>
+        </div>
+
+        <div class="field">
+          <label id="txtPayMethodLabel">طريقة الدفع:</label>
+          <select id="refillMethod" class="sel">
+            <option value="QiCard">QiCard</option>
+            <option value="USDT">USDT (TRC20)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="txtRefillLabel">مبلغ الشحن ($):</label>
+          <input id="refillAmount" class="inp" type="number" step="0.01" placeholder="10" />
+        </div>
+
+        <div class="field">
+          <label id="txtRefillNoteLabel">رقم العملية / اسم المرسل:</label>
+          <input id="refillNote" class="inp" type="text" placeholder="اكتب رقم الحوالة أو اسم المرسل..." />
+        </div>
+
+        <button class="btn-main" onclick="submitRefill()">
+          <span id="txtRefillBtn">إرسال طلب الشحن 🚀</span>
+        </button>
+        <div id="refillMsg" class="status-msg"></div>
+      </div>
+    </div>
+
+    <!-- HISTORY SECTION -->
+    <div id="historySection" style="display:none;">
+      <div class="card">
+        <div id="historyBox" style="text-align:center;padding:16px 0;">
+          <h3 id="txtHistEmpty" style="margin:0 0 6px;font-size:15px;">سجل الطلبات فارغ</h3>
+          <p id="txtHistSub" style="margin:0;font-size:12.5px;color:var(--muted);">الطلبات التي تقوم بتثبيتها ستظهر هنا</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Modal -->
+  <div id="adminModal" onclick="if(event.target===this)this.style.display='none'">
+    <div class="modal-card">
+      <h3 style="margin-top:0">Admin Panel</h3>
+      <div class="field"><label>Profit %</label><input id="adminProfitInput" class="inp" type="number" /></div>
+      <div class="field"><label>QiCard</label><input id="adminQicardInput" class="inp" type="text" /></div>
+      <div class="field"><label>USDT</label><input id="adminUsdtInput" class="inp" type="text" /></div>
+      <div class="field"><label>Bot Token</label><input id="adminBotTokenInput" class="inp" type="text" /></div>
+      <div class="field"><label>Admin Chat ID</label><input id="adminChatIdInput" class="inp" type="text" /></div>
+      <div class="field">
+        <label>Approval Mode</label>
+        <select id="adminApprovalMode" class="sel">
+          <option value="auto">Auto</option>
+          <option value="manual">Manual</option>
+        </select>
+      </div>
+      <button class="btn-main" onclick="saveAdminSettings()">Save Settings</button>
+      <hr style="border-color:var(--border);margin:14px 0;">
+      <div class="field"><label>Target User ID</label><input id="targetUserId" class="inp" type="text" /></div>
+      <div class="field"><label>Add Balance ($)</label><input id="addBalanceAmount" class="inp" type="number" step="0.01" /></div>
+      <button class="btn-main" onclick="adminAddBalance()">Add Balance</button>
+    </div>
+  </div>
+
+  <script src="/app.js?v=25"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
