@@ -426,6 +426,39 @@ function tr(s){
   return translateOne(s,lang);
 }
 
+function detectStartTime(svc){
+  const t=T[lang];
+  if(!svc)return t.stV;
+  const rawApi=svc.start_time||svc.startTime||svc.average_time||svc.avg_time||'';
+  if(rawApi&&String(rawApi).trim()&&String(rawApi).trim()!=='-'){
+    const trApi=translateOne(String(rawApi).trim(),lang);
+    if(trApi)return trApi;
+  }
+  const full=(svc.cleanName+' '+svc.cleanCat).toLowerCase();
+  const hrRange=full.match(/(\d+\s*-\s*\d+)\s*(?:h|hr|hrs|hour|hours|ساعة|ساعات)\b/);
+  if(hrRange){
+    const u=lang==='en'?' Hours':(lang==='ar'?' ساعة':' دەمژمێر');
+    return hrRange[1].replace(/\s+/g,'')+u;
+  }
+  const minRange=full.match(/(\d+\s*-\s*\d+)\s*(?:m|min|mins|minute|minutes|دقيقة|دقائق|د)\b/);
+  if(minRange){
+    const u=lang==='en'?' Min':(lang==='ar'?' دقيقة':' خولەک');
+    return minRange[1].replace(/\s+/g,'')+u;
+  }
+  const singleHr=full.match(/\b(\d+)\s*(?:h|hr|hrs|hour|hours|ساعة|ساعات)\b/);
+  if(singleHr){
+    const u=lang==='en'?' Hours':(lang==='ar'?' ساعة':' دەمژمێر');
+    return '0-'+singleHr[1]+u;
+  }
+  if(full.includes('slow')||full.includes('بطي')){
+    return lang==='en'?'1 - 6 Hours':(lang==='ar'?'1 - 6 ساعات':'1 - 6 دەمژمێر');
+  }
+  if(full.includes('fast')||full.includes('سريع')){
+    return lang==='en'?'Fast (0 - 30m)':(lang==='ar'?'سريع (0 - 30 د)':'بلەز (0 - 30 خولەک)');
+  }
+  return t.stV;
+}
+
 function setLang(l){
   lang=T[l]?l:'ar';
   try{localStorage.setItem('m7_lang',lang);}catch(e){}
@@ -585,10 +618,13 @@ function updateInfo(){
   const id=document.getElementById('serviceSelect').value,t=T[lang];
   curSvc=allServices.find(s=>String(s.service||s.id)===String(id));
   if(curSvc){
+    setTxt('infoStart',detectStartTime(curSvc));
     setTxt('infoMinMax',(curSvc.min||50)+' - '+(curSvc.max||200000));
     document.getElementById('orderQuantity').value=curSvc.min||100;
     const low=(curSvc.cleanName+' '+curSvc.cleanCat).toLowerCase(),noW=curSvc.refill===false||low.includes('no refill')||low.includes('بدون ضمان')||low.includes('بدون تعويض')||low.includes('لا يوجد ضمان')||low.includes('بێ گەرەنتی');
     const wEl=document.getElementById('txtYes');if(wEl){wEl.innerText=noW?t.noW:t.yes;wEl.style.color=noW?'#ef4444':'var(--ok)';}
+  }else{
+    setTxt('infoStart',t.stV);
   }
   calcTotal();
 }
