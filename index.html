@@ -11,8 +11,8 @@
   <style>
     :root {
       --bg: #07090e;
-      --card: rgba(16, 20, 31, 0.74);
-      --card-2: rgba(23, 29, 44, 0.82);
+      --card: rgba(16, 21, 33, 0.92);
+      --card-2: rgba(23, 30, 46, 0.95);
       --border: rgba(255, 255, 255, 0.09);
       --accent: #7c3aed;
       --accent-2: #3b82f6;
@@ -33,14 +33,15 @@
       min-height: 100vh;
     }
 
-    /* === M7 ANIMATED LUXURY AMBIENT BACKGROUND === */
+    /* === GLITCH-FREE GPU AMBIENT BACKGROUND === */
     .m7-ambient-canvas {
       position: fixed;
       inset: 0;
       z-index: 0;
       pointer-events: none;
       overflow: hidden;
-      background: radial-gradient(circle at 50% 0%, #101424 0%, #07090e 70%);
+      background: radial-gradient(circle at 50% 0%, #111629 0%, #07090e 72%);
+      transform: translateZ(0);
     }
     .m7-ambient-grid {
       position: absolute;
@@ -55,46 +56,45 @@
     .m7-orb {
       position: absolute;
       border-radius: 50%;
-      filter: blur(65px);
-      opacity: 0.45;
       will-change: transform;
+      transform: translateZ(0);
     }
     .m7-orb-1 {
-      width: 290px;
-      height: 290px;
-      top: -70px;
-      left: -60px;
-      background: radial-gradient(circle, rgba(124, 58, 237, 0.55) 0%, transparent 70%);
+      width: 360px;
+      height: 360px;
+      top: -110px;
+      left: -90px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.24) 0%, rgba(124, 58, 237, 0.06) 42%, transparent 70%);
       animation: m7FloatOrb1 14s ease-in-out infinite alternate;
     }
     .m7-orb-2 {
-      width: 310px;
-      height: 310px;
-      bottom: 5%;
-      right: -80px;
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.45) 0%, transparent 70%);
+      width: 380px;
+      height: 380px;
+      bottom: -40px;
+      right: -110px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.05) 42%, transparent 70%);
       animation: m7FloatOrb2 17s ease-in-out infinite alternate;
     }
     .m7-orb-3 {
-      width: 220px;
-      height: 220px;
-      top: 42%;
-      left: 30%;
-      background: radial-gradient(circle, rgba(139, 92, 246, 0.22) 0%, transparent 70%);
+      width: 300px;
+      height: 300px;
+      top: 38%;
+      left: 20%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
       animation: m7FloatOrb3 12s ease-in-out infinite alternate;
     }
 
     @keyframes m7FloatOrb1 {
       0% { transform: translate3d(0, 0, 0) scale(1); }
-      100% { transform: translate3d(95px, 110px, 0) scale(1.18); }
+      100% { transform: translate3d(85px, 95px, 0) scale(1.12); }
     }
     @keyframes m7FloatOrb2 {
-      0% { transform: translate3d(0, 0, 0) scale(1.05); }
-      100% { transform: translate3d(-110px, -130px, 0) scale(0.9); }
+      0% { transform: translate3d(0, 0, 0) scale(1.04); }
+      100% { transform: translate3d(-95px, -110px, 0) scale(0.92); }
     }
     @keyframes m7FloatOrb3 {
-      0% { transform: translate3d(-40px, 20px, 0) scale(0.95); }
-      100% { transform: translate3d(55px, -45px, 0) scale(1.15); }
+      0% { transform: translate3d(-30px, 15px, 0) scale(0.96); }
+      100% { transform: translate3d(45px, -35px, 0) scale(1.1); }
     }
 
     /* App Container */
@@ -106,19 +106,16 @@
       padding: 12px;
     }
 
-    /* Top Bar (Higher z-index so language dropdown floats above glass cards) */
+    /* Top Bar */
     .topbar {
       position: relative;
       z-index: 30;
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
-      background: var(--card);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.11);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      background: linear-gradient(145deg, rgba(21, 27, 42, 0.94), rgba(14, 18, 29, 0.96));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.11);
       border-radius: 18px;
       padding: 10px 12px; margin-bottom: 12px;
-      animation: m7CardEnter 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.35s backwards;
     }
     .brand { display: flex; align-items: center; gap: 9px; cursor: pointer; min-width: 0; }
     .brand-logo {
@@ -126,7 +123,7 @@
       overflow: hidden;
       width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.3);
       display: flex; align-items: center; justify-content: center;
       font-weight: 800; font-size: 15px; color: #fff;
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -139,7 +136,7 @@
       left: -120%;
       width: 70%;
       height: 200%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
       transform: rotate(25deg);
       animation: m7ShimmerSweep 4.2s ease-in-out infinite;
     }
@@ -150,9 +147,9 @@
 
     .top-actions { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
     .bal-pill {
-      background: linear-gradient(145deg, rgba(16, 185, 129, 0.16), rgba(16, 185, 129, 0.06));
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      box-shadow: 0 0 18px rgba(16, 185, 129, 0.14);
+      background: linear-gradient(145deg, rgba(16, 185, 129, 0.17), rgba(16, 185, 129, 0.07));
+      border: 1px solid rgba(16, 185, 129, 0.36);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.14);
       padding: 5px 11px; border-radius: 12px; text-align: center;
       animation: m7BalPulse 3.5s ease-in-out infinite;
     }
@@ -164,17 +161,15 @@
       background: var(--card-2); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text);
       padding: 8px 10px; border-radius: 12px; font-size: 12px; font-weight: 700;
       cursor: pointer; display: flex; align-items: center; gap: 4px;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.2s ease;
     }
     .lang-btn:active { transform: scale(0.95); }
     .lang-menu {
       display: none; position: absolute; top: 118%; inset-inline-end: 0;
-      background: rgba(20, 25, 38, 0.96);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(124, 58, 237, 0.35); border-radius: 14px;
-      min-width: 150px; padding: 6px; box-shadow: 0 16px 38px rgba(0, 0, 0, 0.8); z-index: 60;
-      animation: m7DropdownPop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      background: #141927;
+      border: 1px solid rgba(124, 58, 237, 0.38); border-radius: 14px;
+      min-width: 150px; padding: 6px; box-shadow: 0 16px 38px rgba(0, 0, 0, 0.85); z-index: 60;
+      animation: m7DropdownPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .lang-menu.show { display: block; }
     .lang-item { padding: 9px 11px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.18s; }
@@ -185,25 +180,22 @@
       position: relative;
       z-index: 5;
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
-      background: var(--card);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: linear-gradient(145deg, rgba(19, 24, 38, 0.94), rgba(14, 18, 29, 0.96));
       padding: 5px; border-radius: 16px;
       border: 1px solid var(--border);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       margin-bottom: 12px;
-      animation: m7CardEnter 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.45s backwards;
     }
     .nav-btn {
       background: transparent; border: none; color: var(--muted);
       padding: 10px 4px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer;
-      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
     }
     .nav-btn:active { transform: scale(0.96); }
     .nav-btn.active {
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       color: #fff;
-      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.26);
     }
 
     .sec-lbl { font-size: 12px; font-weight: 700; color: var(--muted); margin: 8px 2px 7px; display: block; }
@@ -211,70 +203,58 @@
     /* Platforms */
     .platforms-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 11px;
-      animation: m7CardEnter 0.75s cubic-bezier(0.16, 1, 0.3, 1) 2.52s backwards;
     }
     .platform-card {
       position: relative;
-      overflow: hidden;
-      background: var(--card);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: linear-gradient(145deg, rgba(20, 26, 40, 0.92), rgba(14, 18, 29, 0.95));
       border: 1px solid var(--border);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
       border-radius: 14px;
       padding: 10px 5px; text-align: center; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; gap: 5px;
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                  background 0.25s ease,
-                  border-color 0.25s ease,
-                  box-shadow 0.25s ease;
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  background 0.22s ease,
+                  border-color 0.22s ease,
+                  box-shadow 0.22s ease;
     }
     .platform-card:active { transform: scale(0.95); }
     .platform-card svg {
       width: 22px; height: 22px;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .platform-card span { font-size: 11.5px; font-weight: 700; transition: color 0.25s ease; }
+    .platform-card span { font-size: 11.5px; font-weight: 700; transition: color 0.22s ease; }
     .platform-card.selected {
-      background: linear-gradient(145deg, rgba(124, 58, 237, 0.24), rgba(59, 130, 246, 0.14));
-      border-color: rgba(139, 92, 246, 0.75);
-      box-shadow: 0 8px 22px rgba(124, 58, 237, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      background: linear-gradient(145deg, rgba(124, 58, 237, 0.28), rgba(59, 130, 246, 0.18));
+      border-color: rgba(139, 92, 246, 0.78);
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.22);
       transform: translateY(-2px);
     }
-    .platform-card.selected svg {
-      transform: scale(1.12);
-      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.25));
-    }
+    .platform-card.selected svg { transform: scale(1.1); }
     .platform-card.selected span { color: #ffffff; }
 
     /* Pills */
     .types-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 9px; scrollbar-width: none; }
     .types-row::-webkit-scrollbar { display: none; }
     .type-pill {
-      background: var(--card);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(19, 25, 39, 0.94);
       border: 1px solid var(--border); color: var(--muted);
       padding: 7px 14px; border-radius: 99px; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: background 0.22s ease, color 0.22s ease, transform 0.18s ease;
     }
     .type-pill:active { transform: scale(0.94); }
     .type-pill.selected {
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       border-color: transparent;
       color: #fff;
-      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.36);
     }
 
     /* Cards & Inputs */
     .card {
-      background: var(--card);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      background: linear-gradient(155deg, rgba(19, 25, 39, 0.94), rgba(13, 17, 28, 0.96));
       border: 1px solid rgba(255, 255, 255, 0.09);
-      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.09);
       border-radius: 18px; padding: 15px; margin-bottom: 12px;
-      animation: m7CardEnter 0.8s cubic-bezier(0.16, 1, 0.3, 1) 2.6s backwards;
     }
     .card-head { margin-bottom: 11px; }
     .card-head h2 { margin: 0 0 3px; font-size: 15px; font-weight: 800; }
@@ -284,13 +264,12 @@
       width: 100%; background: var(--card-2); border: 1px solid rgba(255, 255, 255, 0.09);
       color: var(--text); border-radius: 13px; padding: 11px 12px;
       font-size: 13.5px; font-weight: 600; outline: none;
-      transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .sel option { background: #141926; color: #f8fafc; }
     .inp:focus, .sel:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
-      background: rgba(26, 33, 50, 0.95);
     }
     .field { margin-bottom: 11px; }
     .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 5px; }
@@ -308,9 +287,9 @@
       position: relative;
       overflow: hidden;
       display: flex; align-items: center; justify-content: space-between;
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.18), rgba(59, 130, 246, 0.14));
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(59, 130, 246, 0.16));
       border: 1px solid rgba(124, 58, 237, 0.38);
-      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.14);
       border-radius: 13px; padding: 11px 13px; margin-bottom: 11px;
       font-weight: 800; font-size: 14px; color: #f3e8ff;
     }
@@ -334,13 +313,10 @@
       animation: m7BtnGradientFlow 5s ease infinite;
       border: none; color: #fff; padding: 13.5px; border-radius: 14px;
       font-size: 14px; font-weight: 800; cursor: pointer;
-      box-shadow: 0 8px 24px rgba(124, 58, 237, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.32);
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+      box-shadow: 0 8px 22px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: transform 0.18s ease;
     }
-    .btn-main:active {
-      transform: scale(0.97);
-      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
-    }
+    .btn-main:active { transform: scale(0.97); }
     .btn-main::after {
       content: "";
       position: absolute;
@@ -348,7 +324,7 @@
       left: -120%;
       width: 55%;
       height: 200%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
       transform: rotate(25deg);
       animation: m7ShimmerSweep 3.8s ease-in-out infinite;
     }
@@ -362,7 +338,7 @@
     .copy-btn {
       background: rgba(124, 58, 237, 0.24); border: 1px solid rgba(124, 58, 237, 0.45);
       color: #fff; padding: 7px 11px; border-radius: 10px; font-size: 11.5px; font-weight: 700; cursor: pointer;
-      transition: transform 0.18s ease, background 0.18s ease;
+      transition: transform 0.18s ease;
     }
     .copy-btn:active { transform: scale(0.93); }
 
@@ -375,18 +351,15 @@
     .status-msg { text-align: center; font-size: 13px; font-weight: 700; margin-top: 9px; min-height: 18px; }
 
     #adminModal {
-      display: none; position: fixed; inset: 0; background: rgba(4, 6, 10, 0.85);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      display: none; position: fixed; inset: 0; background: rgba(4, 6, 10, 0.88);
       z-index: 99; align-items: center; justify-content: center; padding: 15px;
     }
     .modal-card {
-      background: rgba(17, 21, 31, 0.95); border: 1px solid rgba(124, 58, 237, 0.4); border-radius: 18px;
+      background: #131826; border: 1px solid rgba(124, 58, 237, 0.42); border-radius: 18px;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
       width: 100%; max-width: 400px; max-height: 88vh; overflow-y: auto; padding: 15px;
     }
 
-    /* Keyframes for Luxury Motion */
     @keyframes m7ShimmerSweep {
       0% { left: -120%; }
       45%, 100% { left: 160%; }
@@ -397,12 +370,8 @@
       100% { background-position: 0% 50%; }
     }
     @keyframes m7BalPulse {
-      0%, 100% { border-color: rgba(16, 185, 129, 0.32); box-shadow: 0 0 14px rgba(16, 185, 129, 0.12); }
-      50% { border-color: rgba(16, 185, 129, 0.65); box-shadow: 0 0 22px rgba(16, 185, 129, 0.28); }
-    }
-    @keyframes m7CardEnter {
-      from { opacity: 0; transform: translateY(14px); }
-      to { opacity: 1; transform: translateY(0); }
+      0%, 100% { border-color: rgba(16, 185, 129, 0.34); box-shadow: 0 0 12px rgba(16, 185, 129, 0.12); }
+      50% { border-color: rgba(16, 185, 129, 0.65); box-shadow: 0 0 20px rgba(16, 185, 129, 0.26); }
     }
     @keyframes m7DropdownPop {
       from { opacity: 0; transform: translateY(-6px) scale(0.96); }
@@ -411,7 +380,7 @@
   </style>
 </head>
 <body>
-  <!-- M7 ANIMATED AMBIENT BACKGROUND -->
+  <!-- M7 GLITCH-FREE AMBIENT BACKGROUND -->
   <div class="m7-ambient-canvas" aria-hidden="true">
     <div class="m7-ambient-grid"></div>
     <div class="m7-orb m7-orb-1"></div>
@@ -419,7 +388,7 @@
     <div class="m7-orb m7-orb-3"></div>
   </div>
 
-  <!-- M7 BRAND-MATCHED LUXURY INTRO START -->
+  <!-- M7 GLITCH-FREE LUXURY INTRO START -->
   <div id="m7IntroOverlay" dir="ltr" aria-hidden="true">
     <div class="m7-intro-grid"></div>
     <div class="m7-intro-glow"></div>
@@ -439,9 +408,9 @@
             </linearGradient>
           </defs>
           <!-- Geometric M -->
-          <path class="m7-draw-path" d="M22 78V24L48 56L74 24V78" stroke="url(#m7WhiteGrad)" stroke-width="6.8" stroke-linecap="square" stroke-linejoin="miter"/>
-          <!-- Geometric 7 in M7 Violet-Blue Gradient -->
-          <path class="m7-draw-path m7-draw-delay" d="M92 24H138L108 78" stroke="url(#m7BrandGrad)" stroke-width="6.8" stroke-linecap="square" stroke-linejoin="miter"/>
+          <path class="m7-draw-path" pathLength="100" d="M22 78V24L48 56L74 24V78" stroke="url(#m7WhiteGrad)" stroke-width="6.8" stroke-linecap="square" stroke-linejoin="miter"/>
+          <!-- Geometric 7 -->
+          <path class="m7-draw-path m7-draw-delay" pathLength="100" d="M92 24H138L108 78" stroke="url(#m7BrandGrad)" stroke-width="6.8" stroke-linecap="square" stroke-linejoin="miter"/>
           <!-- Electric Blue Accent Square -->
           <rect class="m7-precision-dot" x="131" y="71" width="7" height="7" rx="1.5" fill="#3b82f6"/>
         </svg>
@@ -466,15 +435,15 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-                  filter 0.75s ease;
+      will-change: opacity, transform;
+      transform: translateZ(0);
+      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     #m7IntroOverlay.m7-intro-exit {
       opacity: 0;
-      transform: scale(1.07);
-      filter: blur(14px);
+      transform: scale(1.04) translateZ(0);
       pointer-events: none;
     }
 
@@ -491,12 +460,12 @@
 
     .m7-intro-glow {
       position: absolute;
-      width: 340px;
-      height: 340px;
+      width: 380px;
+      height: 380px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(124, 58, 237, 0.28) 0%, rgba(59, 130, 246, 0.16) 45%, rgba(7, 9, 14, 0) 72%);
-      filter: blur(26px);
-      animation: m7GlowPulse 2.4s ease-in-out forwards;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.25) 0%, rgba(59, 130, 246, 0.12) 45%, rgba(7, 9, 14, 0) 70%);
+      will-change: transform, opacity;
+      animation: m7GlowPulse 2.3s ease-in-out forwards;
     }
 
     .m7-intro-center {
@@ -512,43 +481,39 @@
       width: 146px;
       height: 146px;
       border-radius: 34px;
-      background: linear-gradient(145deg, rgba(23, 28, 41, 0.94), rgba(17, 21, 31, 0.88));
-      border: 1px solid rgba(124, 58, 237, 0.38);
-      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.88),
-                  0 0 42px rgba(124, 58, 237, 0.22),
+      background: linear-gradient(145deg, #192032, #101522);
+      border: 1px solid rgba(124, 58, 237, 0.42);
+      box-shadow: 0 24px 55px rgba(0, 0, 0, 0.85),
+                  0 0 36px rgba(124, 58, 237, 0.22),
                   inset 0 1px 0 rgba(255, 255, 255, 0.16);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
-      transform: scale(0.85) translateY(14px);
-      animation: m7BoxReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+      transform: scale(0.88) translateY(12px);
+      animation: m7BoxReveal 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.08s forwards;
     }
 
     .m7-svg-logo {
       width: 108px;
       height: 68px;
-      filter: drop-shadow(0 0 16px rgba(124, 58, 237, 0.35));
     }
 
     .m7-draw-path {
-      stroke-dasharray: 240;
-      stroke-dashoffset: 240;
-      animation: m7StrokeDraw 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: m7StrokeDraw 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
     }
 
     .m7-draw-delay {
-      animation-delay: 0.46s;
+      animation-delay: 0.48s;
     }
 
     .m7-precision-dot {
       opacity: 0;
       transform: scale(0);
       transform-origin: 134.5px 74.5px;
-      filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.8));
-      animation: m7DotSnap 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 1.12s forwards;
+      animation: m7DotSnap 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 1.05s forwards;
     }
 
     .m7-intro-brand {
@@ -559,10 +524,10 @@
       color: #f8fafc;
       letter-spacing: 0.4em;
       padding-left: 0.4em;
-      text-shadow: 0 0 24px rgba(124, 58, 237, 0.45);
+      text-shadow: 0 0 22px rgba(124, 58, 237, 0.42);
       opacity: 0;
       transform: translateY(10px);
-      animation: m7TextGlide 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.72s forwards;
+      animation: m7TextGlide 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.68s forwards;
     }
 
     .m7-intro-tag {
@@ -575,7 +540,7 @@
       padding-left: 0.34em;
       opacity: 0;
       transform: translateY(8px);
-      animation: m7TextGlide 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.9s forwards;
+      animation: m7TextGlide 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.85s forwards;
     }
 
     .m7-loader-track {
@@ -586,17 +551,16 @@
       margin-top: 28px;
       overflow: hidden;
       opacity: 0;
-      animation: m7FadeSimple 0.45s ease 0.85s forwards;
+      animation: m7FadeSimple 0.4s ease 0.8s forwards;
     }
 
     .m7-loader-bar {
       width: 100%;
       height: 100%;
       background: linear-gradient(90deg, #7c3aed, #3b82f6);
-      box-shadow: 0 0 12px rgba(124, 58, 237, 0.75);
       transform: scaleX(0);
       transform-origin: left center;
-      animation: m7BarFill 1.45s cubic-bezier(0.65, 0, 0.35, 1) 0.9s forwards;
+      animation: m7BarFill 1.35s cubic-bezier(0.65, 0, 0.35, 1) 0.85s forwards;
     }
 
     @keyframes m7BoxReveal {
@@ -618,9 +582,9 @@
       to { transform: scaleX(1); }
     }
     @keyframes m7GlowPulse {
-      0% { opacity: 0.35; transform: scale(0.8); }
-      55% { opacity: 1; transform: scale(1.12); }
-      100% { opacity: 0.55; transform: scale(1); }
+      0% { opacity: 0.4; transform: scale(0.85); }
+      55% { opacity: 1; transform: scale(1.08); }
+      100% { opacity: 0.6; transform: scale(1); }
     }
   </style>
 
@@ -632,19 +596,19 @@
 
       setTimeout(() => {
         try { if (haptic) haptic.impactOccurred('medium'); } catch (e) {}
-      }, 1120);
+      }, 1050);
 
       setTimeout(() => {
         try { if (haptic) haptic.impactOccurred('light'); } catch (e) {}
         overlay.classList.add('m7-intro-exit');
-      }, 2400);
+      }, 2250);
 
       setTimeout(() => {
         if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      }, 3250);
+      }, 3000);
     })();
   </script>
-  <!-- M7 BRAND-MATCHED LUXURY INTRO END -->
+  <!-- M7 GLITCH-FREE LUXURY INTRO END -->
 
   <div class="app-wrap">
     <div class="topbar">
