@@ -106,18 +106,34 @@
       padding: 12px;
     }
 
-    /* Top Bar */
+    /* === CLEAN ORGANIZED TOP BAR === */
     .topbar {
       position: relative;
       z-index: 30;
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
-      background: linear-gradient(145deg, rgba(21, 27, 42, 0.94), rgba(14, 18, 29, 0.96));
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      background: linear-gradient(145deg, rgba(21, 27, 42, 0.95), rgba(14, 18, 29, 0.97));
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.11);
       border-radius: 18px;
-      padding: 10px 12px; margin-bottom: 12px;
+      padding: 11px 12px;
+      margin-bottom: 12px;
     }
-    .brand { display: flex; align-items: center; gap: 9px; cursor: pointer; min-width: 0; }
+    .topbar-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      min-width: 0;
+      flex: 1;
+    }
     .brand-logo {
       position: relative;
       overflow: hidden;
@@ -140,28 +156,63 @@
       transform: rotate(25deg);
       animation: m7ShimmerSweep 4.2s ease-in-out infinite;
     }
-    .brand-info { min-width: 0; }
-    .brand-info h1 { margin: 0; font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .brand-info span { font-size: 11px; color: var(--muted); cursor: pointer; transition: color 0.2s; }
-    .brand-info span:hover { color: #fff; }
-
-    .top-actions { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
-    .bal-pill {
-      background: linear-gradient(145deg, rgba(16, 185, 129, 0.17), rgba(16, 185, 129, 0.07));
-      border: 1px solid rgba(16, 185, 129, 0.36);
-      box-shadow: 0 0 16px rgba(16, 185, 129, 0.14);
-      padding: 5px 11px; border-radius: 12px; text-align: center;
-      animation: m7BalPulse 3.5s ease-in-out infinite;
+    .brand-info {
+      min-width: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
-    .bal-pill small { display: block; font-size: 10px; color: #6ee7b7; line-height: 1.2; }
-    .bal-pill b { font-size: 13px; color: #fff; font-family: 'Inter', sans-serif; }
+    .brand-info h1 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.25;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #userIdDisplay {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      direction: ltr;
+      unicode-bidi: isolate;
+      white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 2px 7px;
+      border-radius: 7px;
+      margin-top: 3px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    #userIdDisplay:active {
+      background: rgba(124, 58, 237, 0.25);
+      border-color: rgba(124, 58, 237, 0.5);
+    }
 
-    .lang-wrap { position: relative; }
+    /* Compact Sleek Language Button */
+    .lang-wrap { position: relative; flex-shrink: 0; }
     .lang-btn {
-      background: var(--card-2); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text);
-      padding: 8px 10px; border-radius: 12px; font-size: 12px; font-weight: 700;
-      cursor: pointer; display: flex; align-items: center; gap: 4px;
-      transition: transform 0.2s ease;
+      background: var(--card-2);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      color: var(--text);
+      padding: 6px 9px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
     }
     .lang-btn:active { transform: scale(0.95); }
     .lang-menu {
@@ -174,6 +225,32 @@
     .lang-menu.show { display: block; }
     .lang-item { padding: 9px 11px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.18s; }
     .lang-item:hover { background: rgba(124, 58, 237, 0.25); }
+
+    /* Dedicated Clear Balance Bar */
+    .bal-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.06));
+      border: 1px solid rgba(16, 185, 129, 0.32);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.12);
+      padding: 7px 12px;
+      border-radius: 12px;
+      animation: m7BalPulse 3.5s ease-in-out infinite;
+    }
+    .bal-pill small {
+      font-size: 12px;
+      font-weight: 700;
+      color: #6ee7b7;
+    }
+    .bal-pill b {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      direction: ltr;
+      letter-spacing: 0.02em;
+    }
 
     /* Tabs */
     .nav-tabs {
@@ -612,19 +689,15 @@
 
   <div class="app-wrap">
     <div class="topbar">
-      <div class="brand" onclick="handleLogoClick()">
-        <div class="brand-logo">M7</div>
-        <div class="brand-info">
-          <h1 id="userNameDisplay">M7 Store</h1>
-          <span id="userIdDisplay" onclick="event.stopPropagation();copyText(telegramId,this)">ID: ...</span>
+      <div class="topbar-main">
+        <div class="brand" onclick="handleLogoClick()">
+          <div class="brand-logo">M7</div>
+          <div class="brand-info">
+            <h1 id="userNameDisplay">M7 Store</h1>
+            <span id="userIdDisplay" onclick="event.stopPropagation();copyText(telegramId,this)">ID: ...</span>
+          </div>
         </div>
-      </div>
 
-      <div class="top-actions">
-        <div class="bal-pill">
-          <small id="txtBalance">رصيدك</small>
-          <b id="userBalance">$0.00</b>
-        </div>
         <div class="lang-wrap">
           <button class="lang-btn" onclick="document.getElementById('langMenu').classList.toggle('show')">
             🌐 <span id="currentLangTitle">العربية</span>
@@ -635,6 +708,11 @@
             <div class="lang-item" onclick="setLang('ku_b')">☀️ کوردی (بادینی)</div>
           </div>
         </div>
+      </div>
+
+      <div class="bal-pill">
+        <small id="txtBalance">رصيدك</small>
+        <b id="userBalance">$0.00</b>
       </div>
     </div>
 
