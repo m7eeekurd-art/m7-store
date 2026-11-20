@@ -166,6 +166,221 @@
   </style>
 </head>
 <body>
+  <!-- M7 ULTRA-LUXURY INTRO START -->
+  <div id="m7IntroOverlay" dir="ltr" aria-hidden="true">
+    <div class="m7-intro-grid"></div>
+    <div class="m7-intro-glow"></div>
+
+    <div class="m7-intro-center">
+      <div class="m7-logo-box">
+        <svg class="m7-svg-logo" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="m7MetalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="50%" stop-color="#d4d4d8"/>
+              <stop offset="100%" stop-color="#ffffff"/>
+            </linearGradient>
+          </defs>
+          <path class="m7-draw-path" d="M22 78V24L48 56L74 24V78" stroke="url(#m7MetalGrad)" stroke-width="6.5" stroke-linecap="square" stroke-linejoin="miter"/>
+          <path class="m7-draw-path m7-draw-delay" d="M92 24H138L108 78" stroke="url(#m7MetalGrad)" stroke-width="6.5" stroke-linecap="square" stroke-linejoin="miter"/>
+          <rect class="m7-precision-dot" x="131" y="71" width="7" height="7" fill="#ffffff"/>
+        </svg>
+      </div>
+
+      <div class="m7-intro-brand">M7 STORE</div>
+      <div class="m7-intro-tag">EXCLUSIVE DIGITAL SUITE</div>
+
+      <div class="m7-loader-track">
+        <div class="m7-loader-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    #m7IntroOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: #050507;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+                  filter 0.75s ease;
+    }
+
+    #m7IntroOverlay.m7-intro-exit {
+      opacity: 0;
+      transform: scale(1.07);
+      filter: blur(14px);
+      pointer-events: none;
+    }
+
+    .m7-intro-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      -webkit-mask-image: radial-gradient(circle at center, #000 20%, transparent 72%);
+      mask-image: radial-gradient(circle at center, #000 20%, transparent 72%);
+    }
+
+    .m7-intro-glow {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+      filter: blur(22px);
+      animation: m7GlowPulse 2.4s ease-in-out forwards;
+    }
+
+    .m7-intro-center {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .m7-logo-box {
+      width: 146px;
+      height: 146px;
+      border-radius: 34px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.015));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 28px 65px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(0.85) translateY(14px);
+      animation: m7BoxReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+    }
+
+    .m7-svg-logo {
+      width: 108px;
+      height: 68px;
+      filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.22));
+    }
+
+    .m7-draw-path {
+      stroke-dasharray: 240;
+      stroke-dashoffset: 240;
+      animation: m7StrokeDraw 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
+    }
+
+    .m7-draw-delay {
+      animation-delay: 0.46s;
+    }
+
+    .m7-precision-dot {
+      opacity: 0;
+      transform: scale(0);
+      transform-origin: 134.5px 74.5px;
+      animation: m7DotSnap 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 1.12s forwards;
+    }
+
+    .m7-intro-brand {
+      margin-top: 26px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 21px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.4em;
+      padding-left: 0.4em;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: m7TextGlide 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.72s forwards;
+    }
+
+    .m7-intro-tag {
+      margin-top: 8px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 9.5px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.48);
+      letter-spacing: 0.34em;
+      padding-left: 0.34em;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: m7TextGlide 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.9s forwards;
+    }
+
+    .m7-loader-track {
+      width: 148px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 99px;
+      margin-top: 28px;
+      overflow: hidden;
+      opacity: 0;
+      animation: m7FadeSimple 0.45s ease 0.85s forwards;
+    }
+
+    .m7-loader-bar {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.25), #ffffff);
+      transform: scaleX(0);
+      transform-origin: left center;
+      animation: m7BarFill 1.45s cubic-bezier(0.65, 0, 0.35, 1) 0.9s forwards;
+    }
+
+    @keyframes m7BoxReveal {
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes m7StrokeDraw {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes m7DotSnap {
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes m7TextGlide {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes m7FadeSimple {
+      to { opacity: 1; }
+    }
+    @keyframes m7BarFill {
+      to { transform: scaleX(1); }
+    }
+    @keyframes m7GlowPulse {
+      0% { opacity: 0.3; transform: scale(0.8); }
+      55% { opacity: 1; transform: scale(1.12); }
+      100% { opacity: 0.5; transform: scale(1); }
+    }
+  </style>
+
+  <script>
+    (function() {
+      const overlay = document.getElementById('m7IntroOverlay');
+      if (!overlay) return;
+      const haptic = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback;
+
+      setTimeout(() => {
+        try { if (haptic) haptic.impactOccurred('medium'); } catch (e) {}
+      }, 1120);
+
+      setTimeout(() => {
+        try { if (haptic) haptic.impactOccurred('light'); } catch (e) {}
+        overlay.classList.add('m7-intro-exit');
+      }, 2400);
+
+      setTimeout(() => {
+        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      }, 3250);
+    })();
+  </script>
+  <!-- M7 ULTRA-LUXURY INTRO END -->
+
   <div class="app-wrap">
     <div class="topbar">
       <div class="brand" onclick="handleLogoClick()">
