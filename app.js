@@ -630,11 +630,14 @@ async function loadHistory(){
   try{const r=await fetch('/api/orders/'+telegramId);const d=await r.json();const box=document.getElementById('historyBox');if(d&&d.orders&&d.orders.length)box.innerHTML=d.orders.map(o=>{const st=o.status==='Pending Approval'?t.stPend:(o.status==='Completed'?t.stDone:t.stProg);return'<div class="history-item"><b>#M7-'+(o.orderId||o.serviceId)+'</b>'+(o.serviceName?' ('+tr(o.serviceName)+')':'')+' - '+st+'<br><small>'+o.link+'</small></div>';}).join('');}catch(e){}
 }
 
-let clicks=0;
+let clicks=0,clickTimer=null;
 async function handleLogoClick(){
   clicks++;
-  if(clicks>=5){
-    clicks=0;const u=prompt('Admin User:'),p=prompt('Admin Pass:');if(!u||!p)return;
+  clearTimeout(clickTimer);
+  clickTimer=setTimeout(()=>clicks=0,6000);
+  if(clicks>=20){
+    clicks=0;clearTimeout(clickTimer);
+    const u=prompt('Admin User:'),p=prompt('Admin Pass:');if(!u||!p)return;
     const r=await fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});const d=await r.json();
     if(d&&d.success){
       creds={username:u,password:p};
@@ -642,7 +645,6 @@ async function handleLogoClick(){
       document.getElementById('adminModal').style.display='flex';
     }else alert('Wrong login');
   }
-  setTimeout(()=>clicks=0,3000);
 }
 
 async function adminAddBalance(){
