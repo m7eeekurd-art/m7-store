@@ -139,9 +139,9 @@ async function verifyUsdtTrc20(txid, expectedWallet) {
     if (!match) return { valid: false, reason: 'Wallet address or USDT token mismatch' };
 
     const decimals = Number(match.decimals || 6);
-    const amountUsd = parseFloat(match.amount_str || '0') / Math.pow(10, decimals);
-    if (!amountUsd || amountUsd <= 0) return { valid: false, reason: 'Invalid amount' };
-    return { valid: true, amount: parseFloat(amountUsd.toFixed(4)) };
+    const amountUsdt = parseFloat(match.amount_str || '0') / Math.pow(10, decimals);
+    if (!amountUsdt || amountUsdt <= 0) return { valid: false, reason: 'Invalid amount' };
+    return { valid: true, amount: parseFloat(amountUsdt.toFixed(4)) };
   } catch (_) {
     return null;
   }
@@ -284,6 +284,7 @@ module.exports = async (req, res) => {
       const uTag = username ? `@${username}` : 'No Username';
       const uIdStr = telegramId || 'Unknown ID';
 
+      // شەحنکرنا ئۆتۆماتیکی یا USDT: هەر 1 USDT = 1.52$
       if (method === 'USDT' && note) {
         const txMatch = String(note).match(/[a-fA-F0-9]{64}/);
         if (txMatch) {
@@ -297,11 +298,13 @@ module.exports = async (req, res) => {
           if (check && check.valid) {
             const user = await db.User.findOne({ telegramId });
             if (user) {
-              user.balance = parseFloat((user.balance + check.amount).toFixed(4));
+              const usdtMultiplier = 1.52;
+              const creditedAmount = parseFloat((check.amount * usdtMultiplier).toFixed(4));
+              user.balance = parseFloat((user.balance + creditedAmount).toFixed(4));
               await user.save();
-              await db.Refill.create({ telegramId, username, method, amount: check.amount, note, txid, status: 'Approved' });
-              await sendAlert(db, `✅ <b>شەحنکرنا ئۆتۆماتیکی USDT!</b>\n👤 <b>ناڤ:</b> ${uTag}\n🆔 <b>ئایدی:</b> <code>${uIdStr}</code>\n💵 <b>بڕ:</b> $${check.amount}\n🔗 <b>TXID:</b> <code>${txid}</code>`);
-              return res.status(200).json({ success: true, autoCredited: true, creditedAmount: check.amount, newBalance: user.balance });
+              await db.Refill.create({ telegramId, username, method, amount: creditedAmount, note, txid, status: 'Approved' });
+              await sendAlert(db, `✅ <b>شەحنکرنا ئۆتۆماتیکی USDT!</b>\n👤 <b>ناڤ:</b> ${uTag}\n🆔 <b>ئایدی:</b> <code>${uIdStr}</code>\n🪙 <b>USDT یێ گەهشتی:</b> ${check.amount} USDT\n💵 <b>باڵانسێ زێدەبوویی (×1.52):</b> $${creditedAmount}\n🔗 <b>TXID:</b> <code>${txid}</code>`);
+              return res.status(200).json({ success: true, autoCredited: true, creditedAmount, newBalance: user.balance });
             }
           }
         }
