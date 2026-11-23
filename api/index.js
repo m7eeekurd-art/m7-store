@@ -43,6 +43,7 @@ async function connectDB() {
         method: String,
         amount: Number,
         note: String,
+        txid: { type: String, sparse: true },
         status: { type: String, default: 'Pending' },
         createdAt: { type: Date, default: Date.now }
       }))
@@ -75,6 +76,33 @@ async function sendAlert(db, text) {
   } catch (_) {}
 }
 
+// پشکنینا حەواڵا USDT (TRC20) ب شێوەیێ ئۆتۆماتیکی
+async function verifyUsdtTrc20(txid, expectedWallet) {
+  try {
+    const cleanWallet = String(expectedWallet || '').trim();
+    if (!cleanWallet || cleanWallet.startsWith('TYourAdmin')) return null;
+    const res = await fetch(`https://apilist.tronscanapi.com/api/transaction-info?hash=${txid}`);
+    if (!res.ok) return null;
+    const info = await res.json();
+    if (!info || info.contractRet !== 'SUCCESS' || !info.confirmed) return { valid: false, reason: 'Transaction not confirmed yet' };
+
+    const transfers = Array.isArray(info.trc20TransferInfo) ? info.trc20TransferInfo : [];
+    const usdtContract = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
+    const match = transfers.find(t =>
+      String(t.contract_address || '') === usdtContract &&
+      String(t.to_address || '').toLowerCase() === cleanWallet.toLowerCase()
+    );
+    if (!match) return { valid: false, reason: 'Wallet address or USDT token mismatch' };
+
+    const decimals = Number(match.decimals || 6);
+    const amountUsd = parseFloat(match.amount_str || '0') / Math.pow(10, decimals);
+    if (!amountUsd || amountUsd <= 0) return { valid: false, reason: 'Invalid amount' };
+    return { valid: true, amount: parseFloat(amountUsd.toFixed(4)) };
+  } catch (_) {
+    return null;
+  }
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
@@ -88,6 +116,33 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // وەلامدانا /start د تێلیگرامی دا ب دوگما مینی ئەپێ
+    if (path === '/api/telegram-webhook') {
+      const msg = body && body.message;
+      if (msg && msg.text && msg.text.trim().startsWith('/start')) {
+        const db = await connectDB();
+        const s = db ? await db.Settings.findOne({ key: 'main' }) : null;
+        const token = (process.env.BOT_TOKEN || (s && s.botToken) || '').trim();
+        const miniAppUrl = (process.env.MINI_APP_URL || 'https://m7-com.vercel.app/').trim();
+        if (token && msg.chat && msg.chat.id) {
+          const fname = (msg.from && msg.from.first_name) || 'User';
+          await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: msg.chat.id,
+              text: `👋 بخێرهاتی <b>${fname}</b> بۆ <b>M7 Store</b>!\n\nبۆ داواکرنا خزمەتگوزارییان و پڕکرنا باڵانسی ب ئاسانترین شێوە، دوگما ل خوارێ دابگرە:`,
+              parse_mode: 'HTML',
+              reply_markup: {
+                inline_keyboard: [[{ text: '🚀 ڤەکرنا مینی ئەپێ (Open App)', web_app: { url: miniAppUrl } }]]
+              }
+            })
+          });
+        }
+      }
+      return res.status(200).json({ ok: true });
+    }
+
     if (path === '/api/services') {
       const apiKey = (process.env.KD1S_API_KEY || '').trim();
       if (!apiKey) return res.status(200).json({ success: false, error: 'KD1S_API_KEY missing' });
@@ -103,7 +158,13 @@ module.exports = async (req, res) => {
 
       const data = await kd1sPost({ key: apiKey, action: 'services' });
       if (!Array.isArray(data)) return res.status(200).json({ success: false, error: (data && data.error) || 'Invalid Key' });
-      const services = data.map(s => ({ ...s, rate: (parseFloat(s.rate || 0) * (1 + profit)).toFixed(4) }));
+      const services = data.map(s => ({
+        ...s,
+        rate: (parseFloat(s.rate || 0) * (1 + profit)).toFixed(4),
+        average_time: s.average_time || s.avg_time || '',
+        start_time: s.start_time || '',
+        desc: s.desc || s.description || ''
+      }));
       return res.status(200).json({ success: true, services });
     }
 
@@ -133,8 +194,7 @@ module.exports = async (req, res) => {
 
       const settings = await db.Settings.findOne({ key: 'main' });
       const profit = settings ? (settings.profitPercentage / 100) : 0.40;
-      
-      // حیسابکرنا دروستا کوژمەی بەهایێ داواکاریێ ب ساناهی
+
       const rawCost = (quantity / 1000) * parseFloat(svc.rate) * (1 + profit);
       const cost = Math.max(0.0001, parseFloat(rawCost.toFixed(4)));
 
@@ -151,7 +211,6 @@ module.exports = async (req, res) => {
 
       const kd = await kd1sPost({ key: apiKey, action: 'add', service: serviceId, link, quantity });
       if (kd && kd.order) {
-        // کێمکرنا باڵانسی ب شێوەیەکێ دروست و گشتگیر
         user.balance = Math.max(0, parseFloat((user.balance - cost).toFixed(4)));
         await user.save();
 
@@ -162,17 +221,80 @@ module.exports = async (req, res) => {
       return res.status(200).json({ success: false, error: (kd && kd.error) || 'Order failed' });
     }
 
+    // پشکنینا ڕەوشا داواکارییان ژ kd1s و زڤڕاندنا پارەی ب شێوەیێ ئۆتۆماتیکی ئەگەر هاتنە ڕەتکرن
     if (path.startsWith('/api/orders/')) {
       const tid = path.split('/').pop();
       const orders = await db.Order.find({ telegramId: tid }).sort({ createdAt: -1 }).limit(20);
+      const apiKey = (process.env.KD1S_API_KEY || '').trim();
+      const activeIds = orders.filter(o => o.orderId && o.status === 'In Progress').map(o => o.orderId);
+
+      if (apiKey && activeIds.length > 0) {
+        try {
+          const stData = await kd1sPost({ key: apiKey, action: 'status', orders: activeIds.join(',') });
+          if (stData && typeof stData === 'object' && !stData.error) {
+            let refundTotal = 0;
+            for (const o of orders) {
+              const info = stData[o.orderId];
+              if (!info || !info.status) continue;
+              const stLow = String(info.status).toLowerCase();
+              if (stLow === 'completed') {
+                o.status = 'Completed';
+                await o.save();
+              } else if (stLow === 'canceled' || stLow === 'refunded') {
+                o.status = 'Refunded';
+                await o.save();
+                refundTotal += parseFloat(o.cost || 0);
+              } else if (stLow === 'partial' && o.quantity > 0) {
+                const remains = Math.min(o.quantity, Math.max(0, parseFloat(info.remains || 0)));
+                o.status = 'Refunded';
+                await o.save();
+                refundTotal += parseFloat(((remains / o.quantity) * (o.cost || 0)).toFixed(4));
+              }
+            }
+            if (refundTotal > 0) {
+              const user = await db.User.findOne({ telegramId: tid });
+              if (user) {
+                user.balance = parseFloat((user.balance + refundTotal).toFixed(4));
+                await user.save();
+                return res.status(200).json({ success: true, orders, newBalance: user.balance });
+              }
+            }
+          }
+        } catch (_) {}
+      }
       return res.status(200).json({ success: true, orders });
     }
 
     if (path === '/api/refill-request') {
       const { telegramId, username, method, amount, note } = body;
-      await db.Refill.create({ telegramId, username, method, amount, note });
       const uTag = username ? `@${username}` : 'No Username';
       const uIdStr = telegramId || 'Unknown ID';
+
+      // ئەگەر USDT بیت و کۆدێ TXID نڤیسیبیت، ب شێوەیێ ئۆتۆماتیکی پشکنینێ دکەت
+      if (method === 'USDT' && note) {
+        const txMatch = String(note).match(/[a-fA-F0-9]{64}/);
+        if (txMatch) {
+          const txid = txMatch[0].toLowerCase();
+          const existing = await db.Refill.findOne({ txid });
+          if (existing) {
+            return res.status(200).json({ success: false, error: 'TXID already used!' });
+          }
+          const settings = await db.Settings.findOne({ key: 'main' });
+          const check = await verifyUsdtTrc20(txid, settings && settings.usdt);
+          if (check && check.valid) {
+            const user = await db.User.findOne({ telegramId });
+            if (user) {
+              user.balance = parseFloat((user.balance + check.amount).toFixed(4));
+              await user.save();
+              await db.Refill.create({ telegramId, username, method, amount: check.amount, note, txid, status: 'Approved' });
+              await sendAlert(db, `✅ <b>شەحنکرنا ئۆتۆماتیکی USDT!</b>\n👤 <b>ناڤ:</b> ${uTag}\n🆔 <b>ئایدی:</b> <code>${uIdStr}</code>\n💵 <b>بڕ:</b> $${check.amount}\n🔗 <b>TXID:</b> <code>${txid}</code>`);
+              return res.status(200).json({ success: true, autoCredited: true, creditedAmount: check.amount, newBalance: user.balance });
+            }
+          }
+        }
+      }
+
+      await db.Refill.create({ telegramId, username, method, amount, note });
       await sendAlert(db, `💳 <b>داواکارییا پڕکرنا باڵانسی!</b>\n👤 <b>ناڤ:</b> ${uTag}\n🆔 <b>ئایدی:</b> <code>${uIdStr}</code>\n💵 <b>بڕ:</b> $${amount}\n🏦 <b>ڕێکا ڤەدانا:</b> ${method}\n📝 <b>تێبینی:</b> ${note || '-'}`);
       return res.status(200).json({ success: true });
     }
@@ -218,4 +340,3 @@ module.exports = async (req, res) => {
     return res.status(200).json({ success: false, error: err.message });
   }
 };
-        
