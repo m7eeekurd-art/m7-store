@@ -76,6 +76,50 @@ async function sendAlert(db, text) {
   } catch (_) {}
 }
 
+// پشکنینا داواکارییان د kd1s دا و زڤڕاندنا پارەی ب شێوەیێ ئۆتۆماتیکی
+async function syncUserOrders(db, tid) {
+  const orders = await db.Order.find({ telegramId: tid }).sort({ createdAt: -1 }).limit(20);
+  const apiKey = (process.env.KD1S_API_KEY || '').trim();
+  const activeIds = orders.filter(o => o.orderId && o.status === 'In Progress').map(o => o.orderId);
+  let newBalance;
+
+  if (apiKey && activeIds.length > 0) {
+    try {
+      const stData = await kd1sPost({ key: apiKey, action: 'status', orders: activeIds.join(',') });
+      if (stData && typeof stData === 'object' && !stData.error) {
+        let refundTotal = 0;
+        for (const o of orders) {
+          const info = stData[o.orderId];
+          if (!info || !info.status) continue;
+          const stLow = String(info.status).toLowerCase();
+          if (stLow === 'completed') {
+            o.status = 'Completed';
+            await o.save();
+          } else if (stLow === 'canceled' || stLow === 'refunded') {
+            o.status = 'Refunded';
+            await o.save();
+            refundTotal += parseFloat(o.cost || 0);
+          } else if (stLow === 'partial' && o.quantity > 0) {
+            const remains = Math.min(o.quantity, Math.max(0, parseFloat(info.remains || 0)));
+            o.status = 'Refunded';
+            await o.save();
+            refundTotal += parseFloat(((remains / o.quantity) * (o.cost || 0)).toFixed(4));
+          }
+        }
+        if (refundTotal > 0) {
+          const user = await db.User.findOne({ telegramId: tid });
+          if (user) {
+            user.balance = parseFloat((user.balance + refundTotal).toFixed(4));
+            await user.save();
+            newBalance = user.balance;
+          }
+        }
+      }
+    } catch (_) {}
+  }
+  return { orders, newBalance };
+}
+
 // پشکنینا حەواڵا USDT (TRC20) ب شێوەیێ ئۆتۆماتیکی
 async function verifyUsdtTrc20(txid, expectedWallet) {
   try {
@@ -171,15 +215,20 @@ module.exports = async (req, res) => {
     const db = await connectDB();
     if (!db) return res.status(200).json({ success: false, error: 'DB Error' });
 
+    // ل دەمێ ڤەکرنا ئەپێ ئێکسەر داواکارییان دپشکنیت و ئەگەر کەنسل ببن پارەی دزڤڕینیت
     if (path === '/api/user') {
       const { telegramId, username, firstName } = body;
       if (!telegramId) return res.status(200).json({ success: false });
       let user = await db.User.findOne({ telegramId });
       if (!user) user = await db.User.create({ telegramId, username: username || 'NoUsername', firstName: firstName || 'User', balance: 0 });
       else if (username && user.username !== username) { user.username = username; await user.save(); }
+
+      const syncRes = await syncUserOrders(db, telegramId);
+      const finalBalance = syncRes.newBalance !== undefined ? syncRes.newBalance : user.balance;
+
       let settings = await db.Settings.findOne({ key: 'main' });
       if (!settings) settings = await db.Settings.create({ key: 'main' });
-      return res.status(200).json({ success: true, balance: user.balance, settings });
+      return res.status(200).json({ success: true, balance: finalBalance, settings });
     }
 
     if (path === '/api/order') {
@@ -221,48 +270,13 @@ module.exports = async (req, res) => {
       return res.status(200).json({ success: false, error: (kd && kd.error) || 'Order failed' });
     }
 
-    // پشکنینا ڕەوشا داواکارییان ژ kd1s و زڤڕاندنا پارەی ب شێوەیێ ئۆتۆماتیکی ئەگەر هاتنە ڕەتکرن
+    // پشکنین ل دەمێ ڤەکرنا بەشێ History ژی
     if (path.startsWith('/api/orders/')) {
       const tid = path.split('/').pop();
-      const orders = await db.Order.find({ telegramId: tid }).sort({ createdAt: -1 }).limit(20);
-      const apiKey = (process.env.KD1S_API_KEY || '').trim();
-      const activeIds = orders.filter(o => o.orderId && o.status === 'In Progress').map(o => o.orderId);
-
-      if (apiKey && activeIds.length > 0) {
-        try {
-          const stData = await kd1sPost({ key: apiKey, action: 'status', orders: activeIds.join(',') });
-          if (stData && typeof stData === 'object' && !stData.error) {
-            let refundTotal = 0;
-            for (const o of orders) {
-              const info = stData[o.orderId];
-              if (!info || !info.status) continue;
-              const stLow = String(info.status).toLowerCase();
-              if (stLow === 'completed') {
-                o.status = 'Completed';
-                await o.save();
-              } else if (stLow === 'canceled' || stLow === 'refunded') {
-                o.status = 'Refunded';
-                await o.save();
-                refundTotal += parseFloat(o.cost || 0);
-              } else if (stLow === 'partial' && o.quantity > 0) {
-                const remains = Math.min(o.quantity, Math.max(0, parseFloat(info.remains || 0)));
-                o.status = 'Refunded';
-                await o.save();
-                refundTotal += parseFloat(((remains / o.quantity) * (o.cost || 0)).toFixed(4));
-              }
-            }
-            if (refundTotal > 0) {
-              const user = await db.User.findOne({ telegramId: tid });
-              if (user) {
-                user.balance = parseFloat((user.balance + refundTotal).toFixed(4));
-                await user.save();
-                return res.status(200).json({ success: true, orders, newBalance: user.balance });
-              }
-            }
-          }
-        } catch (_) {}
-      }
-      return res.status(200).json({ success: true, orders });
+      const syncRes = await syncUserOrders(db, tid);
+      const resp = { success: true, orders: syncRes.orders };
+      if (syncRes.newBalance !== undefined) resp.newBalance = syncRes.newBalance;
+      return res.status(200).json(resp);
     }
 
     if (path === '/api/refill-request') {
@@ -270,7 +284,6 @@ module.exports = async (req, res) => {
       const uTag = username ? `@${username}` : 'No Username';
       const uIdStr = telegramId || 'Unknown ID';
 
-      // ئەگەر USDT بیت و کۆدێ TXID نڤیسیبیت، ب شێوەیێ ئۆتۆماتیکی پشکنینێ دکەت
       if (method === 'USDT' && note) {
         const txMatch = String(note).match(/[a-fA-F0-9]{64}/);
         if (txMatch) {
