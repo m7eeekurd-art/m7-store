@@ -27,12 +27,11 @@ function copyText(t,btn){if(!t)return;if(navigator.clipboard)navigator.clipboard
 function fmtBal(n){const v=parseFloat(n)||0;if(v===0)return'$0.00';const s=v.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');const p=s.split('.');return!p[1]?'$'+p[0]+'.00':(p[1].length===1?'$'+s+'0':'$'+s);}
 
 const T={
-  ar:{lang:"العربية",dir:"rtl",bal:"رصيدك",ord:"طلب جديد ⚡",ref:"شحن رصيد 💳",his:"سجلاتي 🕒",selP:"اختر المنصة:",selT:"اختر نوع الخدمة:",srch:"🔍 ابحث باسم الخدمة أو الرقم...",cat:"القسم:",loadCat:"جاري التحميل...",loadSvc:"جاري التحميل...",oTit:"إنشاء طلب جديد",oSub:"اختر الخدمة واكتب الرابط الخاص بك",svc:"الخدمة:",lnk:"الرابط:",lnkPh:"ضع الرابط هنا \u200Ehttps://...\u200E",qty:"الكمية:",st:"البدء",stV:"فوري (0 - 15 د)",wr:"الضمان",yes:"متوفر",noW:"بدون ضمان",mm:"الحد الأدنى / الأقصى",tot:"الإجمالي",sub:"تأكيد الطلب ⚡",rTit:"شحن رصيد الحساب 💳",rSub:"انسخ رقم QiCard أو عنوان USDT وأرسل المبلغ",cpy:"📋 نسخ",pay:"طريقة الدفع:",rAmt:"مبلغ الشحن ($):",note:"رقم العملية / اسم المرسل:",notePh:"اكتب رقم الحوالة أو اسم المرسل...",rBtn:"إرسال طلب الشحن 🚀",hEmp:"سجل الطلبات فارغ",hSub:"الطلبات التي تقوم بتثبيتها ستظهر هنا",tAll:"الكل",tFol:"متابعين",tLik:"لايكات",tViw:"مشاهدات",tCom:"تعليقات",pIg:"إنستغرام",pTt:"تيك توك",pTg:"تيليجرام",pYt:"يوتيوب",pFb:"فيسبوك",pSc:"سناب شات",pTw:"تويتر / X",pWa:"واتساب",pAl:"الكل / عام",errFill:"يرجى إدخال الرابط واختيار الخدمة!",okPend:"⏳ بانتظار الموافقة",okOrd:"✅ تم تنفيذ الطلب #",errFail:"فشل تنفيذ الطلب",errConn:"خطأ في الاتصال",okRef:"✅ تم الإرسال بنجاح!",errRef:"❌ خطأ في الإرسال",stProg:"قيد التنفيذ",stPend:"بانتظار الموافقة",stDone:"مكتمل"},
-  en:{lang:"English",dir:"ltr",bal:"Balance",ord:"New Order ⚡",ref:"Top Up 💳",his:"History 🕒",selP:"Select Platform:",selT:"Service Type:",srch:"🔍 Search service name or ID...",cat:"Category:",loadCat:"Loading...",loadSvc:"Loading...",oTit:"Create New Order",oSub:"Select a service and enter your link",svc:"Service:",lnk:"Link:",lnkPh:"Paste link here https://...",qty:"Quantity:",st:"Start",stV:"Instant (0 - 15m)",wr:"Guarantee",yes:"Available",noW:"No Refill",mm:"Min / Max",tot:"Total",sub:"Submit Order ⚡",rTit:"Top Up Balance 💳",rSub:"Copy QiCard or USDT (TRC20) and send payment",cpy:"📋 Copy",pay:"Payment Method:",rAmt:"Amount ($):",note:"Transaction ID / Sender Name:",notePh:"Enter transaction ID or sender name...",rBtn:"Send Top-Up Request 🚀",hEmp:"Order history is empty",hSub:"Your submitted orders will appear here",tAll:"All",tFol:"Followers",tLik:"Likes",tViw:"Views",tCom:"Comments",pIg:"Instagram",pTt:"TikTok",pTg:"Telegram",pYt:"YouTube",pFb:"Facebook",pSc:"Snapchat",pTw:"Twitter / X",pWa:"WhatsApp",pAl:"All / General",errFill:"Please enter link and select a service!",okPend:"⏳ Pending Approval",okOrd:"✅ Order #",errFail:"Order Failed",errConn:"Connection Error",okRef:"✅ Request Sent!",errRef:"❌ Error",stProg:"In Progress",stPend:"Pending Approval",stDone:"Completed"},
-  ku_b:{lang:"کوردی (بادینی)",dir:"rtl",bal:"باڵانسێ تە",ord:"داواکارییا نوو ⚡",ref:"پڕکرنا باڵانسی 💳",his:"تۆمارێن من 🕒",selP:"پلاتفۆرمی هەلبژێرە:",selT:"جۆرێ خزمەتگوزاریێ:",srch:"🔍 ل ناڤ یان ژمارا خزمەتگوزاریێ بگەڕێ...",cat:"بەش:",loadCat:"بارکرن...",loadSvc:"بارکرن...",oTit:"داواکارییەکا نوو چێکە",oSub:"خزمەتگوزاریێ هەلبژێرە و لینکی بنڤیسە",svc:"خزمەتگوزاری:",lnk:"لینک:",lnkPh:"لینکی ل ڤێرێ دانێ \u200Ehttps://...\u200E",qty:"چەنداتی:",st:"دەستپێکرن",stV:"ئێکسەر (0 - 15 خولەک)",wr:"گەرەنتی",yes:"هەیە",noW:"بێ گەرەنتی",mm:"کێمترین / زۆرترین",tot:"کۆمێ گشتی",sub:"پشتڕاستکرنا داواکاریێ ⚡",rTit:"پڕکرنا باڵانسێ هەژمارێ 💳",rSub:"ژمارا QiCard یان ناونیشانێ USDT کۆپی بکە و پارەی فرێکە",cpy:"📋 کۆپی",pay:"ڕێکا پارەدانێ:",rAmt:"بڕێ پڕکرنێ ($):",note:"ژمارا پرۆسێ / ناڤێ هنێرەری:",notePh:"ژمارا حەواڵێ یان ناڤێ خۆ بنڤیسە...",rBtn:"هنارتنا داواکارییا پڕکرنێ 🚀",hEmp:"تۆمارا داواکارییان یا ڤالایە",hSub:"داواکاریێن تە ل ڤێرێ دێ دیار بن",tAll:"هەمی",tFol:"فۆڵۆوەرز",tLik:"لایک",tViw:"بینین",tCom:"کۆمێنت",pIg:"ئینستاگرام",pTt:"تیک تۆک",pTg:"تێلیگرام",pYt:"یوتیوب",pFb:"فەیسبووک",pSc:"سناب چات",pTw:"تویتەر / X",pWa:"واتساب",pAl:"هەمی / گشتی",errFill:"هیڤیدارین لینکی بنڤیسە و خزمەتگوزاریێ هەلبژێرە!",okPend:"⏳ ل هیڤییا ڕەزامەندیێ یە",okOrd:"✅ داواکاری هاتە هنارتن #",errFail:"داواکاری سەرنەکەفت",errConn:"خەلەتی د پەیوەندیێ دا",okRef:"✅ داواکاری هاتە هنارتن!",errRef:"❌ خەلەتی روویدا",stProg:"د قۆناغا جێبەجێکرنێ دایە",stPend:"ل هیڤییا ڕەزامەندیێ یە",stDone:"ب دووماهیک هات"}
+  ar:{lang:"العربية",dir:"rtl",bal:"رصيدك",ord:"طلب جديد ⚡",ref:"شحن رصيد 💳",his:"سجلاتي 🕒",selP:"اختر المنصة:",selT:"اختر نوع الخدمة:",srch:"🔍 ابحث باسم الخدمة أو الرقم...",cat:"القسم:",loadCat:"جاري التحميل...",loadSvc:"جاري التحميل...",oTit:"إنشاء طلب جديد",oSub:"اختر الخدمة واكتب الرابط الخاص بك",svc:"الخدمة:",lnk:"الرابط:",lnkPh:"ضع الرابط هنا \u200Ehttps://...\u200E",qty:"الكمية:",st:"البدء",stV:"فوري (0 - 15 د)",delLbl:"سرعة الوصول / التأخير:",delFast:"سريع • بدون تأخير",delMed:"متوسط • 1 - 6 ساعات",delSlow:"يتأخر قليلاً • جودة حقيقية / تدريجي",wr:"الضمان",yes:"متوفر",noW:"بدون ضمان",mm:"الحد الأدنى / الأقصى",tot:"الإجمالي",sub:"تأكيد الطلب ⚡",rTit:"شحن رصيد الحساب 💳",rSub:"انسخ رقم QiCard أو عنوان USDT وأرسل المبلغ",cpy:"📋 نسخ",pay:"طريقة الدفع:",rAmt:"مبلغ الشحن ($):",note:"رقم العملية / اسم المرسل:",notePh:"اكتب رقم الحوالة أو اسم المرسل...",rBtn:"إرسال طلب الشحن 🚀",hEmp:"سجل الطلبات فارغ",hSub:"الطلبات التي تقوم بتثبيتها ستظهر هنا",tAll:"الكل",tFol:"متابعين",tLik:"لايكات",tViw:"مشاهدات",tCom:"تعليقات",pIg:"إنستغرام",pTt:"تيك توك",pTg:"تيليجرام",pYt:"يوتيوب",pFb:"فيسبوك",pSc:"سناب شات",pTw:"تويتر / X",pWa:"واتساب",pAl:"الكل / عام",errFill:"يرجى إدخال الرابط واختيار الخدمة!",okPend:"⏳ بانتظار الموافقة",okOrd:"✅ تم تنفيذ الطلب #",errFail:"فشل تنفيذ الطلب",errConn:"خطأ في الاتصال",okRef:"✅ تم الإرسال بنجاح!",errRef:"❌ خطأ في الإرسال",stProg:"قيد التنفيذ",stPend:"بانتظار الموافقة",stDone:"مكتمل",stRef:"مسترجع ↩️"},
+  en:{lang:"English",dir:"ltr",bal:"Balance",ord:"New Order ⚡",ref:"Top Up 💳",his:"History 🕒",selP:"Select Platform:",selT:"Service Type:",srch:"🔍 Search service name or ID...",cat:"Category:",loadCat:"Loading...",loadSvc:"Loading...",oTit:"Create New Order",oSub:"Select a service and enter your link",svc:"Service:",lnk:"Link:",lnkPh:"Paste link here https://...",qty:"Quantity:",st:"Start",stV:"Instant (0 - 15m)",delLbl:"Delivery / Delay:",delFast:"Fast • No Delay",delMed:"Moderate • 1 - 6 Hours",delSlow:"Slight Delay • Real / Gradual",wr:"Guarantee",yes:"Available",noW:"No Refill",mm:"Min / Max",tot:"Total",sub:"Submit Order ⚡",rTit:"Top Up Balance 💳",rSub:"Copy QiCard or USDT (TRC20) and send payment",cpy:"📋 Copy",pay:"Payment Method:",rAmt:"Amount ($):",note:"Transaction ID / Sender Name:",notePh:"Enter transaction ID or sender name...",rBtn:"Send Top-Up Request 🚀",hEmp:"Order history is empty",hSub:"Your submitted orders will appear here",tAll:"All",tFol:"Followers",tLik:"Likes",tViw:"Views",tCom:"Comments",pIg:"Instagram",pTt:"TikTok",pTg:"Telegram",pYt:"YouTube",pFb:"Facebook",pSc:"Snapchat",pTw:"Twitter / X",pWa:"WhatsApp",pAl:"All / General",errFill:"Please enter link and select a service!",okPend:"⏳ Pending Approval",okOrd:"✅ Order #",errFail:"Order Failed",errConn:"Connection Error",okRef:"✅ Request Sent!",errRef:"❌ Error",stProg:"In Progress",stPend:"Pending Approval",stDone:"Completed",stRef:"Refunded ↩️"},
+  ku_b:{lang:"کوردی (بادینی)",dir:"rtl",bal:"باڵانسێ تە",ord:"داواکارییا نوو ⚡",ref:"پڕکرنا باڵانسی 💳",his:"تۆمارێن من 🕒",selP:"پلاتفۆرمی هەلبژێرە:",selT:"جۆرێ خزمەتگوزاریێ:",srch:"🔍 ل ناڤ یان ژمارا خزمەتگوزاریێ بگەڕێ...",cat:"بەش:",loadCat:"بارکرن...",loadSvc:"بارکرن...",oTit:"داواکارییەکا نوو چێکە",oSub:"خزمەتگوزاریێ هەلبژێرە و لینکی بنڤیسە",svc:"خزمەتگوزاری:",lnk:"لینک:",lnkPh:"لینکی ل ڤێرێ دانێ \u200Ehttps://...\u200E",qty:"چەنداتی:",st:"دەستپێکرن",stV:"ئێکسەر (0 - 15 خولەک)",delLbl:"گەهشتن و تەخیربوون:",delFast:"بلەز • بێ تەخیربوون",delMed:"ناڤنجی • د 1 - 6 دەمژمێران دا",delSlow:"تەخیر دبیت • کوالێتی ڕاستەقینە / هێدی",wr:"گەرەنتی",yes:"هەیە",noW:"بێ گەرەنتی",mm:"کێمترین / زۆرترین",tot:"کۆمێ گشتی",sub:"پشتڕاستکرنا داواکاریێ ⚡",rTit:"پڕکرنا باڵانسێ هەژمارێ 💳",rSub:"ژمارا QiCard یان ناونیشانێ USDT کۆپی بکە و پارەی فرێکە",cpy:"📋 کۆپی",pay:"ڕێکا پارەدانێ:",rAmt:"بڕێ پڕکرنێ ($):",note:"ژمارا پرۆسێ / ناڤێ هنێرەری:",notePh:"ژمارا حەواڵێ یان ناڤێ خۆ بنڤیسە...",rBtn:"هنارتنا داواکارییا پڕکرنێ 🚀",hEmp:"تۆمارا داواکارییان یا ڤالایە",hSub:"داواکاریێن تە ل ڤێرێ دێ دیار بن",tAll:"هەمی",tFol:"فۆڵۆوەرز",tLik:"لایک",tViw:"بینین",tCom:"کۆمێنت",pIg:"ئینستاگرام",pTt:"تیک تۆک",pTg:"تێلیگرام",pYt:"یوتیوب",pFb:"فەیسبووک",pSc:"سناب چات",pTw:"تویتەر / X",pWa:"واتساب",pAl:"هەمی / گشتی",errFill:"هیڤیدارین لینکی بنڤیسە و خزمەتگوزاریێ هەلبژێرە!",okPend:"⏳ ل هیڤییا ڕەزامەندیێ یە",okOrd:"✅ داواکاری هاتە هنارتن #",errFail:"داواکاری سەرنەکەفت",errConn:"خەلەتی د پەیوەندیێ دا",okRef:"✅ داواکاری هاتە هنارتن!",errRef:"❌ خەلەتی روویدا",stProg:"د قۆناغا جێبەجێکرنێ دایە",stPend:"ل هیڤییا ڕەزامەندیێ یە",stDone:"ب دووماهیک هات",stRef:"پارە زڤڕی ↩️"}
 };
 
-// Comprehensive Multi-Word Phrases [normalized_source, English, Arabic, Kurdish_Badini]
 const PHRASES=[
   ["طفي زر مراجعة المتابعين قبل الطلب","Turn off follower review button before ordering","أوقف زر مراجعة المتابعين قبل الطلب","دوگمەیا پێداچوونا فۆڵۆوەران بگرە بەری داواکاریێ"],
   ["اطفي زر مراجعة المتابعين قبل الطلب","Turn off follower review button before ordering","أوقف زر مراجعة المتابعين قبل الطلب","دوگمەیا پێداچوونا فۆڵۆوەران بگرە بەری داواکاریێ"],
@@ -153,7 +152,6 @@ const PHRASES=[
   ["الاكثر تفاعلا","Most Engaging","الأكثر تفاعلاً","زۆرترین کارڤەدان"]
 ];
 
-// Exhaustive Single-Word Dictionary [English, Arabic, Kurdish_Badini]
 const WORDS={
   "instagram":["Instagram","إنستغرام","ئینستاگرام"],"انستقرام":["Instagram","إنستغرام","ئینستاگرام"],"انستغرام":["Instagram","إنستغرام","ئینستاگرام"],"انستجرام":["Instagram","إنستغرام","ئینستاگرام"],
   "tiktok":["TikTok","تيك توك","تیک تۆک"],"تيك توك":["TikTok","تيك توك","تیک تۆک"],"تيكتوك":["TikTok","تيك توك","تیک تۆک"],
@@ -362,7 +360,6 @@ function translateOne(raw,targetLang){
   let txt=normText(raw);
   let low=txt.toLowerCase();
 
-  // 1. Replace multi-word phrases first
   for(let i=0;i<SORTED_PHRASES.length;i++){
     const ph=SORTED_PHRASES[i][0];
     if(low.includes(ph)){
@@ -376,7 +373,6 @@ function translateOne(raw,targetLang){
     }
   }
 
-  // 2. Replace individual words cleanly
   const tokens=txt.split(/(\s+|•|-|\(|\)|\[|\]|\/|:|,|\+)/);
   const out=[];
   for(let i=0;i<tokens.length;i++){
@@ -393,10 +389,8 @@ function translateOne(raw,targetLang){
       if(hit[idx])out.push(hit[idx]);
       continue;
     }
-    // Strip untranslated foreign script tokens so languages NEVER mix
     if(targetLang==='en'&&/[\u0600-\u06FF]/.test(tok))continue;
     if(targetLang!=='en'&&/[a-zA-Z]{2,}/.test(tok)&&!/^(VIP|USA|UK|UAE|USDT|TRC20|ID|M7|HD|4K|HQ|LQ|MQ|XL|CK|X|\d+[KMB])$/i.test(tok))continue;
-    // In Badini, drop any unknown Arabic word so 0 Arabic words ever mix in
     if(targetLang==='ku_b'&&/[\u0600-\u06FF]/.test(tok)){
       if(/[پچژگڤۆێە]/.test(tok)){out.push(tok);}
       continue;
@@ -426,37 +420,102 @@ function tr(s){
   return translateOne(s,lang);
 }
 
-function detectStartTime(svc){
+function formatApiTime(raw){
+  const s=String(raw||'').trim();
+  if(!s||s==='-'||/not enough data/i.test(s))return'';
+  const hm=s.match(/(\d+)\s*hours?\s*(?:(\d+)\s*minutes?)?/i);
+  if(hm){
+    const h=hm[1],m=hm[2];
+    if(lang==='en')return m?`${h}h ${m}m`:`${h} Hours`;
+    if(lang==='ar')return m?`${h} ساعة و ${m} د`:`${h} ساعة`;
+    return m?`${h} دەمژمێر و ${m} خولەک`:`${h} دەمژمێر`;
+  }
+  const mm=s.match(/(\d+)\s*minutes?/i);
+  if(mm){
+    if(lang==='en')return`${mm[1]} Min`;
+    if(lang==='ar')return`${mm[1]} دقيقة`;
+    return`${mm[1]} خولەک`;
+  }
+  return translateOne(s,lang);
+}
+
+function getServiceTiming(svc){
   const t=T[lang];
-  if(!svc)return t.stV;
-  const rawApi=svc.start_time||svc.startTime||svc.average_time||svc.avg_time||'';
-  if(rawApi&&String(rawApi).trim()&&String(rawApi).trim()!=='-'){
-    const trApi=translateOne(String(rawApi).trim(),lang);
-    if(trApi)return trApi;
+  if(!svc)return{start:t.stV,color:'var(--ok)',delivery:t.delFast,delColor:'#38bdf8'};
+
+  const rawStart=svc.start_time||svc.startTime||'';
+  const rawAvg=svc.average_time||svc.avg_time||'';
+  const full=normText(svc.cleanName+' '+svc.cleanCat+' '+(svc.desc||svc.description||'')).toLowerCase();
+
+  let startTxt='',color='#38bdf8',isDelayed=false;
+
+  if(rawStart&&String(rawStart).trim()!=='-'){
+    startTxt=formatApiTime(rawStart);
+    isDelayed=/\b(6|12|24|48|72|hour|ساعة|دەمژمێر|slow|بطي)/i.test(rawStart);
+    color=isDelayed?'#f59e0b':'var(--ok)';
+  }else{
+    const hrRange=full.match(/(\d+)\s*-\s*(\d+)\s*(?:h|hr|hrs|hour|hours|ساعة|ساعات)\b/);
+    const minRange=full.match(/(\d+)\s*-\s*(\d+)\s*(?:m|min|mins|minute|minutes|دقيقة|دقائق|د)\b/);
+    const singleHr=full.match(/\b(\d+)\s*(?:h|hr|hrs|hour|hours|ساعة|ساعات)\b/);
+
+    if(hrRange){
+      const hi=parseInt(hrRange[2],10);
+      const rng=hrRange[1]+'-'+hrRange[2];
+      isDelayed=hi>=6;
+      color=isDelayed?'#f59e0b':'#38bdf8';
+      if(lang==='en')startTxt=isDelayed?`Delayed (${rng}h)`:`${rng} Hours`;
+      else if(lang==='ar')startTxt=isDelayed?`يتأخر (${rng} ساعة)`:`${rng} ساعة`;
+      else startTxt=isDelayed?`تەخیر دبیت (${rng} دەمژمێر)`:`${rng} دەمژمێر`;
+    }else if(minRange){
+      const rng=minRange[1]+'-'+minRange[2];
+      color='var(--ok)';
+      if(lang==='en')startTxt=`${rng} Min`;
+      else if(lang==='ar')startTxt=`${rng} دقيقة`;
+      else startTxt=`${rng} خولەک`;
+    }else if(singleHr){
+      const hi=parseInt(singleHr[1],10);
+      isDelayed=hi>=6;
+      color=isDelayed?'#f59e0b':'#38bdf8';
+      if(lang==='en')startTxt=isDelayed?`Delayed (0-${hi}h)`:`0-${hi} Hours`;
+      else if(lang==='ar')startTxt=isDelayed?`يتأخر (0-${hi} ساعة)`:`0-${hi} ساعة`;
+      else startTxt=isDelayed?`تەخیر دبیت (0-${hi} دەمژمێر)`:`0-${hi} دەمژمێر`;
+    }else if(full.includes('فوري')||full.includes('instant')||full.includes('فائق')){
+      startTxt=t.stV;
+      color='var(--ok)';
+    }else if(full.includes('سريع')||full.includes('fast')){
+      color='var(--ok)';
+      startTxt=lang==='en'?'Fast (0 - 30m)':(lang==='ar'?'سريع (0 - 30 د)':'بلەز (0 - 30 خولەک)');
+    }else if(full.includes('بطي')||full.includes('slow')||full.includes('تدريجي')||full.includes('gradual')||full.includes('تاخير')||full.includes('delay')){
+      isDelayed=true;
+      color='#f59e0b';
+      startTxt=lang==='en'?'Delayed (1 - 12h)':(lang==='ar'?'يتأخر (1 - 12 ساعة)':'تەخیر دبیت (1 - 12 دەمژمێر)');
+    }else if(full.includes('دعم ممول')||full.includes('ممول')||full.includes('sponsored')||full.includes('اعلان')||full.includes('ads')||full.includes('حقيقي')||full.includes('real')||full.includes('عراق')||full.includes('iraq')||full.includes('خليج')||full.includes('gulf')||full.includes('سعود')||full.includes('saudi')){
+      isDelayed=true;
+      color='#f59e0b';
+      startTxt=lang==='en'?'Delayed (1 - 6h)':(lang==='ar'?'يتأخر (1 - 6 ساعات)':'تەخیر دبیت (1 - 6 دەمژمێر)');
+    }else{
+      color='#38bdf8';
+      startTxt=lang==='en'?'0 - 1 Hour':(lang==='ar'?'0 - 1 ساعة':'0 - 1 دەمژمێر');
+    }
   }
-  const full=(svc.cleanName+' '+svc.cleanCat).toLowerCase();
-  const hrRange=full.match(/(\d+\s*-\s*\d+)\s*(?:h|hr|hrs|hour|hours|ساعة|ساعات)\b/);
-  if(hrRange){
-    const u=lang==='en'?' Hours':(lang==='ar'?' ساعة':' دەمژمێر');
-    return hrRange[1].replace(/\s+/g,'')+u;
+
+  // Extract speed / average delivery time
+  let delTxt='',delColor=isDelayed?'#f59e0b':'#10b981';
+  const avgFmt=formatApiTime(rawAvg);
+  const spdMatch=full.match(/(\d+(?:\.\d+)?\s*[km]?)\s*(?:\/|\s*في\s*|\s*بال|\s*per\s*)(?:day|d|يوم|اليوم|hour|h|ساعة|الساعة)/i);
+
+  if(avgFmt){
+    const prefix=isDelayed?(lang==='en'?'Delayed • ~':(lang==='ar'?'يتأخر • ~':'تەخیر دبیت • ~')):(lang==='en'?'Avg: ~':(lang==='ar'?'المتوسط: ~':'تێکرا: ~'));
+    delTxt=prefix+avgFmt;
+  }else if(spdMatch){
+    const rawSpd=spdMatch[0].replace(/في اليوم|باليوم|per day|\/day|\/d/i,lang==='en'?'/Day':(lang==='ar'?'/يوم':'/ڕۆژ')).replace(/في الساعة|بالساعة|per hour|\/hour|\/h/i,lang==='en'?'/Hr':(lang==='ar'?'/ساعة':'/دەمژمێر'));
+    const statusTag=isDelayed?(lang==='en'?'Delayed • ':(lang==='ar'?'يتأخر • ':'تەخیر دبیت • ')):(lang==='en'?'No Delay • ':(lang==='ar'?'بدون تأخير • ':'بێ تەخیربوون • '));
+    delTxt=statusTag+rawSpd;
+  }else{
+    delTxt=isDelayed?t.delSlow:(color==='var(--ok)'?t.delFast:t.delMed);
   }
-  const minRange=full.match(/(\d+\s*-\s*\d+)\s*(?:m|min|mins|minute|minutes|دقيقة|دقائق|د)\b/);
-  if(minRange){
-    const u=lang==='en'?' Min':(lang==='ar'?' دقيقة':' خولەک');
-    return minRange[1].replace(/\s+/g,'')+u;
-  }
-  const singleHr=full.match(/\b(\d+)\s*(?:h|hr|hrs|hour|hours|ساعة|ساعات)\b/);
-  if(singleHr){
-    const u=lang==='en'?' Hours':(lang==='ar'?' ساعة':' دەمژمێر');
-    return '0-'+singleHr[1]+u;
-  }
-  if(full.includes('slow')||full.includes('بطي')){
-    return lang==='en'?'1 - 6 Hours':(lang==='ar'?'1 - 6 ساعات':'1 - 6 دەمژمێر');
-  }
-  if(full.includes('fast')||full.includes('سريع')){
-    return lang==='en'?'Fast (0 - 30m)':(lang==='ar'?'سريع (0 - 30 د)':'بلەز (0 - 30 خولەک)');
-  }
-  return t.stV;
+
+  return{start:startTxt,color,delivery:delTxt,delColor};
 }
 
 function setLang(l){
@@ -481,7 +540,7 @@ function setLang(l){
   const ol=document.getElementById('orderLink');if(ol)ol.placeholder=t.lnkPh;
   setTxt('txtQtyLabel',t.qty);
   setTxt('txtStart',t.st);
-  setTxt('infoStart',t.stV);
+  setTxt('txtDeliveryLabel',t.delLbl);
   setTxt('txtWarranty',t.wr);
   setTxt('txtMinMax',t.mm);
   setTxt('submitBtnText',t.sub);
@@ -563,7 +622,7 @@ function mapServices(rawList){
 }
 
 try{
-  const cachedSvcs=JSON.parse(localStorage.getItem('m7_svcs_v1')||'null');
+  const cachedSvcs=JSON.parse(localStorage.getItem('m7_svcs_v2')||'null');
   if(Array.isArray(cachedSvcs)&&cachedSvcs.length)allServices=mapServices(cachedSvcs);
 }catch(e){}
 
@@ -573,7 +632,7 @@ async function fetchServices(){
     const res=await fetch('/api/services');const txt=await res.text();let data;
     try{data=JSON.parse(txt);}catch(e){if(!allServices.length){setOpt(cEl,'API Error');setOpt(sEl,'API Error');}return;}
     if(!data||!data.success||!Array.isArray(data.services)){if(!allServices.length){const e=(data&&data.error)||'Failed';setOpt(cEl,e);setOpt(sEl,e);}return;}
-    try{localStorage.setItem('m7_svcs_v1',JSON.stringify(data.services));}catch(e){}
+    try{localStorage.setItem('m7_svcs_v2',JSON.stringify(data.services));}catch(e){}
     allServices=mapServices(data.services);
     if(document.activeElement!==cEl&&document.activeElement!==sEl)renderCats();
   }catch(e){if(!allServices.length){setOpt(cEl,'Error: '+e.message);setOpt(sEl,'Error');}}
@@ -617,14 +676,18 @@ function renderSvcs(){
 function updateInfo(){
   const id=document.getElementById('serviceSelect').value,t=T[lang];
   curSvc=allServices.find(s=>String(s.service||s.id)===String(id));
+  const stEl=document.getElementById('infoStart'),delEl=document.getElementById('infoDelivery');
   if(curSvc){
-    setTxt('infoStart',detectStartTime(curSvc));
+    const tm=getServiceTiming(curSvc);
+    if(stEl){stEl.innerText=tm.start;stEl.style.color=tm.color;}
+    if(delEl){delEl.innerText=tm.delivery;delEl.style.color=tm.delColor;}
     setTxt('infoMinMax',(curSvc.min||50)+' - '+(curSvc.max||200000));
     document.getElementById('orderQuantity').value=curSvc.min||100;
     const low=(curSvc.cleanName+' '+curSvc.cleanCat).toLowerCase(),noW=curSvc.refill===false||low.includes('no refill')||low.includes('بدون ضمان')||low.includes('بدون تعويض')||low.includes('لا يوجد ضمان')||low.includes('بێ گەرەنتی');
     const wEl=document.getElementById('txtYes');if(wEl){wEl.innerText=noW?t.noW:t.yes;wEl.style.color=noW?'#ef4444':'var(--ok)';}
   }else{
-    setTxt('infoStart',t.stV);
+    if(stEl){stEl.innerText=t.stV;stEl.style.color='var(--ok)';}
+    if(delEl){delEl.innerText=t.delFast;delEl.style.color='#38bdf8';}
   }
   calcTotal();
 }
@@ -659,12 +722,38 @@ async function submitOrder(){
 async function submitRefill(){
   const method=document.getElementById('refillMethod').value,amount=parseFloat(document.getElementById('refillAmount').value),note=document.getElementById('refillNote').value.trim(),m=document.getElementById('refillMsg'),t=T[lang];
   if(!amount||amount<=0)return;m.style.color='#38bdf8';m.innerText='...';
-  try{const r=await fetch('/api/refill-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telegramId,username,method,amount,note})});const d=await r.json();m.style.color=d&&d.success?'#10b981':'#ef4444';m.innerText=d&&d.success?t.okRef:t.errRef;}catch(e){m.style.color='#ef4444';m.innerText=t.errConn;}
+  try{
+    const r=await fetch('/api/refill-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telegramId,username,method,amount,note})});
+    const d=await r.json();
+    if(d&&d.success){
+      m.style.color='#10b981';
+      if(d.autoCredited&&d.newBalance!==undefined){
+        userBal=parseFloat(d.newBalance);
+        setTxt('userBalance',fmtBal(userBal));
+        m.innerText=t.okRef+' (+$'+parseFloat(d.creditedAmount||amount).toFixed(2)+')';
+      }else{
+        m.innerText=t.okRef;
+      }
+      document.getElementById('refillNote').value='';
+    }else{
+      m.style.color='#ef4444';
+      m.innerText=(d&&d.error)||t.errRef;
+    }
+  }catch(e){m.style.color='#ef4444';m.innerText=t.errConn;}
 }
 
 async function loadHistory(){
   if(!telegramId)return;const t=T[lang];
-  try{const r=await fetch('/api/orders/'+telegramId);const d=await r.json();const box=document.getElementById('historyBox');if(d&&d.orders&&d.orders.length)box.innerHTML=d.orders.map(o=>{const st=o.status==='Pending Approval'?t.stPend:(o.status==='Completed'?t.stDone:t.stProg);return'<div class="history-item"><b>#M7-'+(o.orderId||o.serviceId)+'</b>'+(o.serviceName?' ('+tr(o.serviceName)+')':'')+' - '+st+'<br><small>'+o.link+'</small></div>';}).join('');}catch(e){}
+  try{
+    const r=await fetch('/api/orders/'+telegramId);
+    const d=await r.json();
+    if(d&&d.newBalance!==undefined){userBal=parseFloat(d.newBalance);setTxt('userBalance',fmtBal(userBal));}
+    const box=document.getElementById('historyBox');
+    if(d&&d.orders&&d.orders.length)box.innerHTML=d.orders.map(o=>{
+      const st=o.status==='Pending Approval'?t.stPend:(o.status==='Completed'?t.stDone:(o.status==='Refunded'?t.stRef:t.stProg));
+      return'<div class="history-item"><b>#M7-'+(o.orderId||o.serviceId)+'</b>'+(o.serviceName?' ('+tr(o.serviceName)+')':'')+' - '+st+'<br><small>'+o.link+'</small></div>';
+    }).join('');
+  }catch(e){}
 }
 
 let clicks=0,clickTimer=null;
