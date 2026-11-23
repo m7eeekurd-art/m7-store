@@ -131,10 +131,10 @@ module.exports = async (req, res) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               chat_id: msg.chat.id,
-              text: `👋 بخێرهاتی <b>${fname}</b> بۆ <b>M7 Store</b>!\n\nبۆ داواکرنا خزمەتگوزارییان و پڕکرنا باڵانسی ب ئاسانترین شێوە، دوگما ل خوارێ دابگرە:`,
+              text: `👋 Welcome <b>${fname}</b> to <b>M7 Store</b>!`,
               parse_mode: 'HTML',
               reply_markup: {
-                inline_keyboard: [[{ text: '🚀 ڤەکرنا مینی ئەپێ (Open App)', web_app: { url: miniAppUrl } }]]
+                inline_keyboard: [[{ text: 'Open App', web_app: { url: miniAppUrl } }]]
               }
             })
           });
