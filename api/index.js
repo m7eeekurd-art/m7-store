@@ -284,7 +284,7 @@ module.exports = async (req, res) => {
       const uTag = username ? `@${username}` : 'No Username';
       const uIdStr = telegramId || 'Unknown ID';
 
-      // شەحنکرنا ئۆتۆماتیکی یا USDT: هەر 1 USDT = 1.52$
+      // شەحنکرنا ئۆتۆماتیکی یا USDT: هەر 1 USDT = 1.7$
       if (method === 'USDT' && note) {
         const txMatch = String(note).match(/[a-fA-F0-9]{64}/);
         if (txMatch) {
@@ -298,20 +298,19 @@ module.exports = async (req, res) => {
           if (check && check.valid) {
             const user = await db.User.findOne({ telegramId });
             if (user) {
-              const usdtMultiplier = 1.52;
+              const usdtMultiplier = 1.7;
               const creditedAmount = parseFloat((check.amount * usdtMultiplier).toFixed(4));
               user.balance = parseFloat((user.balance + creditedAmount).toFixed(4));
               await user.save();
               await db.Refill.create({ telegramId, username, method, amount: creditedAmount, note, txid, status: 'Approved' });
-              await sendAlert(db, `✅ <b>شەحنکرنا ئۆتۆماتیکی USDT!</b>\n👤 <b>ناڤ:</b> ${uTag}\n🆔 <b>ئایدی:</b> <code>${uIdStr}</code>\n🪙 <b>USDT یێ گەهشتی:</b> ${check.amount} USDT\n💵 <b>باڵانسێ زێدەبوویی (×1.52):</b> $${creditedAmount}\n🔗 <b>TXID:</b> <code>${txid}</code>`);
+              await sendAlert(db, `✅ <b>شەحنکرنا ئۆتۆماتیکی USDT!</b>\n👤 <b>ناڤ:</b> ${uTag}\n🆔 <b>ئایدی:</b> <code>${uIdStr}</code>\n🪙 <b>USDT یێ گەهشتی:</b> ${check.amount} USDT\n💵 <b>باڵانسێ زێدەبوویی (×1.7):</b> $${creditedAmount}\n🔗 <b>TXID:</b> <code>${txid}</code>`);
               return res.status(200).json({ success: true, autoCredited: true, creditedAmount, newBalance: user.balance });
             }
           }
         }
+        return res.status(200).json({ success: false, error: 'Invalid or unconfirmed TXID!' });
       }
 
-      await db.Refill.create({ telegramId, username, method, amount, note });
-      await sendAlert(db, `💳 <b>داواکارییا پڕکرنا باڵانسی!</b>\n👤 <b>ناڤ:</b> ${uTag}\n🆔 <b>ئایدی:</b> <code>${uIdStr}</code>\n💵 <b>بڕ:</b> $${amount}\n🏦 <b>ڕێکا ڤەدانا:</b> ${method}\n📝 <b>تێبینی:</b> ${note || '-'}`);
       return res.status(200).json({ success: true });
     }
 
