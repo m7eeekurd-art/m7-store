@@ -27,9 +27,9 @@ function copyText(t,btn){if(!t)return;if(navigator.clipboard)navigator.clipboard
 function fmtBal(n){const v=parseFloat(n)||0;if(v===0)return'$0.00';const s=v.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');const p=s.split('.');return!p[1]?'$'+p[0]+'.00':(p[1].length===1?'$'+s+'0':'$'+s);}
 
 const T={
-  ar:{lang:"العربية",dir:"rtl",bal:"رصيدك",ord:"طلب جديد ⚡",ref:"شحن رصيد 💳",his:"سجلاتي 🕒",selP:"اختر المنصة:",selT:"اختر نوع الخدمة:",srch:"🔍 ابحث باسم الخدمة أو الرقم...",cat:"القسم:",loadCat:"جاري التحميل...",loadSvc:"جاري التحميل...",oTit:"إنشاء طلب جديد",oSub:"اختر الخدمة واكتب الرابط الخاص بك",svc:"الخدمة:",lnk:"الرابط:",lnkPh:"ضع الرابط هنا \u200Ehttps://...\u200E",qty:"الكمية:",st:"البدء",stV:"فوري (0 - 15 د)",delLbl:"سرعة الوصول / التأخير:",delFast:"سريع • بدون تأخير",delMed:"متوسط • 1 - 6 ساعات",delSlow:"يتأخر قليلاً • جودة حقيقية / تدريجي",wr:"الضمان",yes:"متوفر",noW:"بدون ضمان",mm:"الحد الأدنى / الأقصى",tot:"الإجمالي",sub:"تأكيد الطلب ⚡",rTit:"شحن رصيد الحساب 💳",rSub:"انسخ رقم QiCard أو عنوان USDT وأرسل المبلغ",cpy:"📋 نسخ",pay:"طريقة الدفع:",rAmt:"مبلغ الشحن ($):",note:"رقم العملية / اسم المرسل:",notePh:"اكتب رقم الحوالة أو اسم المرسل...",rBtn:"إرسال طلب الشحن 🚀",hEmp:"سجل الطلبات فارغ",hSub:"الطلبات التي تقوم بتثبيتها ستظهر هنا",tAll:"الكل",tFol:"متابعين",tLik:"لايكات",tViw:"مشاهدات",tCom:"تعليقات",pIg:"إنستغرام",pTt:"تيك توك",pTg:"تيليجرام",pYt:"يوتيوب",pFb:"فيسبوك",pSc:"سناب شات",pTw:"تويتر / X",pWa:"واتساب",pAl:"الكل / عام",errFill:"يرجى إدخال الرابط واختيار الخدمة!",okPend:"⏳ بانتظار الموافقة",okOrd:"✅ تم تنفيذ الطلب #",errFail:"فشل تنفيذ الطلب",errConn:"خطأ في الاتصال",okRef:"✅ تم الإرسال بنجاح!",errRef:"❌ خطأ في الإرسال",stProg:"قيد التنفيذ",stPend:"بانتظار الموافقة",stDone:"مكتمل",stRef:"مسترجع ↩️"},
-  en:{lang:"English",dir:"ltr",bal:"Balance",ord:"New Order ⚡",ref:"Top Up 💳",his:"History 🕒",selP:"Select Platform:",selT:"Service Type:",srch:"🔍 Search service name or ID...",cat:"Category:",loadCat:"Loading...",loadSvc:"Loading...",oTit:"Create New Order",oSub:"Select a service and enter your link",svc:"Service:",lnk:"Link:",lnkPh:"Paste link here https://...",qty:"Quantity:",st:"Start",stV:"Instant (0 - 15m)",delLbl:"Delivery / Delay:",delFast:"Fast • No Delay",delMed:"Moderate • 1 - 6 Hours",delSlow:"Slight Delay • Real / Gradual",wr:"Guarantee",yes:"Available",noW:"No Refill",mm:"Min / Max",tot:"Total",sub:"Submit Order ⚡",rTit:"Top Up Balance 💳",rSub:"Copy QiCard or USDT (TRC20) and send payment",cpy:"📋 Copy",pay:"Payment Method:",rAmt:"Amount ($):",note:"Transaction ID / Sender Name:",notePh:"Enter transaction ID or sender name...",rBtn:"Send Top-Up Request 🚀",hEmp:"Order history is empty",hSub:"Your submitted orders will appear here",tAll:"All",tFol:"Followers",tLik:"Likes",tViw:"Views",tCom:"Comments",pIg:"Instagram",pTt:"TikTok",pTg:"Telegram",pYt:"YouTube",pFb:"Facebook",pSc:"Snapchat",pTw:"Twitter / X",pWa:"WhatsApp",pAl:"All / General",errFill:"Please enter link and select a service!",okPend:"⏳ Pending Approval",okOrd:"✅ Order #",errFail:"Order Failed",errConn:"Connection Error",okRef:"✅ Request Sent!",errRef:"❌ Error",stProg:"In Progress",stPend:"Pending Approval",stDone:"Completed",stRef:"Refunded ↩️"},
-  ku_b:{lang:"کوردی (بادینی)",dir:"rtl",bal:"باڵانسێ تە",ord:"داواکارییا نوو ⚡",ref:"پڕکرنا باڵانسی 💳",his:"تۆمارێن من 🕒",selP:"پلاتفۆرمی هەلبژێرە:",selT:"جۆرێ خزمەتگوزاریێ:",srch:"🔍 ل ناڤ یان ژمارا خزمەتگوزاریێ بگەڕێ...",cat:"بەش:",loadCat:"بارکرن...",loadSvc:"بارکرن...",oTit:"داواکارییەکا نوو چێکە",oSub:"خزمەتگوزاریێ هەلبژێرە و لینکی بنڤیسە",svc:"خزمەتگوزاری:",lnk:"لینک:",lnkPh:"لینکی ل ڤێرێ دانێ \u200Ehttps://...\u200E",qty:"چەنداتی:",st:"دەستپێکرن",stV:"ئێکسەر (0 - 15 خولەک)",delLbl:"گەهشتن و تەخیربوون:",delFast:"بلەز • بێ تەخیربوون",delMed:"ناڤنجی • د 1 - 6 دەمژمێران دا",delSlow:"تەخیر دبیت • کوالێتی ڕاستەقینە / هێدی",wr:"گەرەنتی",yes:"هەیە",noW:"بێ گەرەنتی",mm:"کێمترین / زۆرترین",tot:"کۆمێ گشتی",sub:"پشتڕاستکرنا داواکاریێ ⚡",rTit:"پڕکرنا باڵانسێ هەژمارێ 💳",rSub:"ژمارا QiCard یان ناونیشانێ USDT کۆپی بکە و پارەی فرێکە",cpy:"📋 کۆپی",pay:"ڕێکا پارەدانێ:",rAmt:"بڕێ پڕکرنێ ($):",note:"ژمارا پرۆسێ / ناڤێ هنێرەری:",notePh:"ژمارا حەواڵێ یان ناڤێ خۆ بنڤیسە...",rBtn:"هنارتنا داواکارییا پڕکرنێ 🚀",hEmp:"تۆمارا داواکارییان یا ڤالایە",hSub:"داواکاریێن تە ل ڤێرێ دێ دیار بن",tAll:"هەمی",tFol:"فۆڵۆوەرز",tLik:"لایک",tViw:"بینین",tCom:"کۆمێنت",pIg:"ئینستاگرام",pTt:"تیک تۆک",pTg:"تێلیگرام",pYt:"یوتیوب",pFb:"فەیسبووک",pSc:"سناب چات",pTw:"تویتەر / X",pWa:"واتساب",pAl:"هەمی / گشتی",errFill:"هیڤیدارین لینکی بنڤیسە و خزمەتگوزاریێ هەلبژێرە!",okPend:"⏳ ل هیڤییا ڕەزامەندیێ یە",okOrd:"✅ داواکاری هاتە هنارتن #",errFail:"داواکاری سەرنەکەفت",errConn:"خەلەتی د پەیوەندیێ دا",okRef:"✅ داواکاری هاتە هنارتن!",errRef:"❌ خەلەتی روویدا",stProg:"د قۆناغا جێبەجێکرنێ دایە",stPend:"ل هیڤییا ڕەزامەندیێ یە",stDone:"ب دووماهیک هات",stRef:"پارە زڤڕی ↩️"}
+  ar:{lang:"العربية",dir:"rtl",bal:"رصيدك",ord:"طلب جديد ⚡",ref:"شحن رصيد 💳",his:"سجلاتي 🕒",selP:"اختر المنصة:",selT:"اختر نوع الخدمة:",srch:"🔍 ابحث باسم الخدمة أو الرقم...",cat:"القسم:",loadCat:"جاري التحميل...",loadSvc:"جاري التحميل...",oTit:"إنشاء طلب جديد",oSub:"اختر الخدمة واكتب الرابط الخاص بك",svc:"الخدمة:",lnk:"الرابط:",lnkPh:"ضع الرابط هنا \u200Ehttps://...\u200E",qty:"الكمية:",st:"البدء",stV:"فوري (0 - 15 د)",delLbl:"سرعة الوصول / التأخير:",delFast:"سريع • بدون تأخير",delMed:"متوسط • 1 - 6 ساعات",delSlow:"يتأخر قليلاً • جودة حقيقية / تدريجي",wr:"الضمان",yes:"متوفر",noW:"بدون ضمان",mm:"الحد الأدنى / الأقصى",tot:"الإجمالي",sub:"تأكيد الطلب ⚡",rTit:"شحن رصيد الحساب 💳",rSub:"اختر طريقة الدفع المناسبة لشحن رصيدك",rateTit:"💡 أسعار الشحن المعتمدة:",chatSup:"💬 مراسلة الدعم",manHint:"اضغط أدناه لمراسلة الدعم برسالة جاهزة لطلب رقم التحويل، وبعد التحويل أرسل صورة الإيصال ليتم شحن رصيدك يدوياً:",manBtn:"💬 طلب الرقم عبر تيليجرام (@M7support)",cpy:"📋 نسخ",pay:"طريقة الدفع:",rAmt:"مبلغ الشحن ($):",note:"رمز العملية (TXID):",notePh:"الصق رمز التحويل (TXID) للتحقق التلقائي...",rBtn:"إرسال طلب الشحن 🚀",hEmp:"سجل الطلبات فارغ",hSub:"الطلبات التي تقوم بتثبيتها ستظهر هنا",tAll:"الكل",tFol:"متابعين",tLik:"لايكات",tViw:"مشاهدات",tCom:"تعليقات",pIg:"إنستغرام",pTt:"تيك توك",pTg:"تيليجرام",pYt:"يوتيوب",pFb:"فيسبوك",pSc:"سناب شات",pTw:"تويتر / X",pWa:"واتساب",pAl:"الكل / عام",errFill:"يرجى إدخال الرابط واختيار الخدمة!",okPend:"⏳ بانتظار الموافقة",okOrd:"✅ تم تنفيذ الطلب #",errFail:"فشل تنفيذ الطلب",errConn:"خطأ في الاتصال",okRef:"✅ تم الإرسال بنجاح!",errRef:"❌ رمز العملية غير صحيح أو مستخدم مسبقاً",stProg:"قيد التنفيذ",stPend:"بانتظار الموافقة",stDone:"مكتمل",stRef:"مسترجع ↩️"},
+  en:{lang:"English",dir:"ltr",bal:"Balance",ord:"New Order ⚡",ref:"Top Up 💳",his:"History 🕒",selP:"Select Platform:",selT:"Service Type:",srch:"🔍 Search service name or ID...",cat:"Category:",loadCat:"Loading...",loadSvc:"Loading...",oTit:"Create New Order",oSub:"Select a service and enter your link",svc:"Service:",lnk:"Link:",lnkPh:"Paste link here https://...",qty:"Quantity:",st:"Start",stV:"Instant (0 - 15m)",delLbl:"Delivery / Delay:",delFast:"Fast • No Delay",delMed:"Moderate • 1 - 6 Hours",delSlow:"Slight Delay • Real / Gradual",wr:"Guarantee",yes:"Available",noW:"No Refill",mm:"Min / Max",tot:"Total",sub:"Submit Order ⚡",rTit:"Top Up Balance 💳",rSub:"Choose your preferred payment method to top up",rateTit:"💡 Official Top-Up Rates:",chatSup:"💬 Message Support",manHint:"Tap below to message support with a ready request for the transfer number, then send your receipt for manual top-up:",manBtn:"💬 Request Number via Telegram (@M7support)",cpy:"📋 Copy",pay:"Payment Method:",rAmt:"Amount ($):",note:"Transaction Hash (TXID):",notePh:"Paste transaction hash (TXID) for auto credit...",rBtn:"Send Top-Up Request 🚀",hEmp:"Order history is empty",hSub:"Your submitted orders will appear here",tAll:"All",tFol:"Followers",tLik:"Likes",tViw:"Views",tCom:"Comments",pIg:"Instagram",pTt:"TikTok",pTg:"Telegram",pYt:"YouTube",pFb:"Facebook",pSc:"Snapchat",pTw:"Twitter / X",pWa:"WhatsApp",pAl:"All / General",errFill:"Please enter link and select a service!",okPend:"⏳ Pending Approval",okOrd:"✅ Order #",errFail:"Order Failed",errConn:"Connection Error",okRef:"✅ Request Sent!",errRef:"❌ Invalid or already used TXID",stProg:"In Progress",stPend:"Pending Approval",stDone:"Completed",stRef:"Refunded ↩️"},
+  ku_b:{lang:"کوردی (بادینی)",dir:"rtl",bal:"باڵانسێ تە",ord:"داواکارییا نوو ⚡",ref:"پڕکرنا باڵانسی 💳",his:"تۆمارێن من 🕒",selP:"پلاتفۆرمی هەلبژێرە:",selT:"جۆرێ خزمەتگوزاریێ:",srch:"🔍 ل ناڤ یان ژمارا خزمەتگوزاریێ بگەڕێ...",cat:"بەش:",loadCat:"بارکرن...",loadSvc:"بارکرن...",oTit:"داواکارییەکا نوو چێکە",oSub:"خزمەتگوزاریێ هەلبژێرە و لینکی بنڤیسە",svc:"خزمەتگوزاری:",lnk:"لینک:",lnkPh:"لینکی ل ڤێرێ دانێ \u200Ehttps://...\u200E",qty:"چەنداتی:",st:"دەستپێکرن",stV:"ئێکسەر (0 - 15 خولەک)",delLbl:"گەهشتن و تەخیربوون:",delFast:"بلەز • بێ تەخیربوون",delMed:"ناڤنجی • د 1 - 6 دەمژمێران دا",delSlow:"تەخیر دبیت • کوالێتی ڕاستەقینە / هێدی",wr:"گەرەنتی",yes:"هەیە",noW:"بێ گەرەنتی",mm:"کێمترین / زۆرترین",tot:"کۆمێ گشتی",sub:"پشتڕاستکرنا داواکاریێ ⚡",rTit:"پڕکرنا باڵانسێ هەژمارێ 💳",rSub:"ڕێکا پارەدانێ یا گونجای هەلبژێرە بۆ پڕکرنا باڵانسی",rateTit:"💡 نرخێن فەرمی یێن شەحنکرنێ:",chatSup:"💬 نامە بۆ دەعمی",manHint:"ل خوارێ کلیک بکە دا ب ڕیسالەکا حازر ژمارا حەوالێ ژ دەعمی بخوازی، و پشتی فرێکرنێ وێنێ پسوولێ بنێرە دا باڵانسێ تە بهێتە شەحنکرن:",manBtn:"💬 داخوازکرنا ژمارێ د تێلیگرامی دا (@M7support)",cpy:"📋 کۆپی",pay:"ڕێکا پارەدانێ:",rAmt:"بڕێ پڕکرنێ ($):",note:"کۆدێ پرۆسێ (TXID):",notePh:"کۆدێ حەوالێ (TXID) ل ڤێرێ دانێ بۆ شەحنکرنا ئۆتۆماتیکی...",rBtn:"هنارتنا داواکارییا پڕکرنێ 🚀",hEmp:"تۆمارا داواکارییان یا ڤالایە",hSub:"داواکاریێن تە ل ڤێرێ دێ دیار بن",tAll:"هەمی",tFol:"فۆڵۆوەرز",tLik:"لایک",tViw:"بینین",tCom:"کۆمێنت",pIg:"ئینستاگرام",pTt:"تیک تۆک",pTg:"تێلیگرام",pYt:"یوتیوب",pFb:"فەیسبووک",pSc:"سناب چات",pTw:"تویتەر / X",pWa:"واتساب",pAl:"هەمی / گشتی",errFill:"هیڤیدارین لینکی بنڤیسە و خزمەتگوزاریێ هەلبژێرە!",okPend:"⏳ ل هیڤییا ڕەزامەندیێ یە",okOrd:"✅ داواکاری هاتە هنارتن #",errFail:"داواکاری سەرنەکەفت",errConn:"خەلەتی د پەیوەندیێ دا",okRef:"✅ داواکاری هاتە هنارتن!",errRef:"❌ کۆدێ TXID خەلەتە یان بەری نوکە هاتییە بکارئینان",stProg:"د قۆناغا جێبەجێکرنێ دایە",stPend:"ل هیڤییا ڕەزامەندیێ یە",stDone:"ب دووماهیک هات",stRef:"پارە زڤڕی ↩️"}
 };
 
 const PHRASES=[
@@ -499,7 +499,6 @@ function getServiceTiming(svc){
     }
   }
 
-  // Extract speed / average delivery time
   let delTxt='',delColor=isDelayed?'#f59e0b':'#10b981';
   const avgFmt=formatApiTime(rawAvg);
   const spdMatch=full.match(/(\d+(?:\.\d+)?\s*[km]?)\s*(?:\/|\s*في\s*|\s*بال|\s*per\s*)(?:day|d|يوم|اليوم|hour|h|ساعة|الساعة)/i);
@@ -516,6 +515,37 @@ function getServiceTiming(svc){
   }
 
   return{start:startTxt,color,delivery:delTxt,delColor};
+}
+
+function toggleRefillMethod(){
+  const sel=document.getElementById('refillMethod');
+  const isUsdt=sel&&sel.value==='USDT';
+  const usdtBox=document.getElementById('usdtFieldsBox');
+  const manBox=document.getElementById('manualSupportBox');
+  const msg=document.getElementById('refillMsg');
+  if(usdtBox)usdtBox.style.display=isUsdt?'block':'none';
+  if(manBox)manBox.style.display=isUsdt?'none':'block';
+  if(msg)msg.innerText='';
+}
+
+function openSupportChat(){
+  const sel=document.getElementById('refillMethod');
+  let method=sel?sel.value:'QiCard';
+  if(method!=='QiCard'&&method!=='FIB')method='QiCard';
+  let text='';
+  if(lang==='ar'){
+    text=`مرحباً، أريد شحن رصيدي عبر ${method}، ممكن ترسل لي الرقم للتحويل؟`;
+  }else if(lang==='ku_b'){
+    text=`سلاڤ، من دڤێت باڵانسێ خۆ ب ڕێکا ${method} شەحن بکەم، زەحمەت نەبیت ژمارێ بنێرە دا پارەی فرێکەم.`;
+  }else{
+    text=`Hello, I want to top up my balance via ${method}. Please send me the number to transfer.`;
+  }
+  const url='https://t.me/M7support?text='+encodeURIComponent(text);
+  if(tg&&typeof tg.openTelegramLink==='function'){
+    tg.openTelegramLink(url);
+  }else{
+    window.open(url,'_blank');
+  }
 }
 
 function setLang(l){
@@ -546,17 +576,22 @@ function setLang(l){
   setTxt('submitBtnText',t.sub);
   setTxt('txtRefillTitle',t.rTit);
   setTxt('txtRefillSub',t.rSub);
+  setTxt('txtRateNoteTitle',t.rateTit);
+  setTxt('txtChatSupportTop',t.chatSup);
+  setTxt('txtManualHint',t.manHint);
+  setTxt('txtManualSupportBtn',t.manBtn);
   setTxt('txtPayMethodLabel',t.pay);
   setTxt('txtRefillLabel',t.rAmt);
   setTxt('txtRefillNoteLabel',t.note);
   const rn=document.getElementById('refillNote');if(rn)rn.placeholder=t.notePh;
   setTxt('txtRefillBtn',t.rBtn);
-  document.querySelectorAll('.copy-btn').forEach(b=>b.innerText=t.cpy);
+  document.querySelectorAll('.copy-btn').forEach(b=>{if(b.id!=='txtChatSupportTop')b.innerText=t.cpy;});
   setTxt('txtHistEmpty',t.hEmp);
   setTxt('txtHistSub',t.hSub);
   setTxt('pInsta',t.pIg);setTxt('pTiktok',t.pTt);setTxt('pTelegram',t.pTg);
   setTxt('pYoutube',t.pYt);setTxt('pFacebook',t.pFb);setTxt('pSnapchat',t.pSc);
   setTxt('pTwitter',t.pTw);setTxt('pWhatsapp',t.pWa);setTxt('pAll',t.pAl);
+  toggleRefillMethod();
   renderPills();
   if(allServices.length)renderCats();
   else{setOpt(document.getElementById('categorySelect'),t.loadCat);setOpt(document.getElementById('serviceSelect'),t.loadSvc);updateInfo();}
@@ -576,7 +611,7 @@ function switchTab(t){
   document.getElementById('refillSection').style.display=t==='refill'?'block':'none';
   document.getElementById('historySection').style.display=t==='history'?'block':'none';
   if(t==='order')document.getElementById('btnNewOrder').classList.add('active');
-  if(t==='refill')document.getElementById('btnRefill').classList.add('active');
+  if(t==='refill'){document.getElementById('btnRefill').classList.add('active');toggleRefillMethod();}
   if(t==='history'){document.getElementById('btnHistory').classList.add('active');loadHistory();}
 }
 
@@ -703,7 +738,7 @@ async function syncUser(){
   try{
     const r=await fetch('/api/user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telegramId,username,firstName})});
     const d=await r.json();
-    if(d&&d.success){userBal=parseFloat(d.balance)||0;setTxt('userBalance',fmtBal(userBal));if(d.settings){if(d.settings.qicard)setTxt('displayQicard',d.settings.qicard);if(d.settings.usdt)setTxt('displayUsdt',d.settings.usdt);}}
+    if(d&&d.success){userBal=parseFloat(d.balance)||0;setTxt('userBalance',fmtBal(userBal));if(d.settings){if(d.settings.usdt)setTxt('displayUsdt',d.settings.usdt);}}
   }catch(e){}
 }
 
@@ -720,8 +755,11 @@ async function submitOrder(){
 }
 
 async function submitRefill(){
-  const method=document.getElementById('refillMethod').value,amount=parseFloat(document.getElementById('refillAmount').value),note=document.getElementById('refillNote').value.trim(),m=document.getElementById('refillMsg'),t=T[lang];
-  if(!amount||amount<=0)return;m.style.color='#38bdf8';m.innerText='...';
+  const method=document.getElementById('refillMethod').value;
+  if(method!=='USDT'){openSupportChat();return;}
+  const amount=parseFloat(document.getElementById('refillAmount').value)||0,note=document.getElementById('refillNote').value.trim(),m=document.getElementById('refillMsg'),t=T[lang];
+  if(!note){m.style.color='#ef4444';m.innerText=t.errRef;return;}
+  m.style.color='#38bdf8';m.innerText='...';
   try{
     const r=await fetch('/api/refill-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telegramId,username,method,amount,note})});
     const d=await r.json();
